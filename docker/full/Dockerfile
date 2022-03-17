@@ -1,56 +1,7 @@
-FROM ubuntu:20.04
+FROM lucashagen/zeek-base
 
-################################################################################
-# Code from p4.org
-# Install dependencies and some useful tools.
-ENV NET_TOOLS iputils-arping \
-              iputils-ping \
-              iputils-tracepath \
-              net-tools \
-              nmap \
-              python3-ipaddr \
-              python3-scapy \
-              tcpdump \
-              traceroute \
-              tshark
-
-ENV MININET_DEPS automake \
-                 build-essential \
-                 cgroup-tools \
-                 ethtool \
-                 gcc \
-                 help2man \
-                 iperf \
-                 iproute2 \
-                 libtool \
-                 make \
-                 pkg-config \
-                 psmisc \
-                 socat \
-                 ssh \
-                 sudo \
-                 telnet \
-                 pep8 \
-                 pyflakes3 \
-                 pylint \
-                 python3-pexpect \
-                 python3-setuptools
-
-ENV DEV_TOOLS cmake flex curl gpg
-
-# Ignore questions when installing with apt-get:
-ENV DEBIAN_FRONTEND noninteractive
-
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends ca-certificates $NET_TOOLS $MININET_DEPS $DEV_TOOLS
-
-# Fix to get tcpdump working
-# RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump # This breaks Scapy.
-RUN ln /usr/sbin/tcpdump /usr/bin/tcpdump
-
-# End of code from p4.org.
-################################################################################
+ARG ZEEK_PACKAGE=zeek-lts
+ARG ZEEK_PATH=/opt/zeek
 
 # Installing Zeek.
 # Reference:
@@ -61,9 +12,10 @@ RUN echo 'deb http://download.opensuse.org/repositories/security:/zeek/xUbuntu_2
     curl -fsSL https://download.opensuse.org/repositories/security:zeek/xUbuntu_20.04/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/security_zeek.gpg > /dev/null
 
 RUN apt-get update && \
-    apt-get install -y zeek-rc
+    apt-get install -y $ZEEK_PACKAGE
 
 ENV PATH="/opt/zeek-rc/bin:/opt/zeek-aux/plugin-support:${PATH}"
+ENV ZEEK_HOME="$ZEEK_PATH"
 
 RUN cd /opt && \
     git clone --recursive https://github.com/zeek/zeek-aux && \
