@@ -5,5 +5,4 @@
 # your plugin's accompanying scripts.
 #
 
-# @load ./bar
-
+@load ./main.zeek
