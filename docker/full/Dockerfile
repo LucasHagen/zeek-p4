@@ -14,7 +14,7 @@ RUN echo 'deb http://download.opensuse.org/repositories/security:/zeek/xUbuntu_2
 RUN apt-get update && \
     apt-get install -y $ZEEK_PACKAGE
 
-ENV PATH="/opt/zeek-rc/bin:/opt/zeek-aux/plugin-support:${PATH}"
+ENV PATH="${ZEEK_PATH}/bin:/opt/zeek-aux/plugin-support:${PATH}"
 ENV ZEEK_HOME="$ZEEK_PATH"
 
 RUN cd /opt && \

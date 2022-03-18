@@ -1,9 +1,24 @@
 #!/usr/bin/env bash
 
+echo ""
+echo "-- BASE --"
+echo ""
 docker build --tag lucashagen/zeek-base ./base
+
+echo ""
+echo "-- FULL:LTS --"
+echo ""
 docker build --tag lucashagen/zeek-full:lts ./full
-docker build --tag lucashagen/zeek-full:rc --build-arg ZEEK_PACKAGE="zeek-rc" --build-arg ZEEK_PACKAGE="/opt/zeek-rc" ./full
-docker build --tag lucashagen/zeek-full --build-arg ZEEK_PACKAGE="zeek-rc" --build-arg ZEEK_PACKAGE="/opt/zeek-rc" ./full
+
+echo ""
+echo "-- FULL:RC --"
+echo ""
+docker build --tag lucashagen/zeek-full:rc --build-arg ZEEK_PACKAGE="zeek-rc" --build-arg ZEEK_PATH="/opt/zeek-rc" ./full
+
+echo ""
+echo "-- FULL:LATEST --"
+echo ""
+docker build --tag lucashagen/zeek-full --build-arg ZEEK_PACKAGE="zeek-rc" --build-arg ZEEK_PATH="/opt/zeek-rc" ./full
 
 # for d in ./* ; do
 #     [ -d "$d" ] && [ ! -L "$d" ] || continue
