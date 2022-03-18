@@ -1,0 +1,16 @@
+#!/bin/bash
+
+SCRIPT=`realpath $0`
+SCRIPTPATH=`dirname $SCRIPT`
+P4APP=$SCRIPTPATH/deps/p4app/p4app
+
+echo "Script: $SCRIPT"
+echo "Scriptpath: $SCRIPTPATH"
+echo "P4APP: $P4APP"
+
+if [ -f "$P4APP" ]; then
+    $P4APP "$@"
+else
+    echo "Error: p4app not found, please initialize submodules"
+    echo "Run: ./init-submodules"
+fi
