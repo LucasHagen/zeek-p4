@@ -85,8 +85,6 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
                 meta.pkt_num = meta.pkt_num + 1;
                 pkt_counter.write(0, meta.pkt_num);
 
-                meta.ingress_headers = hdr;
-
                 // Generate an event packet.
                 clone3(CloneType.I2E, MIRROR_SESSION, { meta });
             }
@@ -136,8 +134,8 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
         }
 
         switch (meta.event_Type) {
-            TYPE_ICMP_ECHO_REQ_EVENT: construct_icmp_echo_request_event_t(meta, hdr);
-            TYPE_ICMP_ECHO_REPLY_EVENT: construct_icmp_echo_reply_event_t(meta, hdr);
+            TYPE_ICMP_ECHO_REQ_EVENT: construct_icmp_echo_request_event_t(hdr, meta);
+            TYPE_ICMP_ECHO_REPLY_EVENT: construct_icmp_echo_reply_event_t(hdr, meta);
             default: mark_to_drop(standard_metadata);
         }
 
@@ -145,44 +143,44 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
 
 }
 
-control construct_icmp_echo_request_event_t(in metadata meta, inout headers hdr) {
-    hdr.icmp_echo_request_event_t.id = meta.ingress_headers.icmp.id;
-    hdr.icmp_echo_request_event_t.seq = meta.ingress_headers.icmp.seq;
+control construct_icmp_echo_request_event_t(inout headers hdr, inout metadata meta) {
+    hdr.icmp_echo_request_event_t.id = hdr.icmp.id;
+    hdr.icmp_echo_request_event_t.seq = hdr.icmp.seq;
 
     // True if it's an ICMPv6 packet.
-    hdr.icmp_echo_request_event_t.info.v6 = true;
+    hdr.icmp_echo_request_event_t.info.v6 = false;
 
     // The ICMP type of the current packet.
-	hdr.icmp_echo_request_event_t.info.itype = meta.ingress_headers.icmp.type_;
+	hdr.icmp_echo_request_event_t.info.itype = hdr.icmp.type_;
 
     // The ICMP code of the current packet.
-	hdr.icmp_echo_request_event_t.info.icode = meta.ingress_headers.icmp.code;
+	hdr.icmp_echo_request_event_t.info.icode = hdr.icmp.code;
 
     // The length of the ICMP payload. (total ipv4 length - (ipv4 header + icmp header))
-	hdr.icmp_echo_request_event_t.info.len = meta.ingress_headers.ipv4.total_len - 28;
+	hdr.icmp_echo_request_event_t.info.len = hdr.ipv4.total_len - 28;
 
     // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
-	hdr.icmp_echo_request_event_t.info.ttl = meta.ingress_headers.ipv4.ttl;
+	hdr.icmp_echo_request_event_t.info.ttl = hdr.ipv4.ttl;
 }
 
 control construct_icmp_echo_request_event_t(in metadata meta, inout headers hdr) {
-    hdr.icmp_echo_reply_event_t.id = meta.ingress_headers.icmp.id;
-    hdr.icmp_echo_reply_event_t.seq = meta.ingress_headers.icmp.seq;
+    hdr.icmp_echo_reply_event_t.id = hdr.icmp.id;
+    hdr.icmp_echo_reply_event_t.seq = hdr.icmp.seq;
 
     // True if it's an ICMPv6 packet.
-    hdr.icmp_echo_reply_event_t.info.v6 = true;
+    hdr.icmp_echo_reply_event_t.info.v6 = false;
 
     // The ICMP type of the current packet.
-	hdr.icmp_echo_reply_event_t.info.itype = meta.ingress_headers.icmp.type_;
+	hdr.icmp_echo_reply_event_t.info.itype = hdr.icmp.type_;
 
     // The ICMP code of the current packet.
-	hdr.icmp_echo_reply_event_t.info.icode = meta.ingress_headers.icmp.code;
+	hdr.icmp_echo_reply_event_t.info.icode = hdr.icmp.code;
 
     // The length of the ICMP payload. (total ipv4 length - (ipv4 header + icmp header))
-	hdr.icmp_echo_reply_event_t.info.len = meta.ingress_headers.ipv4.total_len - 28;
+	hdr.icmp_echo_reply_event_t.info.len = hdr.ipv4.total_len - 28;
 
     // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
-	hdr.icmp_echo_reply_event_t.info.ttl = meta.ingress_headers.ipv4.ttl;
+	hdr.icmp_echo_reply_event_t.info.ttl = hdr.ipv4.ttl;
 }
 
 V1Switch(ParserImpl(), verifyChecksum(), ingress(), egress(), computeChecksum(), DeparserImpl()) main;

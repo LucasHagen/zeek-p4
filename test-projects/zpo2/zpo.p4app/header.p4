@@ -72,6 +72,8 @@ header icmp_t {
     bit<16>   hdr_checksum;
     bit<16>   id;  // Assuming echo request or reply.
     bit<16>   seq; // Ditto.
+
+    // total:
 }
 
 header icmpv6_t {
@@ -288,7 +290,6 @@ struct metadata {
     bit<16> src_port;
     bit<16> dst_port;
     event_type_t event_type;
-    headers ingress_headers;
 }
 
 #endif /* RNA_HEADERS */
