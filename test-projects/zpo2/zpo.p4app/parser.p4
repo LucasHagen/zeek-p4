@@ -1,7 +1,7 @@
-#ifndef RNA_PARSER
-#define RNA_PARSER
+#ifndef ZPO_PARSER
+#define ZPO_PARSER
 
-#include "rna_headers.p4"
+#include "headers.p4"
 
 parser ParserImpl(packet_in packet,
                 out headers hdr,
@@ -116,4 +116,4 @@ control computeChecksum(inout headers hdr, inout metadata meta) {
     }
 }
 
-#endif /* RNA_PARSER */
+#endif /* ZPO_PARSER */

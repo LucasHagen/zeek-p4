@@ -1,6 +1,6 @@
 #include <v1model.p4>
 
-#include "rna_parser.p4"
+#include "parser.p4"
 
 typedef bit<9>   egress_spec_t;
 
@@ -54,7 +54,7 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
         default_action = NoAction();
     }
 
-    // RNA Data Plane Logic
+    // ZPO Data Plane Logic
     apply {
         if (standard_metadata.instance_type == INSTANCE_TYPE_NORMAL) {
             if (hdr.ipv4.isValid()) {
