@@ -1,5 +1,5 @@
-#ifndef RNA_HEADERS
-#define RNA_HEADERS
+#ifndef ZPO_HEADERS
+#define ZPO_HEADERS
 
 // Header definitions for ICMP, TCP, and UDP loosely based on:
 // https://github.com/p4lang/papers/blob/master/sosr15/DC.p4/includes/headers.p4
@@ -292,5 +292,5 @@ struct metadata {
     event_type_t event_type;
 }
 
-#endif /* RNA_HEADERS */
+#endif /* ZPO_HEADERS */
 
