@@ -161,6 +161,8 @@ control construct_icmp_echo_request_event_t(inout headers hdr, inout metadata me
 
     // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
 	hdr.icmp_echo_request_event_t.info.ttl = hdr.ipv4.ttl;
+
+    hdr.icmp_echo_request_event_t.setValid();
 }
 
 control construct_icmp_echo_request_event_t(in metadata meta, inout headers hdr) {
@@ -181,6 +183,8 @@ control construct_icmp_echo_request_event_t(in metadata meta, inout headers hdr)
 
     // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
 	hdr.icmp_echo_reply_event_t.info.ttl = hdr.ipv4.ttl;
+
+    hdr.icmp_echo_reply_event_t.setValid();
 }
 
 V1Switch(ParserImpl(), verifyChecksum(), ingress(), egress(), computeChecksum(), DeparserImpl()) main;
