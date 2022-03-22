@@ -65,12 +65,12 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
                 // Only working with icmp events for now
                 if (hdr.icmp.isValid()) {
                     meta.protocol = (bit<16>) TYPE_ICMP;
-                    meta.src_port = hdr.icmp.id;
-                    meta.dst_port = hdr.icmp.seq;
+                    meta.src_port = hdr.icmp.type_;
+                    icmp_counterpart(hdr.icmp.type_, meta);
 
                     meta.event_type = select(hdr.icmp.type_) {
-                        0: TYPE_ICMP_ECHO_REPLY_EVENT;
-                        8: TYPE_ICMP_ECHO_REQ_EVENT;
+                        ICMP_ECHOREPLY: TYPE_ICMP_ECHO_REPLY_EVENT;
+                        ICMP_ECHO: TYPE_ICMP_ECHO_REQ_EVENT;
                         default: 0;
                     }
                 }
@@ -191,6 +191,22 @@ control construct_icmp_echo_request_event_t(in metadata meta, inout headers hdr)
 
     hdr.ipv4.setInvalid();
     hdr.icmp.setInvalid();
+}
+
+control icmp_counterpart(in icmp_t icmp, inout metadata meta) {
+    meta.dst_port = select ( icmp.type_ ) {
+		ICMP_ECHO: ICMP_ECHOREPLY;
+		ICMP_ECHOREPLY: ICMP_ECHO;
+		ICMP_TSTAMP: ICMP_TSTAMPREPLY;
+		ICMP_TSTAMPREPLY: ICMP_TSTAMP;
+		ICMP_IREQ: ICMP_IREQREPLY;
+		ICMP_IREQREPLY: ICMP_IREQ;
+		ICMP_ROUTERSOLICIT: ICMP_ROUTERADVERT;
+		ICMP_ROUTERADVERT: ICMP_ROUTERSOLICIT;
+		ICMP_MASKREQ: ICMP_MASKREPLY;
+		ICMP_MASKREPLY: ICMP_MASKREQ;
+		default: icmp.code;
+    }
 }
 
 V1Switch(ParserImpl(), verifyChecksum(), ingress(), egress(), computeChecksum(), DeparserImpl()) main;
