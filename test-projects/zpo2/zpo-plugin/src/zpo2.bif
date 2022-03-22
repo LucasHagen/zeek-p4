@@ -1,1 +1,2 @@
-
+event rna_message%(pkt_num: count, protocol: count, src_addr: addr, dst_addr:addr, src_port: port, dst_port: port%);
+event rna_ntp_monlist%(c: connection, is_orig: bool%);
