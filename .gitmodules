@@ -1,6 +1,3 @@
-[submodule "p4app"]
-	path = deps/p4app
-	url = https://github.com/p4lang/p4app
 [submodule "deps/p4app"]
 	path = deps/p4app
 	url = https://github.com/p4lang/p4app
