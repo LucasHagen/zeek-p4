@@ -21,7 +21,7 @@ docker build --tag lucashagen/zeek-apt:rc --build-arg ZEEK_PACKAGE="zeek-rc" --b
 echo ""
 echo "-- FULL:LATEST --"
 echo ""
-docker build --tag lucashagen/zeek-full --build-arg $SCRIPTPATH/apt
+docker build --tag lucashagen/zeek-apt --build-arg $SCRIPTPATH/apt
 
 # for d in ./* ; do
 #     [ -d "$d" ] && [ ! -L "$d" ] || continue

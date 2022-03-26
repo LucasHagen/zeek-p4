@@ -28,7 +28,6 @@ Usage: $0 [OPTIONS]
     --with-caf=DIR             Path to CAF installation root
     --with-bifcl=PATH          Path to bifcl executable
     --enable-debug             Compile in debugging mode
-    --disable-cpp-tests        Don't build C++ unit tests
 EOF
 
 if type plugin_usage >/dev/null 2>&1; then
@@ -51,9 +50,8 @@ append_cache_entry () {
 
 # set defaults
 builddir=build
-zeekdist=""
+zeekdist="$(zeek-config --zeek_dist)"
 installroot="default"
-zeek_plugin_begin_opts=""
 CMakeCacheEntries=""
 
 while [ $# -ne 0 ]; do
@@ -99,11 +97,7 @@ while [ $# -ne 0 ]; do
             ;;
 
         --enable-debug)
-            append_cache_entry BRO_PLUGIN_ENABLE_DEBUG BOOL true
-            ;;
-
-        --disable-cpp-tests)
-            zeek_plugin_begin_opts="DISABLE_CPP_TESTS;$zeek_plugin_begin_opts"
+            append_cache_entry BRO_PLUGIN_ENABLE_DEBUG         BOOL   true
             ;;
 
         *)
@@ -125,7 +119,7 @@ if [ -z "$CMakeCommand" ]; then
     elif command -v cmake >/dev/null 2>&1 ; then
         CMakeCommand="cmake"
     else
-        echo "This plugin requires CMake, please install it first."
+        echo "This package requires CMake, please install it first."
         echo "Then you may use this script to configure the CMake build."
         echo "Note: pass --cmake=PATH to use cmake in non-standard locations."
         exit 1;
@@ -180,14 +174,6 @@ fi
 if [ "$installroot" != "default" ]; then
     mkdir -p $installroot
     append_cache_entry BRO_PLUGIN_INSTALL_ROOT PATH $installroot
-fi
-
-if [ -n "$zeek_plugin_begin_opts" ]; then
-    append_cache_entry ZEEK_PLUGIN_BEGIN_OPTS STRING "$zeek_plugin_begin_opts"
-fi
-
-if type plugin_addl >/dev/null 2>&1; then
-    plugin_addl
 fi
 
 echo "Build Directory        : $builddir"

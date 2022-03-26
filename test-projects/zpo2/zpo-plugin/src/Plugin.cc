@@ -1,14 +1,24 @@
-
 #include "Plugin.h"
 
-namespace plugin { namespace INF_UFRGS_ZPO2 { Plugin plugin; } }
+#include "zeek/packet_analysis/Component.h"
+#include "ZPOEventAnalyzer.h"
 
-using namespace plugin::INF_UFRGS_ZPO2;
+namespace plugin {
+namespace BR_INF_UFRGS_ZPO {
 
-zeek::plugin::Configuration Plugin::Configure()
-{
+	Plugin plugin;
+
+}
+}
+
+using namespace plugin::BR_INF_UFRGS_ZPO;
+
+zeek::plugin::Configuration Plugin::Configure() {
+	AddComponent(new zeek::packet_analysis::Component("ZPOEventAnalyzer",
+					zeek::packet_analysis::BR_INF_UFRGS_ZPO::ZPOEventAnalyzer::Instantiate));
+
 	zeek::plugin::Configuration config;
-	config.name = "INF_UFRGS::ZPO2";
+	config.name = "BR_INF_UFRGS::ZPO";
 	config.description = "This is a test plugin";
 	config.version.major = 0;
 	config.version.minor = 1;
