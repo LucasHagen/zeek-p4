@@ -1,26 +1,24 @@
 FROM lucashagen/zeek-base
 
-ARG ZEEK_PACKAGE=zeek-lts
-ARG ZEEK_PATH=/opt/zeek
+ARG ZEEK_VERSION=4.0.5
+ARG ZEEK_VERSION_TAG="v${ZEEK_VERSION}"
 
-# Installing Zeek.
-# Reference:
-#   https://github.com/zeek/zeek/wiki/Binary-Packages
-#   https://software.opensuse.org//download.html?project=security%3Azeek&package=zeek-lts
+ARG BUILD_CORES=8
 
-RUN echo 'deb http://download.opensuse.org/repositories/security:/zeek/xUbuntu_20.04/ /' | tee /etc/apt/sources.list.d/security:zeek.list && \
-    curl -fsSL https://download.opensuse.org/repositories/security:zeek/xUbuntu_20.04/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/security_zeek.gpg > /dev/null
+ENV ZEEK_HOME="/opt/zeek"
+ENV ZEEK_DIST="/opt/zeek-dist"
 
-RUN apt-get update && \
-    apt-get install -y $ZEEK_PACKAGE
+ADD zeek /opt/zeek-dist
 
-ENV PATH="${ZEEK_PATH}/bin:/opt/zeek-aux/plugin-support:${PATH}"
-ENV ZEEK_HOME="$ZEEK_PATH"
+RUN cd /opt/zeek-dist && \
+    ./configure --prefix=${ZEEK_HOME} && \
+    make install -j ${BUILD_CORES}
+#
+# RUN git clone --recursive https://github.com/zeek/zeek-aux /opt/zeek-aux && \
+#     cd /opt/zeek-aux && \
+#     ./configure && make -j8 && make install
 
-RUN cd /opt && \
-    git clone --recursive https://github.com/zeek/zeek-aux && \
-    cd zeek-aux && \
-    ./configure && make -j8 && make install
+ENV PATH="${ZEEK_HOME}/bin:${PATH}"
 
 WORKDIR /root
 
