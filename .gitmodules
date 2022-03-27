@@ -1,6 +1,6 @@
 [submodule "deps/p4app"]
 	path = deps/p4app
 	url = https://github.com/p4lang/p4app
-[submodule "docker/full/zeek"]
-	path = docker/full/zeek
+[submodule "docker/deps/zeek"]
+	path = docker/deps/zeek
 	url = https://github.com/zeek/zeek

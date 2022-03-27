@@ -51,13 +51,15 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends ca-certificates $NET_TOOLS $MININET_DEPS $DEV_TOOLS
+    apt-get install -y --no-install-recommends ca-certificates $NET_TOOLS $MININET_DEPS $DEV_TOOLS && \
+    apt-get autoremove -y && apt-get clean -y
 
 RUN mkdir /tmp/cmake && \
     cd /tmp/cmake && \
     wget https://cmake.org/files/v${CMAKE_VERSION_MAJOR}/${CMAKE_FILE} && \
     chmod +x ${CMAKE_FILE} && \
-    ./${CMAKE_FILE} --skip-license --prefix=/usr
+    ./${CMAKE_FILE} --skip-license --prefix=/usr && \
+    rm -rf /tmp/*
 
 # Fix to get tcpdump working
 # RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump # This breaks Scapy.

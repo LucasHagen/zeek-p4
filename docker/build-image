@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+SCRIPT=`realpath $0`
+SCRIPTPATH=`dirname $SCRIPT`
+TAG_PREFIX="lucashagen/zeek-"
+
+BUILT_IMAGE=false
+
+if [ "$1" = "base" ] || [ "$1" = "all" ] ; then
+
+    echo ""
+    echo "-- BASE --"
+    echo ""
+    docker build --tag ${TAG_PREFIX}base -f $SCRIPTPATH/base/Dockerfile .
+    BUILT_IMAGE=true
+
+fi
+
+if [ "$1" = "full" ] || [ "$1" = "all" ] ; then
+
+    echo ""
+    echo "-- FULL --"
+    echo ""
+    docker build --tag ${TAG_PREFIX}full -f $SCRIPTPATH/full/Dockerfile .
+    BUILT_IMAGE=true
+
+fi
+
+if [ "$1" = "dev" ] || [ "$1" = "all" ] ; then
+
+    echo ""
+    echo "-- DEV --"
+    echo ""
+    docker build --tag ${TAG_PREFIX}dev -f $SCRIPTPATH/dev/Dockerfile .
+    BUILT_IMAGE=true
+
+fi
+
+if [ "$BUILT_IMAGE" = true ] ; then
+
+    echo ""
+    echo ""
+    echo "Done building!"
+
+else
+
+    echo "Correct usage: ./build-image <base|full|dev|all>"
+
+fi

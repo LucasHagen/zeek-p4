@@ -1,20 +1,27 @@
 FROM lucashagen/zeek-base
 
-ARG ZEEK_VERSION=4.0.5
-ARG ZEEK_VERSION_TAG="v${ZEEK_VERSION}"
+ARG ZEEK_PACKAGE=zeek-lts
+ARG ZEEK_PATH=/opt/zeek
 
-ARG BUILD_CORES=8
+ARG ZEEK_DIST="/opt/zeek-dist"
 
-ENV ZEEK_HOME="/opt/zeek"
-ENV ZEEK_DIST="/opt/zeek-dist"
+ENV ZEEK_HOME="$ZEEK_PATH"
 
-ADD zeek ${ZEEK_DIST}
+# Installing Zeek.
+# Reference:
+#   https://github.com/zeek/zeek/wiki/Binary-Packages
+#   https://software.opensuse.org//download.html?project=security%3Azeek&package=zeek-lts
 
-RUN cd /opt/zeek-dist && \
-    ./configure --prefix=${ZEEK_HOME} && \
-    make install -j ${BUILD_CORES}
+RUN echo 'deb http://download.opensuse.org/repositories/security:/zeek/xUbuntu_20.04/ /' | tee /etc/apt/sources.list.d/security:zeek.list && \
+    curl -fsSL https://download.opensuse.org/repositories/security:zeek/xUbuntu_20.04/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/security_zeek.gpg > /dev/null
 
-ENV PATH="${ZEEK_HOME}/bin:${PATH}"
+RUN apt-get update && \
+    apt-get install -y $ZEEK_PACKAGE && \
+    apt-get autoremove -y && apt-get clean -y
+
+COPY deps/zeek ${ZEEK_DIST}
+
+ENV PATH="${ZEEK_PATH}/bin:${PATH}"
 ENV PATH="${ZEEK_DIST}/auxil/zeek-aux/plugin-support:${PATH}"
 
 WORKDIR /root
