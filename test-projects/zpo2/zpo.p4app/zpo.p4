@@ -66,19 +66,17 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
                 // Only working with icmp events for now
                 if (hdr.icmp.isValid()) {
                     meta.protocol = (bit<16>) TYPE_ICMP;
-                    meta.src_port = hdr.icmp.type_;
-                    icmp_counterpart(hdr.icmp.type_, meta);
+                    meta.src_port = (bit<16>) hdr.icmp.type_;
+                    //icmp_counterpart(hdr.icmp.type_, meta);
 
-                    switch (hdr.icmp.type_) {
-                        ICMP_ECHOREPLY: {
-                            meta.event_type = TYPE_ICMP_ECHO_REPLY_EVENT;
-                        }
-                        ICMP_ECHO: {
-                            meta.event_type = TYPE_ICMP_ECHO_REQ_EVENT;
-                        }
-                        default: {
-                            meta.event_type = 0;
-                        }
+                    if (hdr.icmp.type_ == ICMP_ECHOREPLY) {
+                        meta.event_type = TYPE_ICMP_ECHO_REPLY_EVENT;
+
+                    } else if ( hdr.icmp.type_ == ICMP_ECHO) {
+                        meta.event_type = TYPE_ICMP_ECHO_REQ_EVENT;
+
+                    } else {
+                        meta.event_type = TYPE_NO_EVENT;
                     }
                 }
                 // TODO: Add the edge cases: "something else we don't support yet."
@@ -119,6 +117,56 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
         default_action = NoAction();
     }
 
+    action construct_icmp_echo_request_event_t() {
+        hdr.icmp_echo_request_event.id = (bit<64>) hdr.icmp.id;
+        hdr.icmp_echo_request_event.seq = (bit<64>) hdr.icmp.seq;
+
+        // True if it's an ICMPv6 packet.
+        hdr.icmp_echo_request_event.info.v6 = (bit<8>) false;
+
+        // The ICMP type of the current packet.
+        hdr.icmp_echo_request_event.info.itype = (bit<64>) hdr.icmp.type_;
+
+        // The ICMP code of the current packet.
+        hdr.icmp_echo_request_event.info.icode = (bit<64>) hdr.icmp.code;
+
+        // The length of the ICMP payload. (total ipv4 length - (ipv4 header + icmp header))
+        hdr.icmp_echo_request_event.info.len = (bit<64>) hdr.ipv4.total_len - 28;
+
+        // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
+        hdr.icmp_echo_request_event.info.ttl = (bit<64>) hdr.ipv4.ttl;
+
+        hdr.icmp_echo_request_event.setValid();
+
+        hdr.ipv4.setInvalid();
+        hdr.icmp.setInvalid();
+    }
+
+    action construct_icmp_echo_reply_event_t() {
+        hdr.icmp_echo_reply_event.id = (bit<64>) hdr.icmp.id;
+        hdr.icmp_echo_reply_event.seq = (bit<64>) hdr.icmp.seq;
+
+        // True if it's an ICMPv6 packet.
+        hdr.icmp_echo_reply_event.info.v6 = (bit<8>) false;
+
+        // The ICMP type of the current packet.
+        hdr.icmp_echo_reply_event.info.itype = (bit<64>) hdr.icmp.type_;
+
+        // The ICMP code of the current packet.
+        hdr.icmp_echo_reply_event.info.icode = (bit<64>) hdr.icmp.code;
+
+        // The length of the ICMP payload. (total ipv4 length - (ipv4 header + icmp header))
+        hdr.icmp_echo_reply_event.info.len = (bit<64>) hdr.ipv4.total_len - 28;
+
+        // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
+        hdr.icmp_echo_reply_event.info.ttl = (bit<64>) hdr.ipv4.ttl;
+
+        hdr.icmp_echo_reply_event.setValid();
+
+        hdr.ipv4.setInvalid();
+        hdr.icmp.setInvalid();
+    }
+
     apply {
 
         // Emit normal packets.
@@ -126,6 +174,7 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
             if (hdr.ipv4.isValid()) { // TODO: Is this condition necessary?
                 send_frame.apply();
             }
+            return;
         }
 
         // Fill in the event header fields.
@@ -140,115 +189,56 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
             hdr.ethernet.ethertype = TYPE_EVENT;
         }
 
-        switch (meta.event_Type) {
-            TYPE_ICMP_ECHO_REQ_EVENT: {
-                construct_icmp_echo_request_event_t(hdr, meta);
-            }
-            TYPE_ICMP_ECHO_REPLY_EVENT: {
-                construct_icmp_echo_reply_event_t(hdr, meta);
-            }
-            default: {
-                mark_to_drop(standard_metadata);
-            }
+        if (meta.event_type == TYPE_ICMP_ECHO_REQ_EVENT) {
+            construct_icmp_echo_request_event_t();
+        } else if(meta.event_type == TYPE_ICMP_ECHO_REPLY_EVENT) {
+            construct_icmp_echo_reply_event_t();
+        } else {
+            mark_to_drop(standard_metadata);
         }
 
     }
 
-}
-
-control construct_icmp_echo_request_event_t(inout headers hdr, inout metadata meta) {
-    apply {
-        hdr.icmp_echo_request_event_t.id = hdr.icmp.id;
-        hdr.icmp_echo_request_event_t.seq = hdr.icmp.seq;
-
-        // True if it's an ICMPv6 packet.
-        hdr.icmp_echo_request_event_t.info.v6 = false;
-
-        // The ICMP type of the current packet.
-        hdr.icmp_echo_request_event_t.info.itype = hdr.icmp.type_;
-
-        // The ICMP code of the current packet.
-        hdr.icmp_echo_request_event_t.info.icode = hdr.icmp.code;
-
-        // The length of the ICMP payload. (total ipv4 length - (ipv4 header + icmp header))
-        hdr.icmp_echo_request_event_t.info.len = hdr.ipv4.total_len - 28;
-
-        // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
-        hdr.icmp_echo_request_event_t.info.ttl = hdr.ipv4.ttl;
-
-        hdr.icmp_echo_request_event_t.setValid();
-
-        hdr.ipv4.setInvalid();
-        hdr.icmp.setInvalid();
-    }
-}
-
-control construct_icmp_echo_reply_event_t(in metadata meta, inout headers hdr) {
-    apply {
-        hdr.icmp_echo_reply_event_t.id = hdr.icmp.id;
-        hdr.icmp_echo_reply_event_t.seq = hdr.icmp.seq;
-
-        // True if it's an ICMPv6 packet.
-        hdr.icmp_echo_reply_event_t.info.v6 = false;
-
-        // The ICMP type of the current packet.
-        hdr.icmp_echo_reply_event_t.info.itype = hdr.icmp.type_;
-
-        // The ICMP code of the current packet.
-        hdr.icmp_echo_reply_event_t.info.icode = hdr.icmp.code;
-
-        // The length of the ICMP payload. (total ipv4 length - (ipv4 header + icmp header))
-        hdr.icmp_echo_reply_event_t.info.len = hdr.ipv4.total_len - 28;
-
-        // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
-        hdr.icmp_echo_reply_event_t.info.ttl = hdr.ipv4.ttl;
-
-        hdr.icmp_echo_reply_event_t.setValid();
-
-        hdr.ipv4.setInvalid();
-        hdr.icmp.setInvalid();
-    }
-}
-
-control icmp_counterpart(in icmp_t icmp, inout metadata meta) {
-    apply {
-
-        switch ( icmp.type_ ) {
-            ICMP_ECHO: {
-                meta.dst_port = ICMP_ECHOREPLY;
-            }
-            ICMP_ECHOREPLY: {
-                meta.dst_port = ICMP_ECHO;
-            }
-            ICMP_TSTAMP: {
-                meta.dst_port = ICMP_TSTAMPREPLY;
-            }
-            ICMP_TSTAMPREPLY: {
-                meta.dst_port = ICMP_TSTAMP;
-            }
-            ICMP_IREQ: {
-                meta.dst_port = ICMP_IREQREPLY;
-            }
-            ICMP_IREQREPLY: {
-                meta.dst_port = ICMP_IREQ;
-            }
-            ICMP_ROUTERSOLICIT: {
-                meta.dst_port = ICMP_ROUTERADVERT;
-            }
-            ICMP_ROUTERADVERT: {
-                meta.dst_port = ICMP_ROUTERSOLICIT;
-            }
-            ICMP_MASKREQ: {
-                meta.dst_port = ICMP_MASKREPLY;
-            }
-            ICMP_MASKREPLY: {
-                meta.dst_port = ICMP_MASKREQ;
-            }
-            default: {
-                meta.dst_port = icmp.code;
-            }
-        }
-    }
 }
 
 V1Switch(ParserImpl(), verifyChecksum(), ingress(), egress(), computeChecksum(), DeparserImpl()) main;
+
+/*
+ICMP COUNTERPART
+
+switch ( hdr.icmp.type_ ) {
+    ICMP_ECHO: {
+        meta.dst_port = ICMP_ECHOREPLY;
+    }
+    ICMP_ECHOREPLY: {
+        meta.dst_port = ICMP_ECHO;
+    }
+    ICMP_TSTAMP: {
+        meta.dst_port = ICMP_TSTAMPREPLY;
+    }
+    ICMP_TSTAMPREPLY: {
+        meta.dst_port = ICMP_TSTAMP;
+    }
+    ICMP_IREQ: {
+        meta.dst_port = ICMP_IREQREPLY;
+    }
+    ICMP_IREQREPLY: {
+        meta.dst_port = ICMP_IREQ;
+    }
+    ICMP_ROUTERSOLICIT: {
+        meta.dst_port = ICMP_ROUTERADVERT;
+    }
+    ICMP_ROUTERADVERT: {
+        meta.dst_port = ICMP_ROUTERSOLICIT;
+    }
+    ICMP_MASKREQ: {
+        meta.dst_port = ICMP_MASKREPLY;
+    }
+    ICMP_MASKREPLY: {
+        meta.dst_port = ICMP_MASKREQ;
+    }
+    default: {
+        meta.dst_port = hdr.icmp.code;
+    }
+}
+*/
