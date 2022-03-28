@@ -3,9 +3,9 @@
 This is the repository for the development of the Graduation Project (TCC in pt-BR) of Lucas Hagen.
 
 Oriented by:
-- Prof. Luciano Gaspary
-- Alexandre Ilha (@asilha)
-- Jonatas Marques
+- Prof. Luciano Gaspary ([@lpgaspary](https://github.com/lpgaspary))
+- Jonatas Marques ([@jonadmark](https://github.com/jonadmark))
+- Alexandre Ilha ([@asilha](https://github.com/asilha))
 
 ## Prototypes
 
