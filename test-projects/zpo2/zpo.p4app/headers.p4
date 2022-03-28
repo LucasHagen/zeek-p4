@@ -1,20 +1,6 @@
 #ifndef ZPO_HEADERS
 #define ZPO_HEADERS
 
-const bit<8> ICMP_ECHOREPLY		    = 0	    /* Echo Reply			*/
-const bit<8> ICMP_DEST_UNREACH	    = 3	    /* Destination Unreachable	*/
-const bit<8> ICMP_SOURCE_QUENCH	    = 4	    /* Source Quench		*/
-const bit<8> ICMP_REDIRECT		    = 5	    /* Redirect (change route)	*/
-const bit<8> ICMP_ECHO		        = 8	    /* Echo Request			*/
-const bit<8> ICMP_TIME_EXCEEDED	    = 11	/* Time Exceeded		*/
-const bit<8> ICMP_PARAMETERPROB	    = 12	/* Parameter Problem		*/
-const bit<8> ICMP_TIMESTAMP		    = 13	/* Timestamp Request		*/
-const bit<8> ICMP_TIMESTAMPREPLY	= 14	/* Timestamp Reply		*/
-const bit<8> ICMP_INFO_REQUEST	    = 15	/* Information Request		*/
-const bit<8> ICMP_INFO_REPLY		= 16	/* Information Reply		*/
-const bit<8> ICMP_ADDRESS		    = 17	/* Address Mask Request		*/
-const bit<8> ICMP_ADDRESSREPLY	    = 18	/* Address Mask Reply		*/
-
 // Header definitions for ICMP, TCP, and UDP loosely based on:
 // https://github.com/p4lang/papers/blob/master/sosr15/DC.p4/includes/headers.p4
 
@@ -36,9 +22,9 @@ typedef bit<32>  ipv4_addr_t;
 typedef bit<128> ipv6_addr_t;
 
 
-const event_type_t TYPE_NO_EVENT                = 0x00 // L3 (for events)
-const event_type_t TYPE_ICMP_ECHO_REPLY_EVENT   = 0x01
-const event_type_t TYPE_ICMP_ECHO_REQ_EVENT     = 0x02
+const event_type_t TYPE_NO_EVENT                = 0x00; // L3 (for events)
+const event_type_t TYPE_ICMP_ECHO_REPLY_EVENT   = 0x01;
+const event_type_t TYPE_ICMP_ECHO_REQ_EVENT     = 0x02;
 
 // Zeek datatype definitions
 

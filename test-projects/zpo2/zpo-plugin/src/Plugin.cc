@@ -3,19 +3,13 @@
 #include "zeek/packet_analysis/Component.h"
 #include "ZPOEventAnalyzer.h"
 
-namespace plugin {
-namespace BR_INF_UFRGS_ZPO {
-
-	Plugin plugin;
-
-}
-}
+namespace plugin { namespace BR_INF_UFRGS_ZPO { Plugin plugin; } }
 
 using namespace plugin::BR_INF_UFRGS_ZPO;
 
 zeek::plugin::Configuration Plugin::Configure() {
 	AddComponent(new zeek::packet_analysis::Component("ZPOEventAnalyzer",
-					zeek::packet_analysis::BR_INF_UFRGS_ZPO::ZPOEventAnalyzer::Instantiate));
+	 				zeek::packet_analysis::BR_INF_UFRGS_ZPO::ZPOEventAnalyzer::Instantiate));
 
 	zeek::plugin::Configuration config;
 	config.name = "BR_INF_UFRGS::ZPO";
