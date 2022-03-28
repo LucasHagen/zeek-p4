@@ -7,6 +7,7 @@ include(ZeekPlugin)
 
 zeek_plugin_begin(BR_INF_UFRGS ZPO)
 zeek_plugin_cc(src/Plugin.cc)
+zeek_plugin_cc(src/ZPO.cc)
 zeek_plugin_bif(src/zpo.bif)
 zeek_plugin_dist_files(README CHANGES COPYING VERSION)
 zeek_plugin_end()

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+################################################################################
+# Code from p4.org
+container_id=${P4APP_NAME:-$(docker ps | grep -m1 p4app_ | awk '{print $1}')}
+
+if [ -z "$container_id" ]; then
+    (>&2 echo "Couldn't find any p4app currently running.")
+    exit 1
+fi
+# End of code from p4.org
+################################################################################
+
+SCRIPT=`realpath $0`
+SCRIPTPATH=`dirname $SCRIPT`
+
+docker run \
+-it \
+--rm \
+--name zeek-zpo \
+--network container:$container_id \
+-v ${SCRIPTPATH}:/root/zeek-p4 \
+--workdir /root/zeek-p4 \
+lucashagen/zeek-full
