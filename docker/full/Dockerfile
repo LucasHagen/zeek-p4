@@ -24,6 +24,9 @@ COPY deps/zeek ${ZEEK_DIST}
 ENV PATH="${ZEEK_PATH}/bin:${PATH}"
 ENV PATH="${ZEEK_DIST}/auxil/zeek-aux/plugin-support:${PATH}"
 
+# Can't use unless zeek repo has been fully built (which is not the case for this image)
+# RUN sed -i "s~zeek_dist=~zeek_dist=${ZEEK_DIST}~" ${ZEEK_PATH}/bin/zeek-config
+
 WORKDIR /root
 
 ENTRYPOINT ["/bin/bash"]

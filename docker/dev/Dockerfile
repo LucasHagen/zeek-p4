@@ -12,8 +12,7 @@ ADD deps/zeek ${ZEEK_DIST}
 
 RUN cd /opt/zeek-dist && \
     ./configure --prefix=${ZEEK_HOME} && \
-    make install -j ${BUILD_CORES} && \
-    make clean
+    make install -j ${BUILD_CORES}
 
 ENV PATH="${ZEEK_HOME}/bin:${PATH}"
 ENV PATH="${ZEEK_DIST}/auxil/zeek-aux/plugin-support:${PATH}"

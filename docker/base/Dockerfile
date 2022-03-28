@@ -44,7 +44,7 @@ ENV MININET_DEPS automake \
                  python3-pexpect \
                  python3-setuptools
 
-ENV DEV_TOOLS flex curl gpg clang wget python3-dev bison swig libssl-dev libpcap-dev
+ENV DEV_TOOLS flex curl gpg clang wget python3-dev bison swig libssl-dev libpcap-dev nano
 
 # Ignore questions when installing with apt-get:
 ENV DEBIAN_FRONTEND noninteractive
