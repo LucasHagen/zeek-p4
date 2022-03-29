@@ -22,10 +22,10 @@ event zeek_init() &priority=20
 
 event icmp_echo_request(c: connection, info: icmp_info, id: count, seq: count, payload: string)
 {
-	print "Echo Request"; # , c$id$orig_h, c$id$resp_h, id, seq;
+	print "Echo Request", c$id$orig_h, c$id$resp_h, id, seq;
 }
 
 event icmp_echo_reply(c: connection, info: icmp_info, id: count, seq: count, payload: string)
 {
-	print "Echo Reply"; # , c$id$orig_h, c$id$resp_h, id, seq;
+	print "Echo Reply", c$id$orig_h, c$id$resp_h, id, seq;
 }
