@@ -67,7 +67,32 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
                 if (hdr.icmp.isValid()) {
                     meta.protocol = (bit<16>) TYPE_ICMP;
                     meta.src_port = (bit<16>) hdr.icmp.type_;
-                    //icmp_counterpart(hdr.icmp.type_, meta);
+
+                    // ICMP COUNTERPART START
+                    if (hdr.icmp.type_ == ICMP_ECHO) {
+                        meta.dst_port = (bit<16>) ICMP_ECHOREPLY;
+                    } else if (hdr.icmp.type_ == ICMP_ECHOREPLY) {
+                        meta.dst_port = (bit<16>) ICMP_ECHO;
+                    } else if (hdr.icmp.type_ == ICMP_TSTAMP) {
+                        meta.dst_port = (bit<16>) ICMP_TSTAMPREPLY;
+                    } else if (hdr.icmp.type_ == ICMP_TSTAMPREPLY) {
+                        meta.dst_port = (bit<16>) ICMP_TSTAMP;
+                    } else if (hdr.icmp.type_ == ICMP_IREQ) {
+                        meta.dst_port = (bit<16>) ICMP_IREQREPLY;
+                    } else if (hdr.icmp.type_ == ICMP_IREQREPLY) {
+                        meta.dst_port = (bit<16>) ICMP_IREQ;
+                    } else if (hdr.icmp.type_ == ICMP_ROUTERSOLICIT) {
+                        meta.dst_port = (bit<16>) ICMP_ROUTERADVERT;
+                    } else if (hdr.icmp.type_ == ICMP_ROUTERADVERT) {
+                        meta.dst_port = (bit<16>) ICMP_ROUTERSOLICIT;
+                    } else if (hdr.icmp.type_ == ICMP_MASKREQ) {
+                        meta.dst_port = (bit<16>) ICMP_MASKREPLY;
+                    } else if (hdr.icmp.type_ == ICMP_MASKREPLY) {
+                        meta.dst_port = (bit<16>) ICMP_MASKREQ;
+                    } else {
+                        meta.dst_port = (bit<16>) hdr.icmp.code;
+                    }
+                    // ICMP COUNTERPART END
 
                     if (hdr.icmp.type_ == ICMP_ECHOREPLY) {
                         meta.event_type = TYPE_ICMP_ECHO_REPLY_EVENT;
@@ -202,43 +227,3 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
 }
 
 V1Switch(ParserImpl(), verifyChecksum(), ingress(), egress(), computeChecksum(), DeparserImpl()) main;
-
-/*
-ICMP COUNTERPART
-
-switch ( hdr.icmp.type_ ) {
-    ICMP_ECHO: {
-        meta.dst_port = ICMP_ECHOREPLY;
-    }
-    ICMP_ECHOREPLY: {
-        meta.dst_port = ICMP_ECHO;
-    }
-    ICMP_TSTAMP: {
-        meta.dst_port = ICMP_TSTAMPREPLY;
-    }
-    ICMP_TSTAMPREPLY: {
-        meta.dst_port = ICMP_TSTAMP;
-    }
-    ICMP_IREQ: {
-        meta.dst_port = ICMP_IREQREPLY;
-    }
-    ICMP_IREQREPLY: {
-        meta.dst_port = ICMP_IREQ;
-    }
-    ICMP_ROUTERSOLICIT: {
-        meta.dst_port = ICMP_ROUTERADVERT;
-    }
-    ICMP_ROUTERADVERT: {
-        meta.dst_port = ICMP_ROUTERSOLICIT;
-    }
-    ICMP_MASKREQ: {
-        meta.dst_port = ICMP_MASKREPLY;
-    }
-    ICMP_MASKREPLY: {
-        meta.dst_port = ICMP_MASKREQ;
-    }
-    default: {
-        meta.dst_port = hdr.icmp.code;
-    }
-}
-*/
