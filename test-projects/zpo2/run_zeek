@@ -19,6 +19,6 @@ docker run \
 --rm \
 --name zeek-zpo \
 --network container:$container_id \
--v ${SCRIPTPATH}:/root/zeek-p4 \
---workdir /root/zeek-p4 \
+-v ${SCRIPTPATH}/zpo-plugin:/root/plugin \
+--workdir /root/plugin \
 lucashagen/zeek-full
