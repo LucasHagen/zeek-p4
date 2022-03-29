@@ -4,3 +4,6 @@
 [submodule "docker/deps/zeek"]
 	path = docker/deps/zeek
 	url = https://github.com/zeek/zeek
+[submodule "docker/deps/zeek42"]
+	path = docker/deps/zeek42
+	url = https://github.com/zeek/zeek
