@@ -1,6 +1,11 @@
-@load-plugin Zeek::ICMP
+module PacketAnalyzer::ETHERNET;
+
 @load-plugin Zeek::TCP
 @load-plugin Zeek::UDP
+@load-plugin Zeek::ICMP
+@load base/frameworks/files
+@load base/frameworks/notice
+@load frameworks/files/hash-all-files
 
 export {}
 
@@ -15,12 +20,12 @@ event zeek_init() &priority=20
 	print "Initialized ZPO Plugin.";
 }
 
-event icmp_echo_request(C: connection, icmp: icmp_conn, info: icmp_info, id: count, seq: count, payload: string)
+event icmp_echo_request(c: connection, info: icmp_info, id: count, seq: count, payload: string)
 {
-	print "Echo Request", C$id$orig_h, C$id$resp_h, id, seq;
+	print "Echo Request"; # , c$id$orig_h, c$id$resp_h, id, seq;
 }
 
-event icmp_echo_reply(C: connection, icmp: icmp_conn, info: icmp_info, id: count, seq: count, payload: string)
+event icmp_echo_reply(c: connection, info: icmp_info, id: count, seq: count, payload: string)
 {
-	print "Echo Reply", C$id$orig_h, C$id$resp_h, id, seq;
+	print "Echo Reply"; # , c$id$orig_h, c$id$resp_h, id, seq;
 }

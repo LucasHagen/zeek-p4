@@ -2,6 +2,7 @@ FROM lucashagen/zeek-base
 
 ARG ZEEK_PACKAGE=zeek-lts
 ARG ZEEK_PATH=/opt/zeek
+ARG ZEEK_DIST_SOURCE=deps/zeek
 
 ARG ZEEK_DIST="/opt/zeek-dist"
 
@@ -23,6 +24,8 @@ COPY deps/zeek ${ZEEK_DIST}
 
 ENV PATH="${ZEEK_PATH}/bin:${PATH}"
 ENV PATH="${ZEEK_DIST}/auxil/zeek-aux/plugin-support:${PATH}"
+
+RUN test "${ZEEK_PATH}" != "/opt/zeek" && ln -s ${ZEEK_PATH} /opt/zeek
 
 # Can't use unless zeek repo has been fully built (which is not the case for this image)
 # RUN sed -i "s~zeek_dist=~zeek_dist=${ZEEK_DIST}~" ${ZEEK_PATH}/bin/zeek-config
