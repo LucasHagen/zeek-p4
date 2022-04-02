@@ -10,3 +10,76 @@ This prototype aims to offload ICMP echo reply and request.
     - This seems to be a big problem...
 - All zeek-like structures are now prefixed with `z_`.
 
+## How to run
+
+Clone git repo and switch to the right branch/tag, then:
+
+```bash
+# Enter project's root folder
+cd zeek-p4/
+
+# Init all submodules
+./init-submodules
+
+# Run p4app
+./p4app run test-projects/zpo2/zpo.p4app
+
+# Using a secondary terminal:
+
+# Enter test-project's folder
+cd test-projects/zpo2/
+
+# Run zeek's docker (with p4 network attached)
+./run_zeek
+
+# In the running container: build, install and run zeek on the right interface
+./run
+```
+
+In the `p4app` terminal window, run a ping:
+
+```bash
+h3 ping h1
+```
+
+You should see this results:
+
+```
+[ZPO] AnalyzePacket!!!     \/ \/ \/
+[ZPO] |- src_addr = 10.0.2.10
+[ZPO] |- dst_addr = 10.0.0.10
+[ZPO] |- src_port = 8
+[ZPO] |- dst_port = 0
+[ZPO] |- l3_proto = 2048 (IP)
+[ZPO] |- l4_proto = 1 (ICMP)
+[ZPO] |- event_id = 2
+[ZPO] END AnalyzePacket!!! /\ /\ /\
+
+
+[ZPO] AnalyzePacket!!!     \/ \/ \/
+[ZPO] |- src_addr = 10.0.0.10
+[ZPO] |- dst_addr = 10.0.2.10
+[ZPO] |- src_port = 0
+[ZPO] |- dst_port = 8
+[ZPO] |- l3_proto = 2048 (IP)
+[ZPO] |- l4_proto = 1 (ICMP)
+[ZPO] |- event_id = 1
+[ZPO] END AnalyzePacket!!! /\ /\ /\
+```
+
+### Build docker images (optional)
+
+If you don't want to download the images from dockerhub:
+
+```bash
+
+# Enter project's root folder
+cd zeek-p4/
+
+# Init all submodules
+./init-submodules
+
+# Build the 'base' and 'full' images:
+./build-image base
+./build-image full
+```

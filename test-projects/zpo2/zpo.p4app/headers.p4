@@ -4,9 +4,8 @@
 // Header definitions for ICMP, TCP, and UDP loosely based on:
 // https://github.com/p4lang/papers/blob/master/sosr15/DC.p4/includes/headers.p4
 
-const bit<16>   TYPE_EVENT     = 0x6606; // L2
-
-const bit<16>   TYPE_IPV4      = 0x0800; // L3 // TODO: How about using only one byte to ID the L3 proto?
+const bit<16>   TYPE_EVENT     = 0x6606; // L3
+const bit<16>   TYPE_IPV4      = 0x0800;
 const bit<16>   TYPE_IPV6      = 0x86DD;
 
 const bit<8>    TYPE_ICMP      = 0x01;   // L4
@@ -21,10 +20,11 @@ typedef bit<48>  mac_addr_t;
 typedef bit<32>  ipv4_addr_t;
 typedef bit<128> ipv6_addr_t;
 
+const bit<16> ICMP_ECHO_REQUEST_ID = 0x0008;
 
-const event_type_t TYPE_NO_EVENT                = 0x00; // L3 (for events)
-const event_type_t TYPE_ICMP_ECHO_REPLY_EVENT   = 0x01;
-const event_type_t TYPE_ICMP_ECHO_REQ_EVENT     = 0x02;
+const event_type_t TYPE_NO_EVENT                = 16w0; // L3 (for events)
+const event_type_t TYPE_ICMP_ECHO_REPLY_EVENT   = 16w1;
+const event_type_t TYPE_ICMP_ECHO_REQ_EVENT     = 16w2;
 
 // Zeek datatype definitions
 
@@ -182,13 +182,14 @@ header ntp_priv_t {
 
 // This will eventually become a Zeek-friendly event. The CP must translate (via a wrapper interface) our event signals into a format that Zeek can eat.
 header event_t {
-    bit<32> pkt_num;        // 4
-    bit<16> protocol;       // 2
-    bit<32> src_addr;       // 4
-    bit<32> dst_addr;       // 4
-    bit<16> src_port;       // 2
-    bit<16> dst_port;       // 2
-    event_type_t type;      // 2
+    bit<32> pkt_num;            // 4
+    bit<16> protocol_l3;        // 2
+    bit<16> protocol_l4;        // 2
+    bit<32> src_addr;           // 4
+    bit<32> dst_addr;           // 4
+    bit<16> src_port;           // 2
+    bit<16> dst_port;           // 2
+    event_type_t type;          // 2
 }
 
 // Generated for ICMP *echo request* messages.
@@ -284,7 +285,8 @@ struct headers  {
 struct metadata {
     bit<32> nhop_ipv4;
     bit<32> pkt_num;
-    bit<16> protocol;
+    bit<16> protocol_l3;
+    bit<16> protocol_l4;
     bit<32> src_addr;
     bit<32> dst_addr;
     bit<16> src_port;

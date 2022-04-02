@@ -3,11 +3,13 @@
 #include "icmp_codes.p4"
 #include "parser.p4"
 
-typedef bit<9>   egress_spec_t;
+typedef bit<9> egress_spec_t;
 
 const bit<32> MIRROR_SESSION = 0x01;
 const bit<32> INSTANCE_TYPE_NORMAL = 0;
 const bit<32> INSTANCE_TYPE_CLONE = 1; // TODO: Add other instance types.
+
+// const bit<16> ICMP_ECHO_16 = 8;    /* Echo Request			    */
 
 // TODO: Credits: Some actions and tables were based on https://github.com/p4lang/p4app.
 
@@ -58,14 +60,15 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
     // ZPO Data Plane Logic
     apply {
         if (standard_metadata.instance_type == INSTANCE_TYPE_NORMAL) {
-            if (hdr.ipv4.isValid()) {
+            meta.protocol_l3 = hdr.ethernet.ethertype;
 
+            if (hdr.ipv4.isValid()) {
                 meta.src_addr = hdr.ipv4.src_addr;
                 meta.dst_addr = hdr.ipv4.dst_addr;
+                meta.protocol_l4 = (bit<16>) hdr.ipv4.protocol;
 
                 // Only working with icmp events for now
                 if (hdr.icmp.isValid()) {
-                    meta.protocol = (bit<16>) TYPE_ICMP;
                     meta.src_port = (bit<16>) hdr.icmp.type_;
 
                     // ICMP COUNTERPART START
@@ -92,6 +95,7 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
                     } else {
                         meta.dst_port = (bit<16>) hdr.icmp.code;
                     }
+
                     // ICMP COUNTERPART END
 
                     if (hdr.icmp.type_ == ICMP_ECHOREPLY) {
@@ -206,11 +210,13 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
         if (standard_metadata.instance_type == INSTANCE_TYPE_CLONE) {
             hdr.event.setValid();
             hdr.event.pkt_num = meta.pkt_num;
-            hdr.event.protocol = meta.protocol;
+            hdr.event.protocol_l3 = meta.protocol_l3;
+            hdr.event.protocol_l4 = meta.protocol_l4;
             hdr.event.src_addr = meta.src_addr;
             hdr.event.dst_addr = meta.dst_addr;
             hdr.event.src_port = meta.src_port;
             hdr.event.dst_port = meta.dst_port;
+            hdr.event.type = meta.event_type;
             hdr.ethernet.ethertype = TYPE_EVENT;
         }
 
