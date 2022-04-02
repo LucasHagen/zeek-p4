@@ -11,17 +11,7 @@ if [ "$1" = "base" ] || [ "$1" = "all" ] ; then
     echo ""
     echo "-- BASE --"
     echo ""
-    docker build --tag ${TAG_PREFIX}base -f $SCRIPTPATH/base/Dockerfile .
-    BUILT_IMAGE=true
-
-fi
-
-if [ "$1" = "full" ]  || [ "$1" = "full40" ] || [ "$1" = "all" ] ; then
-
-    echo ""
-    echo "-- FULL:4.0 --"
-    echo ""
-    docker build --tag ${TAG_PREFIX}full:4.0 -f $SCRIPTPATH/full/Dockerfile .
+    docker build --tag ${TAG_PREFIX}base -f $SCRIPTPATH/docker/base/Dockerfile .
     BUILT_IMAGE=true
 
 fi
@@ -32,7 +22,7 @@ if [ "$1" = "full" ] || [ "$1" = "full42" ] || [ "$1" = "all" ] ; then
     echo "-- FULL:4.2 && FULL:latest --"
     echo ""
     docker build --tag ${TAG_PREFIX}full:4.2 \
-        -f $SCRIPTPATH/full/Dockerfile \
+        -f $SCRIPTPATH/docker/full/Dockerfile \
         --build-arg ZEEK_PACKAGE=zeek-rc \
         --build-arg ZEEK_PATH=/opt/zeek-rc \
         --build-arg ZEEK_DIST_SOURCE=deps/zeek42 \
@@ -49,7 +39,7 @@ if [ "$1" = "dev" ] || [ "$1" = "all" ] ; then
     echo ""
     echo "-- DEV --"
     echo ""
-    docker build --tag ${TAG_PREFIX}dev -f $SCRIPTPATH/dev/Dockerfile .
+    docker build --tag ${TAG_PREFIX}dev -f $SCRIPTPATH/docker/dev/Dockerfile .
     BUILT_IMAGE=true
 
 fi
