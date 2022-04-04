@@ -39,32 +39,39 @@ cd test-projects/zpo2/
 In the `p4app` terminal window, run a ping:
 
 ```bash
-h3 ping h1
+h1 ping h2
 ```
 
 You should see this results:
 
 ```
-[ZPO] AnalyzePacket!!!     \/ \/ \/
-[ZPO] |- src_addr = 10.0.2.10
-[ZPO] |- dst_addr = 10.0.0.10
+listening on s1-eth3
+
+Initializing ZPO Script...
+Registering PacketAnalyzer...
+Registered PacketAnalyzer.
+Initialized ZPO Plugin.
+
+[ZPO] START AnalyzePacket!!! \/ \/ \/
+[ZPO] |- src_addr = 10.0.0.10
+[ZPO] |- dst_addr = 10.0.1.10
 [ZPO] |- src_port = 8
 [ZPO] |- dst_port = 0
-[ZPO] |- l3_proto = 2048 (IP)
-[ZPO] |- l4_proto = 1 (ICMP)
+[ZPO] |- l3_proto = 2048
+[ZPO] |- l4_proto = 1
 [ZPO] |- event_id = 2
-[ZPO] END AnalyzePacket!!! /\ /\ /\
+[ZPO] END AnalyzePacket!!!   /\ /\ /\
 
 
-[ZPO] AnalyzePacket!!!     \/ \/ \/
-[ZPO] |- src_addr = 10.0.0.10
-[ZPO] |- dst_addr = 10.0.2.10
+[ZPO] START AnalyzePacket!!! \/ \/ \/
+[ZPO] |- src_addr = 10.0.1.10
+[ZPO] |- dst_addr = 10.0.0.10
 [ZPO] |- src_port = 0
 [ZPO] |- dst_port = 8
-[ZPO] |- l3_proto = 2048 (IP)
-[ZPO] |- l4_proto = 1 (ICMP)
+[ZPO] |- l3_proto = 2048
+[ZPO] |- l4_proto = 1
 [ZPO] |- event_id = 1
-[ZPO] END AnalyzePacket!!! /\ /\ /\
+[ZPO] END AnalyzePacket!!!   /\ /\ /\
 ```
 
 ### Build docker images (optional)
