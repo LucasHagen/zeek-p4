@@ -28,7 +28,7 @@ const event_type_t TYPE_ICMP_ECHO_REQ_EVENT     = 2;
 
 // Zeek datatype definitions
 
-typedef bit<16> z_bool;     // boolean      (1 byte)
+typedef bit<8> z_bool;     // boolean      (1 byte)
 typedef bit<64> z_int;      // signed int   (8 bytes)
 typedef bit<64> z_count;    // unsigned int (8 bytes)
 
@@ -182,14 +182,14 @@ header ntp_priv_t {
 
 // This will eventually become a Zeek-friendly event. The CP must translate (via a wrapper interface) our event signals into a format that Zeek can eat.
 header event_t {
-    bit<32> pkt_num;            // 4 (0-4)
-    bit<16> protocol_l3;        // 2 (4-6)
-    bit<16> protocol_l4;        // 2 (6-8)
-    bit<32> src_addr;           // 4 (8-12)
-    bit<32> dst_addr;           // 4 (12-16)
-    bit<16> src_port;           // 2 (16-18)
-    bit<16> dst_port;           // 2 (18-20)
-    event_type_t type;          // 2 (20-22)
+    bit<32> pkt_num;            // 4
+    bit<16> protocol_l3;        // 2
+    bit<8>  protocol_l4;        // 1
+    bit<32> src_addr;           // 4
+    bit<32> dst_addr;           // 4
+    bit<16> src_port;           // 2
+    bit<16> dst_port;           // 2
+    event_type_t type;          // 2
 }
 
 // Generated for ICMP *echo request* messages.
@@ -286,7 +286,7 @@ struct metadata {
     bit<32> nhop_ipv4;
     bit<32> pkt_num;
     bit<16> protocol_l3;
-    bit<16> protocol_l4;
+    bit<8>  protocol_l4;
     bit<32> src_addr;
     bit<32> dst_addr;
     bit<16> src_port;

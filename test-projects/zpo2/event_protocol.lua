@@ -3,7 +3,7 @@ event_table = DissectorTable.new("zpo_event", "ZPO Event", uint16, base.DEC, zpo
 
 local pkt_num = ProtoField.uint32("zpo_event.pkt_num", "Packet Number", base.DEC)
 local protocol_l3 = ProtoField.uint16("zpo_event.protocol_l3", "L3 Protocol", base.HEX)
-local protocol_l4 = ProtoField.uint16("zpo_event.protocol_l4", "L4 Protocol", base.HEX)
+local protocol_l4 = ProtoField.uint8("zpo_event.protocol_l4", "L4 Protocol", base.HEX)
 local src_addr = ProtoField.ipv4("zpo_event.src_addr", "Source IP")
 local dst_addr = ProtoField.ipv4("zpo_event.dst_addr", "Destination IP")
 local src_port = ProtoField.uint16("zpo_event.src_port", "Source Port", base.DEC)
@@ -25,27 +25,29 @@ function zpo_event.dissector (buf, pkt, root)
   if buf:len() == 0 then return end
   pkt.cols.protocol = zpo_event.name
 
-  pkt.src = buf(8,4):ipv4()
-  pkt.dst = buf(12,4):ipv4()
 
   -- create subtree for myproto
   subtree = root:add(zpo_event, buf(0))
   -- add protocol fields to subtree
   subtree:add(pkt_num,buf(0,4))
   subtree:add(protocol_l3,buf(4,2))
-  subtree:add(protocol_l4,buf(6,2))
-  subtree:add(src_addr,buf(8,4))
-  subtree:add(dst_addr,buf(12,4))
-  subtree:add(src_port,buf(16,2))
-  subtree:add(dst_port,buf(18,2))
-  subtree:add(event_type,buf(20,2))
+  subtree:add(protocol_l4,buf(6,1))
+  subtree:add(src_addr,buf(7,4))
+  pkt.src = buf(7,4):ipv4()
 
-  local event_dis = event_table:get_dissector(buf(20,2):uint())
+  subtree:add(dst_addr,buf(11,4))
+  pkt.dst = buf(11,4):ipv4()
+
+  subtree:add(src_port,buf(15,2))
+  subtree:add(dst_port,buf(17,2))
+  subtree:add(event_type,buf(19,2))
+
+  local event_dis = event_table:get_dissector(buf(19,2):uint())
 
   if event_dis ~= nil then
-    event_dis:call(buf(22):tvb(), pkt, root)
+    event_dis:call(buf(21):tvb(), pkt, root)
   else
-    data_dis:call(buf(20):tvb(), pkt, root)
+    data_dis:call(buf(21):tvb(), pkt, root)
   end
 end
 
@@ -69,7 +71,7 @@ icmp_echo_reply = Proto("icmp_echo_reply","ICMP Echo Reply")
 
 local id_req = ProtoField.uint64("icmp_echo_req.id", "Id", base.DEC)
 local seq_req = ProtoField.uint64("icmp_echo_req.seq", "Seq", base.DEC)
-local v6_req = ProtoField.uint16("icmp_echo_req.v6", "Is v6", base.DEC)
+local v6_req = ProtoField.uint8("icmp_echo_req.v6", "Is v6", base.DEC)
 local itype_req = ProtoField.uint64("icmp_echo_req.itype", "itype", base.DEC)
 local icode_req = ProtoField.uint64("icmp_echo_req.icode", "icode", base.DEC)
 local len_req = ProtoField.uint64("icmp_echo_req.len", "len", base.DEC)
@@ -77,7 +79,7 @@ local ttl_req = ProtoField.uint64("icmp_echo_req.ttl", "ttl", base.DEC)
 
 local id_reply = ProtoField.uint64("icmp_echo_reply.id", "Id", base.DEC)
 local seq_reply = ProtoField.uint64("icmp_echo_reply.seq", "Seq", base.DEC)
-local v6_reply = ProtoField.uint16("icmp_echo_reply.v6", "Is v6", base.DEC)
+local v6_reply = ProtoField.uint8("icmp_echo_reply.v6", "Is v6", base.DEC)
 local itype_reply = ProtoField.uint64("icmp_echo_reply.itype", "itype", base.DEC)
 local icode_reply = ProtoField.uint64("icmp_echo_reply.icode", "icode", base.DEC)
 local len_reply = ProtoField.uint64("icmp_echo_reply.len", "len", base.DEC)
@@ -113,14 +115,14 @@ function icmp_echo_req.dissector (buf, pkt, root)
   -- add protocol fields to subtree
   subtree:add(id_req,buf(0,8))
   subtree:add(seq_req,buf(8,8))
-  subtree:add(v6_req,buf(16,2))
-  subtree:add(itype_req,buf(18,8))
-  subtree:add(icode_req,buf(26,8))
-  subtree:add(len_req,buf(34,8))
-  subtree:add(ttl_req,buf(42,8))
+  subtree:add(v6_req,buf(16,1))
+  subtree:add(itype_req,buf(17,8))
+  subtree:add(icode_req,buf(25,8))
+  subtree:add(len_req,buf(33,8))
+  subtree:add(ttl_req,buf(41,8))
 
   -- description of payload
-  data_dis:call(buf(50):tvb(), pkt, root)
+  data_dis:call(buf(49):tvb(), pkt, root)
 end
 
 function icmp_echo_req.init()
@@ -137,14 +139,14 @@ function icmp_echo_reply.dissector (buf, pkt, root)
     -- add protocol fields to subtree
     subtree:add(id_reply,buf(0,8))
     subtree:add(seq_reply,buf(8,8))
-    subtree:add(v6_reply,buf(16,2))
-    subtree:add(itype_reply,buf(18,8))
-    subtree:add(icode_reply,buf(26,8))
-    subtree:add(len_reply,buf(34,8))
-    subtree:add(ttl_reply,buf(42,8))
+    subtree:add(v6_reply,buf(16,1))
+    subtree:add(itype_reply,buf(17,8))
+    subtree:add(icode_reply,buf(25,8))
+    subtree:add(len_reply,buf(33,8))
+    subtree:add(ttl_reply,buf(41,8))
 
     -- description of payload
-    data_dis:call(buf(50):tvb(), pkt, root)
+    data_dis:call(buf(49):tvb(), pkt, root)
   end
 
 

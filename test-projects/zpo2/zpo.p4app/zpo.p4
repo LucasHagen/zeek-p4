@@ -65,7 +65,7 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
             if (hdr.ipv4.isValid()) {
                 meta.src_addr = hdr.ipv4.src_addr;
                 meta.dst_addr = hdr.ipv4.dst_addr;
-                meta.protocol_l4 = (bit<16>) hdr.ipv4.protocol;
+                meta.protocol_l4 = hdr.ipv4.protocol;
 
                 // Only working with icmp events for now
                 if (hdr.icmp.isValid()) {
@@ -162,7 +162,7 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
         hdr.icmp_echo_request_event.info.icode = (z_count) hdr.icmp.code;
 
         // The length of the ICMP payload. (total ipv4 length - (ipv4 header + icmp header))
-        hdr.icmp_echo_request_event.info.len = (z_count) hdr.ipv4.total_len;
+        hdr.icmp_echo_request_event.info.len = (z_count) hdr.ipv4.total_len - hdr.ipv4.minSizeInBytes() - hdr.icmp.minSizeInBytes();
 
         // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
         hdr.icmp_echo_request_event.info.ttl = (z_count) hdr.ipv4.ttl;
@@ -188,7 +188,7 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
         hdr.icmp_echo_reply_event.info.icode = (z_count) hdr.icmp.code;
 
         // The length of the ICMP payload. (total ipv4 length - (ipv4 header + icmp header))
-        hdr.icmp_echo_reply_event.info.len = (z_count) hdr.ipv4.total_len;
+        hdr.icmp_echo_reply_event.info.len = (z_count) hdr.ipv4.total_len - hdr.ipv4.minSizeInBytes() - hdr.icmp.minSizeInBytes();
 
         // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
         hdr.icmp_echo_reply_event.info.ttl = (z_count) hdr.ipv4.ttl;

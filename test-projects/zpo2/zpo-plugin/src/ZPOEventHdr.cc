@@ -2,6 +2,7 @@
 
 #include <netinet/ether.h>
 #include <netinet/in.h>
+#include <iostream>
 
 #include "zeek/net_util.h"
 
@@ -9,21 +10,34 @@ using namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO;
 using ::zeek::IPAddr;
 using ::zeek::Layer3Proto;
 
-in4_addr ToIn4Addr(const uint8_t* ptr) {
-    return in4_addr{(uint32_t)(ptr[3] << 24 | ptr[2] << 16 | ptr[1] << 8 | ptr[0])};
-}
-
 ZPOEventHdr::ZPOEventHdr(const uint8_t* data)
     : data(data),
       hdr((const event_t*)data),
       packet_number(ntohl(hdr->pkt_num)),
       l3_protocol(ntohs(hdr->protocol_l3)),
-      l4_protocol(ntohs(hdr->protocol_l4)),
+      l4_protocol(hdr->protocol_l4),
       src_addr(IPAddr(IPv4, &hdr->src_addr, IPAddr::ByteOrder::Network)),
       dst_addr(IPAddr(IPv4, &hdr->dst_addr, IPAddr::ByteOrder::Network)),
       src_port(ntohs(hdr->src_port)),
       dst_port(ntohs(hdr->dst_port)),
-      event_type(ntohs(hdr->type)) {}
+      event_type(ntohs(hdr->type)) {
+    std::cout << "ZPO_EVENT_HEADER[uint32_t pkt_num] "
+              << (uint64_t)(void*)&hdr->pkt_num - (uint64_t)(void*)hdr << std::endl;
+    std::cout << "ZPO_EVENT_HEADER[uint16_t protocol_l3] "
+              << (uint64_t)(void*)&hdr->protocol_l3 - (uint64_t)(void*)hdr << std::endl;
+    std::cout << "ZPO_EVENT_HEADER[uint8_t protocol_l4] "
+              << (uint64_t)(void*)&hdr->protocol_l4 - (uint64_t)(void*)hdr << std::endl;
+    std::cout << "ZPO_EVENT_HEADER[uint32_t src_addr] "
+              << (uint64_t)(void*)&hdr->src_addr - (uint64_t)(void*)hdr << std::endl;
+    std::cout << "ZPO_EVENT_HEADER[uint32_t dst_addr] "
+              << (uint64_t)(void*)&hdr->dst_addr - (uint64_t)(void*)hdr << std::endl;
+    std::cout << "ZPO_EVENT_HEADER[uint16_t src_port] "
+              << (uint64_t)(void*)&hdr->src_port - (uint64_t)(void*)hdr << std::endl;
+    std::cout << "ZPO_EVENT_HEADER[uint16_t dst_port] "
+              << (uint64_t)(void*)&hdr->dst_port - (uint64_t)(void*)hdr << std::endl;
+    std::cout << "ZPO_EVENT_HEADER[uint16_t type] "
+              << (uint64_t)(void*)&hdr->type - (uint64_t)(void*)hdr << std::endl;
+}
 
 bool ZPOEventHdr::IsIPv4() const { return l3_protocol == ETH_P_IP; }
 
@@ -53,6 +67,4 @@ TransportProto ZPOEventHdr::GetTransportProto() const {
     }
 }
 
-const uint8_t* ZPOEventHdr::Payload() const {
-    return data + PACKET_SIZE;
-}
+const uint8_t* ZPOEventHdr::Payload() const { return data + PACKET_SIZE; }
