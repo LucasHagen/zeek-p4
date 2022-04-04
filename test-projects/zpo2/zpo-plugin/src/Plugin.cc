@@ -24,6 +24,7 @@ zeek::plugin::Configuration Plugin::Configure() {
 
     AddComponent(new zeek::packet_analysis::Component(
         "ZPO_ICMP", zeek::packet_analysis::BR_INF_UFRGS_ZPO::ICMP::ZpoIcmpAnalyzer::Instantiate));
+    AddComponent(new zeek::analyzer::Component("ZPO_ICMP", nullptr, 0, true, false, true));
 
     AddComponent(new zeek::packet_analysis::Component(
         "ZPO_ARP", zeek::packet_analysis::BR_INF_UFRGS_ZPO::ARP::ZpoArpAnalyzer::Instantiate));

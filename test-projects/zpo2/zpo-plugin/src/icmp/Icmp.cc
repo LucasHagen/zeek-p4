@@ -4,6 +4,7 @@
 
 #include <iostream>
 
+#include "IcmpSessionAdapter.h"
 #include "ZpoPacket.h"
 #include "event_ids.h"
 #include "zeek/Conn.h"
@@ -32,7 +33,42 @@ using ::zeek::RecordValPtr;
 using ::zeek::val_mgr;
 using ::zeek::packet_analysis::IP::SessionAdapter;
 
-ZpoIcmpAnalyzer::ZpoIcmpAnalyzer() : Analyzer("ZPO_ICMP") {}
+ZpoIcmpAnalyzer::ZpoIcmpAnalyzer()
+    : IPBasedAnalyzer("ZPO_ICMP", TRANSPORT_ICMP, ICMP_PORT_MASK, false) {}
+
+SessionAdapter* ZpoIcmpAnalyzer::MakeSessionAdapter(Connection* conn) {
+    auto* root = new IcmpSessionAdapter(conn);
+    root->SetParent(this);
+    conn->SetInactivityTimeout(zeek::detail::icmp_inactivity_timeout);
+
+    return root;
+}
+
+bool ZpoIcmpAnalyzer::BuildConnTuple(size_t len, const uint8_t* data, Packet* packet,
+                                     ConnTuple& tuple) {
+    if (!CheckHeaderTrunc(sizeof(icmp_echo_and_reply_event_h), len, packet)) {
+        return false;
+    }
+
+    auto event_hdr = static_cast<ZpoPacket*>(packet)->event_hdr;
+
+    tuple.proto = TRANSPORT_ICMP;
+    tuple.src_addr = packet->ip_hdr->SrcAddr();
+    tuple.dst_addr = packet->ip_hdr->DstAddr();
+    tuple.src_port = event_hdr->GetSrcPort();
+    tuple.dst_port = event_hdr->GetDstPort();
+
+    std::cout << std::endl;
+    std::cout << "CONNECTION KEY:" << std::endl;
+    std::cout << " |- proto: " << tuple.proto << std::endl;
+    std::cout << " |- src_addr: " << tuple.src_addr.AsString() << std::endl;
+    std::cout << " |- dst_addr: " << tuple.dst_addr.AsString() << std::endl;
+    std::cout << " |- src_port: " << tuple.src_port << std::endl;
+    std::cout << " |- dst_port: " << tuple.dst_port << std::endl;
+    std::cout << std::endl;
+
+    return true;
+}
 
 RecordValPtr BuildInfo(const icmp_echo_and_reply_event_h* icmp) {
     static auto icmp_info = zeek::id::find_type<RecordType>("icmp_info");
@@ -45,22 +81,49 @@ RecordValPtr BuildInfo(const icmp_echo_and_reply_event_h* icmp) {
     return rval;
 }
 
-bool ZpoIcmpAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
+void ZpoIcmpAnalyzer::DeliverPacket(Connection* conn, double t, bool is_orig, int remaining,
+                                    Packet* packet) {
+    auto adapter = static_cast<IcmpSessionAdapter*>(conn->GetSessionAdapter());
     auto zpo_packet = static_cast<ZpoPacket*>(packet);
     auto event_hdr = zpo_packet->event_hdr;
     auto icmp_hdr = (const icmp_echo_and_reply_event_h*)event_hdr->GetPayload();
-
     auto payload = event_hdr->GetPayload() + sizeof(icmp_echo_and_reply_event_h);
     auto payload_len = ntohll(icmp_hdr->len);
+
     String* payloadStr = new String(payload, payload_len, false);
 
-    auto conn = event_hdr->GetOrCreateConnection(packet);
+    EventHandlerPtr e;
+    switch (event_hdr->GetEventType()) {
+        case TYPE_ICMP_ECHO_REQ_EVENT:
+            e = icmp_echo_request;
+            break;
+        case TYPE_ICMP_ECHO_REPLY_EVENT:
+            e = icmp_echo_reply;
+            break;
+        default:
+            return;
+    }
 
-// #define ZPO_ICMP_DEBUG
+    std::cout << "ZPO 1" << std::endl;
+
+    conn->SetLastTime(run_state::current_timestamp);
+    std::cout << "ZPO 2" << std::endl;
+
+    adapter->InitEndpointMatcher(zpo_packet->ip_hdr.get(), remaining, is_orig);
+    std::cout << "ZPO 3" << std::endl;
+
+
+    // Move past common portion of ICMP header.
+    adapter->UpdateLength(is_orig, payload_len);
+    std::cout << "ZPO 4" << std::endl;
+
+
+#define ZPO_ICMP_DEBUG
 #ifdef ZPO_ICMP_DEBUG
 
     std::cout << std::endl;
     std::cout << "[ZPO] START ICMP!!! \\/ \\/ \\/" << std::endl;
+    std::cout << "[ZPO] |- l3proto = " << packet->l3_proto << std::endl;
 
     switch (event_hdr->GetEventType()) {
         case TYPE_ICMP_ECHO_REPLY_EVENT:
@@ -74,10 +137,16 @@ bool ZpoIcmpAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* pac
             break;
     }
 
+    std::cout << "[ZPO] |- conn     = " << (conn == nullptr ? "nullptr" : "OK") << std::endl;
+    std::cout << "[ZPO] |- adapter  = " << (adapter == nullptr ? "nullptr" : "OK") << std::endl;
+    // if (adapter != nullptr) {
+    //     std::cout << "[ZPO]     |- conn = " << (adapter->Conn() == nullptr ? "nullptr" : "OK")
+    //               << std::endl;
+    // } else {
+    //     std::cout << "[ZPO]     |- conn = " << nullptr << std::endl;
+    // }
     std::cout << "[ZPO] |- src_addr = " << packet->ip_hdr->SrcAddr().AsString() << std::endl;
     std::cout << "[ZPO] |- dst_addr = " << packet->ip_hdr->DstAddr().AsString() << std::endl;
-    std::cout << "[ZPO] |- src_port = " << event_hdr->GetSrcPort() << std::endl;
-    std::cout << "[ZPO] |- dst_port = " << event_hdr->GetDstPort() << std::endl;
     std::cout << "[ZPO] |- id       = " << ntohll(icmp_hdr->id) << std::endl;
     std::cout << "[ZPO] |- seq      = " << ntohll(icmp_hdr->seq) << std::endl;
     std::cout << "[ZPO] |- v6       = " << ntohs(icmp_hdr->v6) << std::endl;
@@ -90,20 +159,14 @@ bool ZpoIcmpAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* pac
 
 #endif
 
-    EventHandlerPtr e;
-    switch (event_hdr->GetEventType()) {
-        case TYPE_ICMP_ECHO_REQ_EVENT:
-            e = icmp_echo_request;
-            break;
-        case TYPE_ICMP_ECHO_REPLY_EVENT:
-            e = icmp_echo_reply;
-            break;
-        default:
-            return false;
-    }
+    // if (adapter != nullptr) {
+    //     adapter->EnqueueConnEvent(
+    //         e, adapter->ConnVal(), BuildInfo(icmp_hdr), val_mgr->Count(ntohll(icmp_hdr->id)),
+    //         val_mgr->Count(ntohll(icmp_hdr->seq)), make_intrusive<StringVal>(payload));
+    // }
 
-    event_mgr.Enqueue(e, conn->GetVal(), BuildInfo(icmp_hdr), val_mgr->Count(ntohll(icmp_hdr->id)),
-                      val_mgr->Count(ntohll(icmp_hdr->seq)), make_intrusive<StringVal>(payloadStr));
-
-    return true;
+    // Store the session in the packet in case we get an encapsulation here. We need it for
+    // handling those properly.
+    packet->session = conn;
+    adapter->MatchEndpoint(payload, payload_len, is_orig);
 }
