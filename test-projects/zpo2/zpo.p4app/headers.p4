@@ -28,7 +28,7 @@ const event_type_t TYPE_ICMP_ECHO_REQ_EVENT     = 2;
 
 // Zeek datatype definitions
 
-typedef bit<8>  z_bool;     // boolean      (1 byte)
+typedef bit<16> z_bool;     // boolean      (1 byte)
 typedef bit<64> z_int;      // signed int   (8 bytes)
 typedef bit<64> z_count;    // unsigned int (8 bytes)
 
@@ -182,14 +182,14 @@ header ntp_priv_t {
 
 // This will eventually become a Zeek-friendly event. The CP must translate (via a wrapper interface) our event signals into a format that Zeek can eat.
 header event_t {
-    bit<32> pkt_num;            // 4
-    bit<16> protocol_l3;        // 2
-    bit<16> protocol_l4;        // 2
-    bit<32> src_addr;           // 4
-    bit<32> dst_addr;           // 4
-    bit<16> src_port;           // 2
-    bit<16> dst_port;           // 2
-    event_type_t type;          // 2
+    bit<32> pkt_num;            // 4 (0-4)
+    bit<16> protocol_l3;        // 2 (4-6)
+    bit<16> protocol_l4;        // 2 (6-8)
+    bit<32> src_addr;           // 4 (8-12)
+    bit<32> dst_addr;           // 4 (12-16)
+    bit<16> src_port;           // 2 (16-18)
+    bit<16> dst_port;           // 2 (18-20)
+    event_type_t type;          // 2 (20-22)
 }
 
 // Generated for ICMP *echo request* messages.
@@ -223,7 +223,7 @@ struct z_icmp_info {
 	z_count len;            // The length of the ICMP payload.
 	z_count ttl;            // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
 
-    // Total: 33 bytes
+    // Total: 34 bytes
 }
 
 header icmp_echo_request_event_t {
@@ -231,7 +231,7 @@ header icmp_echo_request_event_t {
     z_count seq;        // seq          (8 bytes)
     z_icmp_info info;   // icmp_info    (33 bytes)
 
-    // Total: 49 bytes
+    // Total: 50 bytes
 }
 
 // Generated for ICMP *echo reply* messages.
@@ -269,6 +269,8 @@ header icmp_echo_reply_event_t {
 struct headers  {
     ethernet_t  ethernet;
     event_t     event;
+    icmp_echo_request_event_t   icmp_echo_request_event;
+    icmp_echo_reply_event_t     icmp_echo_reply_event;
     ipv4_t      ipv4;
     ipv6_t      ipv6;
     icmp_t      icmp;
@@ -278,8 +280,6 @@ struct headers  {
     ntp_flags_t ntp_flags;
     ntp_std_t   ntp_std;
     ntp_priv_t  ntp_priv;
-    icmp_echo_request_event_t   icmp_echo_request_event;
-    icmp_echo_reply_event_t     icmp_echo_reply_event;
 }
 
 struct metadata {

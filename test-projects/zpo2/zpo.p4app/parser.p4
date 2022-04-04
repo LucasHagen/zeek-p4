@@ -95,7 +95,7 @@ parser ParserImpl(packet_in packet,
 
 control DeparserImpl(packet_out packet, in headers hdr) {
     apply {
-        packet.emit(hdr); // It appears that emitting "the whole header" is enough.
+        packet.emit(hdr);
     }
 }
 

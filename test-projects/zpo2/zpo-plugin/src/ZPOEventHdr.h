@@ -17,13 +17,30 @@ typedef struct event_t_struct {
     uint16_t src_port;     // 2
     uint16_t dst_port;     // 2
     uint16_t type;         // 2
+
+    // Total bytes: 22
 } event_t;
 
+/**
+ * @brief Representation of the ZPO Event Header.
+ */
 class ZPOEventHdr {
 public:
+    /**
+     * @brief Construct a new ZPOEventHdr object
+     *
+     * @param data A pointer to the beginning of the header.
+     */
     ZPOEventHdr(const uint8_t* data);
-
     ~ZPOEventHdr() = default;
+
+    /**
+     * @brief Size of the event_t header in bytes.
+     *
+     * The `sizeof` function can't be used because it is 4-byte aligned, we
+     * need raw size.
+     */
+    const int PACKET_SIZE = 22;
 
     const uint8_t* data;
     const event_t* hdr;
@@ -40,6 +57,7 @@ public:
 
     zeek::Layer3Proto GetLayer3Proto() const;
     TransportProto GetTransportProto() const;
+    const uint8_t* Payload() const;
 };
 
 }  // namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO

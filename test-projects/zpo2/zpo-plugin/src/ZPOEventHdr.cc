@@ -52,3 +52,7 @@ TransportProto ZPOEventHdr::GetTransportProto() const {
             return TRANSPORT_UNKNOWN;
     }
 }
+
+const uint8_t* ZPOEventHdr::Payload() const {
+    return data + PACKET_SIZE;
+}

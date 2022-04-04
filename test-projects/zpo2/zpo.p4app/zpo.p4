@@ -23,7 +23,7 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
     action set_nhop(bit<32> nhop_ipv4, bit<9> port) {
         meta.nhop_ipv4 = nhop_ipv4;
         standard_metadata.egress_spec = port;
-        hdr.ipv4.ttl = hdr.ipv4.ttl + 8w255;
+        hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
     }
 
     table ipv4_lpm {
@@ -147,53 +147,55 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
     }
 
     action construct_icmp_echo_request_event_t() {
-        hdr.icmp_echo_request_event.id = (bit<64>) hdr.icmp.id;
-        hdr.icmp_echo_request_event.seq = (bit<64>) hdr.icmp.seq;
-
-        // True if it's an ICMPv6 packet.
-        hdr.icmp_echo_request_event.info.v6 = (bit<8>) false;
-
-        // The ICMP type of the current packet.
-        hdr.icmp_echo_request_event.info.itype = (bit<64>) hdr.icmp.type_;
-
-        // The ICMP code of the current packet.
-        hdr.icmp_echo_request_event.info.icode = (bit<64>) hdr.icmp.code;
-
-        // The length of the ICMP payload. (total ipv4 length - (ipv4 header + icmp header))
-        hdr.icmp_echo_request_event.info.len = (bit<64>) hdr.ipv4.total_len - 28;
-
-        // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
-        hdr.icmp_echo_request_event.info.ttl = (bit<64>) hdr.ipv4.ttl;
-
         hdr.icmp_echo_request_event.setValid();
 
+        hdr.icmp_echo_request_event.id = (z_count) hdr.icmp.id;
+        hdr.icmp_echo_request_event.seq = (z_count) hdr.icmp.seq;
+
+        // True if it's an ICMPv6 packet.
+        hdr.icmp_echo_request_event.info.v6 = (z_bool) 0;
+
+        // The ICMP type of the current packet.
+        hdr.icmp_echo_request_event.info.itype = (z_count) hdr.icmp.type_;
+
+        // The ICMP code of the current packet.
+        hdr.icmp_echo_request_event.info.icode = (z_count) hdr.icmp.code;
+
+        // The length of the ICMP payload. (total ipv4 length - (ipv4 header + icmp header))
+        hdr.icmp_echo_request_event.info.len = (z_count) hdr.ipv4.total_len;
+
+        // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
+        hdr.icmp_echo_request_event.info.ttl = (z_count) hdr.ipv4.ttl;
+
+        hdr.icmp_echo_reply_event.setInvalid();
         hdr.ipv4.setInvalid();
         hdr.icmp.setInvalid();
     }
 
     action construct_icmp_echo_reply_event_t() {
-        hdr.icmp_echo_reply_event.id = (bit<64>) hdr.icmp.id;
-        hdr.icmp_echo_reply_event.seq = (bit<64>) hdr.icmp.seq;
+        hdr.icmp_echo_reply_event.setValid();
+
+        hdr.icmp_echo_reply_event.id = (z_count) hdr.icmp.id;
+        hdr.icmp_echo_reply_event.seq = (z_count) hdr.icmp.seq;
 
         // True if it's an ICMPv6 packet.
-        hdr.icmp_echo_reply_event.info.v6 = (bit<8>) false;
+        hdr.icmp_echo_reply_event.info.v6 = (z_bool) 0;
 
         // The ICMP type of the current packet.
-        hdr.icmp_echo_reply_event.info.itype = (bit<64>) hdr.icmp.type_;
+        hdr.icmp_echo_reply_event.info.itype = (z_count) hdr.icmp.type_;
 
         // The ICMP code of the current packet.
-        hdr.icmp_echo_reply_event.info.icode = (bit<64>) hdr.icmp.code;
+        hdr.icmp_echo_reply_event.info.icode = (z_count) hdr.icmp.code;
 
         // The length of the ICMP payload. (total ipv4 length - (ipv4 header + icmp header))
-        hdr.icmp_echo_reply_event.info.len = (bit<64>) hdr.ipv4.total_len - 28;
+        hdr.icmp_echo_reply_event.info.len = (z_count) hdr.ipv4.total_len;
 
         // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
-        hdr.icmp_echo_reply_event.info.ttl = (bit<64>) hdr.ipv4.ttl;
-
-        hdr.icmp_echo_reply_event.setValid();
+        hdr.icmp_echo_reply_event.info.ttl = (z_count) hdr.ipv4.ttl;
 
         hdr.ipv4.setInvalid();
         hdr.icmp.setInvalid();
+        hdr.icmp_echo_request_event.setInvalid();
     }
 
     apply {
@@ -208,6 +210,7 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
 
         // Fill in the event header fields.
         if (standard_metadata.instance_type == INSTANCE_TYPE_CLONE) {
+            // hdr.ethernet.len
             hdr.event.setValid();
             hdr.event.pkt_num = meta.pkt_num;
             hdr.event.protocol_l3 = meta.protocol_l3;
