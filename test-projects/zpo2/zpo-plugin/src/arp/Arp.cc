@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "ZPOPacket.h"
+#include "ZpoPacket.h"
 #include "event_ids.h"
 #include "zeek/Conn.h"
 #include "zeek/Event.h"
@@ -36,7 +36,7 @@ StringValPtr ToEthAddrStr(const struct ether_addr& addr) {
 }
 
 bool ZpoArpAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
-    auto event_hdr = static_cast<ZPOPacket*>(packet)->event_hdr;
+    auto event_hdr = static_cast<ZpoPacket*>(packet)->event_hdr;
     auto arp_hdr = (const arp_ipv4_req_or_reply*)data;
 
     std::cout << "ARP REQUEST/REPLY:" << std::endl;

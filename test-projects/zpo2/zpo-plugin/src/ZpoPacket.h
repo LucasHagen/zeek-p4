@@ -7,19 +7,19 @@
 
 namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO {
 
-class ZPOPacket : public zeek::Packet {
+class ZpoPacket : public zeek::Packet {
 public:
     /**
-     * @brief Construct a new ZPOPacket object.
+     * @brief Construct a new ZpoPacket object.
      *
      * @param packet Original Packet object.
      */
-    ZPOPacket(Packet* packet, const std::shared_ptr<ZpoEventHdr> event_hdr);
+    ZpoPacket(Packet* packet, const std::shared_ptr<ZpoEventHdr> event_hdr);
 
     /**
      * Destructor.
      */
-    ~ZPOPacket();
+    ~ZpoPacket();
 
     const std::shared_ptr<ZpoEventHdr> event_hdr = nullptr;
 };

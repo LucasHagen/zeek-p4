@@ -1,29 +1,45 @@
-#include "ICMP.h"
+#include "Icmp.h"
 
 #include <netinet/ether.h>
 
 #include <iostream>
 
+#include "ZpoPacket.h"
 #include "event_ids.h"
 #include "zeek/Conn.h"
-#include "zeek/IPAddr.h"
-#include "ZPOPacket.h"
+#include "zeek/Desc.h"
+#include "zeek/Reporter.h"
+#include "zeek/RunState.h"
+#include "zeek/Val.h"
+#include "zeek/ZeekString.h"
+#include "zeek/analyzer/Manager.h"
+#include "zeek/analyzer/protocol/conn-size/ConnSize.h"
+#include "zeek/packet_analysis/protocol/icmp/events.bif.h"
+#include "zeek/session/Manager.h"
+
+enum ICMP_EndpointState {
+    ICMP_INACTIVE,  // no packet seen
+    ICMP_ACTIVE,    // packets seen
+};
 
 using namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO::ICMP;
-
-using ::zeek::IPAddr;
-using ::zeek::Layer3Proto;
-using ::zeek::Packet;
-using ::zeek::packet_analysis::Analyzer;
+using namespace zeek::packet_analysis::IP;
+using ::zeek::make_intrusive;
+using ::zeek::ntohll;
+using ::zeek::RecordType;
+using ::zeek::RecordVal;
+using ::zeek::RecordValPtr;
+using ::zeek::val_mgr;
+using ::zeek::packet_analysis::IP::SessionAdapter;
 
 ZpoIcmpAnalyzer::ZpoIcmpAnalyzer() : Analyzer("ZPO_ICMP") {}
 
-#define ZPO_ICMP_DEBUG
-
 bool ZpoIcmpAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
-    auto event_hdr = static_cast<ZPOPacket*>(packet)->event_hdr;
-    auto icmp_hdr = (const z_icmp_echo_and_reply_event_t*)data;
+    auto zpo_packet = static_cast<ZpoPacket*>(packet);
+    auto event_hdr = zpo_packet->event_hdr;
+    auto icmp_hdr = (const icmp_echo_and_reply_event_h*)event_hdr->GetPayload();
 
+#define ZPO_ICMP_DEBUG
 #ifdef ZPO_ICMP_DEBUG
 
     std::cout << std::endl;
@@ -55,6 +71,15 @@ bool ZpoIcmpAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* pac
     std::cout << std::endl;
 
 #endif
+
+    // if (adapter != nullptr) {
+    //     adapter->EnqueueConnEvent(
+    //         e, adapter->ConnVal(), BuildInfo(icmp_hdr), val_mgr->Count(ntohll(icmp_hdr->id)),
+    //         val_mgr->Count(ntohll(icmp_hdr->seq)), make_intrusive<StringVal>(payload));
+    // }
+
+    // Store the session in the packet in case we get an encapsulation here. We need it for
+    // handling those properly.
 
     return true;
 }
