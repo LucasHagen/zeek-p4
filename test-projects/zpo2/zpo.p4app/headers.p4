@@ -22,9 +22,9 @@ typedef bit<128> ipv6_addr_t;
 
 const bit<16> ICMP_ECHO_REQUEST_ID = 0x0008;
 
-const event_type_t TYPE_NO_EVENT                = 16w0; // L3 (for events)
-const event_type_t TYPE_ICMP_ECHO_REPLY_EVENT   = 16w1;
-const event_type_t TYPE_ICMP_ECHO_REQ_EVENT     = 16w2;
+const event_type_t TYPE_NO_EVENT                = 0; // L3 (for events)
+const event_type_t TYPE_ICMP_ECHO_REPLY_EVENT   = 1;
+const event_type_t TYPE_ICMP_ECHO_REQ_EVENT     = 2;
 
 // Zeek datatype definitions
 

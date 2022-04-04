@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-make install
+make install -j8
 zeek -i s1-eth3 scripts

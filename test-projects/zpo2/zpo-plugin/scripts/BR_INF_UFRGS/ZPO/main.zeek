@@ -15,7 +15,6 @@ event zeek_init() &priority=20
     print "Initializing ZPO Script...";
     print "Registering PacketAnalyzer...";
 	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_ETHERNET, 0x6606, PacketAnalyzer::ANALYZER_ZPO);
-	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_ZPO, 0x0800, PacketAnalyzer::ANALYZER_IP);
     print "Registered PacketAnalyzer.";
 	print "Initialized ZPO Plugin.";
 }
