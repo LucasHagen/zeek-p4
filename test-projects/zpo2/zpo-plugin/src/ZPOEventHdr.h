@@ -24,6 +24,8 @@ typedef struct event_t_struct {
 
 /**
  * @brief Representation of the ZPO Event Header.
+ *
+ * All data available in this object is already in Host ByteOrder, unless otherwise specified.
  */
 class ZPOEventHdr {
 public:
@@ -41,10 +43,11 @@ public:
      * The `sizeof` function can't be used because it is 4-byte aligned, we
      * need raw size.
      */
-    const int PACKET_SIZE = 21;
+    const static int HEADER_SIZE = sizeof(event_t);
 
     const uint8_t* data;
     const event_t* hdr;
+
     const uint32_t packet_number;
     const uint16_t l3_protocol;
     const uint8_t l4_protocol;
@@ -58,6 +61,15 @@ public:
 
     zeek::Layer3Proto GetLayer3Proto() const;
     TransportProto GetTransportProto() const;
+
+    /**
+     * @brief Pointer to the Payload of the packet.
+     *
+     * This adds the size of the `event_t` header to the pointer, returning the next segment of
+     * data.
+     *
+     * @return const uint8_t* Pointer to the Payload
+     */
     const uint8_t* Payload() const;
 };
 

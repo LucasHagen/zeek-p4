@@ -9,7 +9,6 @@ using namespace zeek::packet_analysis;
 
 /**
  * @brief Analyzer for the ZPO Event Header (ZPOEventHdr).
- *
  */
 class ZPO : public Analyzer {
 public:

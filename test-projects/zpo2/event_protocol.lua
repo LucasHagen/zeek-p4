@@ -1,5 +1,6 @@
 zpo_event = Proto("zpo_event","ZPO Event Protocol")
 event_table = DissectorTable.new("zpo_event", "ZPO Event", uint16, base.DEC, zpo_event)
+local data_dis = Dissector.get("data")
 
 local pkt_num = ProtoField.uint32("zpo_event.pkt_num", "Packet Number", base.DEC)
 local protocol_l3 = ProtoField.uint16("zpo_event.protocol_l3", "L3 Protocol", base.HEX)
@@ -55,7 +56,7 @@ end
 function zpo_event.init()
 end
 
--- subscribe for Ethernet packets on type 5212 (0x145c).
+-- subscribe for Ethernet packets on type 26118 (0x6606).
 local eth_table = DissectorTable.get("ethertype")
 eth_table:add(26118, zpo_event)
 
@@ -64,10 +65,11 @@ eth_table:add(26118, zpo_event)
 
 ---- SUB EVENTS
 
-local data_dis = Dissector.get("data")
+
+-- ECHO REQ
+
 
 icmp_echo_req = Proto("icmp_echo_req","ICMP Echo Request")
-icmp_echo_reply = Proto("icmp_echo_reply","ICMP Echo Reply")
 
 local id_req = ProtoField.uint64("icmp_echo_req.id", "Id", base.DEC)
 local seq_req = ProtoField.uint64("icmp_echo_req.seq", "Seq", base.DEC)
@@ -77,14 +79,6 @@ local icode_req = ProtoField.uint64("icmp_echo_req.icode", "icode", base.DEC)
 local len_req = ProtoField.uint64("icmp_echo_req.len", "len", base.DEC)
 local ttl_req = ProtoField.uint64("icmp_echo_req.ttl", "ttl", base.DEC)
 
-local id_reply = ProtoField.uint64("icmp_echo_reply.id", "Id", base.DEC)
-local seq_reply = ProtoField.uint64("icmp_echo_reply.seq", "Seq", base.DEC)
-local v6_reply = ProtoField.uint8("icmp_echo_reply.v6", "Is v6", base.DEC)
-local itype_reply = ProtoField.uint64("icmp_echo_reply.itype", "itype", base.DEC)
-local icode_reply = ProtoField.uint64("icmp_echo_reply.icode", "icode", base.DEC)
-local len_reply = ProtoField.uint64("icmp_echo_reply.len", "len", base.DEC)
-local ttl_reply = ProtoField.uint64("icmp_echo_reply.ttl", "ttl", base.DEC)
-
 icmp_echo_req.fields = {
     id_req,
     seq_req,
@@ -93,15 +87,6 @@ icmp_echo_req.fields = {
     icode_req,
     len_req,
     ttl_req
-}
-icmp_echo_reply.fields = {
-    id_reply,
-    seq_reply,
-    v6_reply,
-    itype_reply,
-    icode_reply,
-    len_reply,
-    ttl_reply
 }
 
 -- myproto dissector function
@@ -127,6 +112,33 @@ end
 
 function icmp_echo_req.init()
 end
+
+event_table:add(2, icmp_echo_req)
+
+
+
+-- ECHO REPLY
+
+
+icmp_echo_reply = Proto("icmp_echo_reply","ICMP Echo Reply")
+
+local id_reply = ProtoField.uint64("icmp_echo_reply.id", "Id", base.DEC)
+local seq_reply = ProtoField.uint64("icmp_echo_reply.seq", "Seq", base.DEC)
+local v6_reply = ProtoField.uint8("icmp_echo_reply.v6", "Is v6", base.DEC)
+local itype_reply = ProtoField.uint64("icmp_echo_reply.itype", "itype", base.DEC)
+local icode_reply = ProtoField.uint64("icmp_echo_reply.icode", "icode", base.DEC)
+local len_reply = ProtoField.uint64("icmp_echo_reply.len", "len", base.DEC)
+local ttl_reply = ProtoField.uint64("icmp_echo_reply.ttl", "ttl", base.DEC)
+
+icmp_echo_reply.fields = {
+    id_reply,
+    seq_reply,
+    v6_reply,
+    itype_reply,
+    icode_reply,
+    len_reply,
+    ttl_reply
+}
 
 -- myproto dissector function
 function icmp_echo_reply.dissector (buf, pkt, root)
@@ -154,4 +166,3 @@ function icmp_echo_reply.init()
 end
 
 event_table:add(1, icmp_echo_reply)
-event_table:add(2, icmp_echo_req)

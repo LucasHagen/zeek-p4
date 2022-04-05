@@ -9,6 +9,7 @@
 #include "zeek/IPAddr.h"
 
 using namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO::ICMP;
+
 using ::zeek::IPAddr;
 using ::zeek::Layer3Proto;
 using ::zeek::Packet;
