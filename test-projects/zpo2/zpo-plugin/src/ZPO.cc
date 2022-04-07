@@ -3,6 +3,7 @@
 #include <netinet/ether.h>
 
 #include <iostream>
+#include <memory>
 
 #include "zeek/Conn.h"
 #include "zeek/IPAddr.h"
@@ -18,22 +19,24 @@ using ::zeek::packet_analysis::Analyzer;
 ZPO::ZPO() : Analyzer("ZPO") {}
 
 bool ZPO::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
-    ZPOEventHdr hdr = ZPOEventHdr(data);
-    packet->l3_proto = hdr.GetLayer3Proto();
+    std::shared_ptr<ZPOEventHdr> hdr = ZPOEventHdr::InitEventHdr(ETH_P_EVENT_IP, data);
+
+    packet->l3_proto = hdr->GetLayer3Proto();
+    packet->ip_hdr = hdr->GetIPHdr();
 
 #ifdef ZPO_DEBUG
     std::cout << std::endl;
     std::cout << "[ZPO] START AnalyzePacket!!! \\/ \\/ \\/" << std::endl;
-    std::cout << "[ZPO] |- src_addr = " << hdr.src_addr.AsString() << std::endl;
-    std::cout << "[ZPO] |- dst_addr = " << hdr.dst_addr.AsString() << std::endl;
-    std::cout << "[ZPO] |- src_port = " << hdr.src_port << std::endl;
-    std::cout << "[ZPO] |- dst_port = " << hdr.dst_port << std::endl;
-    std::cout << "[ZPO] |- l3_proto = " << hdr.l3_protocol << std::endl;
-    std::cout << "[ZPO] |- l4_proto = " << hdr.l4_protocol << std::endl;
-    std::cout << "[ZPO] |- event_id = " << hdr.event_type << std::endl;
+    std::cout << "[ZPO] |- src_addr = " << hdr->GetSrcAddress().AsString() << std::endl;
+    std::cout << "[ZPO] |- dst_addr = " << hdr->GetDstAddress().AsString() << std::endl;
+    std::cout << "[ZPO] |- src_port = " << hdr->GetSrcPort() << std::endl;
+    std::cout << "[ZPO] |- dst_port = " << hdr->GetDstPort() << std::endl;
+    std::cout << "[ZPO] |- l3_proto = " << hdr->GetLayer3Protocol() << std::endl;
+    std::cout << "[ZPO] |- l4_proto = " << (uint16_t) hdr->GetLayer4Protocol() << std::endl;
+    std::cout << "[ZPO] |- event_id = " << hdr->GetEventType() << std::endl;
     std::cout << "[ZPO] END AnalyzePacket!!!   /\\ /\\ /\\" << std::endl;
     std::cout << std::endl;
 #endif
 
-    return ForwardPacket(len, data, packet, hdr.event_type);
+    return ForwardPacket(len, data, packet, hdr->GetEventType());
 }

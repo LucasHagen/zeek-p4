@@ -61,10 +61,9 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
     apply {
         if (standard_metadata.instance_type == INSTANCE_TYPE_NORMAL) {
             meta.protocol_l3 = hdr.ethernet.ethertype;
+            meta.event_type = TYPE_NO_EVENT;
 
             if (hdr.ipv4.isValid()) {
-                meta.src_addr = hdr.ipv4.src_addr;
-                meta.dst_addr = hdr.ipv4.dst_addr;
                 meta.protocol_l4 = hdr.ipv4.protocol;
 
                 // Only working with icmp events for now
@@ -103,9 +102,6 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
 
                     } else if ( hdr.icmp.type_ == ICMP_ECHO) {
                         meta.event_type = TYPE_ICMP_ECHO_REQ_EVENT;
-
-                    } else {
-                        meta.event_type = TYPE_NO_EVENT;
                     }
                 }
                 // TODO: Add the edge cases: "something else we don't support yet."
@@ -167,8 +163,7 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
         // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
         hdr.icmp_echo_request_event.info.ttl = (z_count) hdr.ipv4.ttl;
 
-        hdr.icmp_echo_reply_event.setInvalid();
-        hdr.ipv4.setInvalid();
+        // hdr.ipv4.setInvalid();
         hdr.icmp.setInvalid();
     }
 
@@ -193,44 +188,46 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
         // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
         hdr.icmp_echo_reply_event.info.ttl = (z_count) hdr.ipv4.ttl;
 
-        hdr.ipv4.setInvalid();
+        // hdr.ipv4.setInvalid();
         hdr.icmp.setInvalid();
-        hdr.icmp_echo_request_event.setInvalid();
     }
 
     apply {
-
         // Emit normal packets.
         if (standard_metadata.instance_type == INSTANCE_TYPE_NORMAL) {
             if (hdr.ipv4.isValid()) { // TODO: Is this condition necessary?
                 send_frame.apply();
             }
-            return;
-        }
+        } else if (standard_metadata.instance_type == INSTANCE_TYPE_CLONE) {
+            if(meta.event_type == TYPE_NO_EVENT) {
+                mark_to_drop(standard_metadata);
+            } else if(meta.protocol_l3 == ETH_P_IPV4) {
+                // hdr.ethernet.len
+                hdr.event.ip_event.setValid();
+                hdr.event.ip_event.pkt_num = meta.pkt_num;
+                hdr.event.ip_event.src_port = meta.src_port;
+                hdr.event.ip_event.dst_port = meta.dst_port;
+                hdr.event.ip_event.type = meta.event_type;
+                // hdr.event.ip_event.ipv4_header = (bit<160>) hdr.ipv4;
+                hdr.ethernet.ethertype = ETH_P_EVENT_IP;
 
-        // Fill in the event header fields.
-        if (standard_metadata.instance_type == INSTANCE_TYPE_CLONE) {
-            // hdr.ethernet.len
-            hdr.event.setValid();
-            hdr.event.pkt_num = meta.pkt_num;
-            hdr.event.protocol_l3 = meta.protocol_l3;
-            hdr.event.protocol_l4 = meta.protocol_l4;
-            hdr.event.src_addr = meta.src_addr;
-            hdr.event.dst_addr = meta.dst_addr;
-            hdr.event.src_port = meta.src_port;
-            hdr.event.dst_port = meta.dst_port;
-            hdr.event.type = meta.event_type;
-            hdr.ethernet.ethertype = TYPE_EVENT;
-        }
+                if (meta.event_type == TYPE_ICMP_ECHO_REQ_EVENT) {
+                    construct_icmp_echo_request_event_t();
+                } else if(meta.event_type == TYPE_ICMP_ECHO_REPLY_EVENT) {
+                    construct_icmp_echo_reply_event_t();
+                }
+            } else if(meta.protocol_l3 == ETH_P_IPV6) {
+                // TODO, not yet supported.
+            } else {
+                hdr.event.eth_event.setValid();
+                hdr.event.eth_event.pkt_num = meta.pkt_num;
+                hdr.event.eth_event.protocol_l3 = meta.protocol_l3;
+                hdr.event.eth_event.type = meta.event_type;
+                hdr.ethernet.ethertype = ETH_P_EVENT;
 
-        if (meta.event_type == TYPE_ICMP_ECHO_REQ_EVENT) {
-            construct_icmp_echo_request_event_t();
-        } else if(meta.event_type == TYPE_ICMP_ECHO_REPLY_EVENT) {
-            construct_icmp_echo_reply_event_t();
-        } else {
-            mark_to_drop(standard_metadata);
+                // Set other headers invalid and construct event
+            }
         }
-
     }
 
 }

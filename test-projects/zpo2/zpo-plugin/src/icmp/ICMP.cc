@@ -18,15 +18,14 @@ using ::zeek::packet_analysis::Analyzer;
 ZpoIcmpAnalyzer::ZpoIcmpAnalyzer() : Analyzer("ZPO_ICMP") {}
 
 bool ZpoIcmpAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
-    ZPOEventHdr event_hdr = ZPOEventHdr(data);
-    auto icmp_hdr = (const z_icmp_echo_and_reply_event_t*)event_hdr.Payload();
+    std::shared_ptr<ZPOEventHdr> event_hdr = ZPOEventHdr::InitEventHdr(ETH_P_EVENT_IP, data);
+    auto icmp_hdr = (const z_icmp_echo_and_reply_event_t*)event_hdr->GetPayload();
 
     std::cout << std::endl;
     std::cout << "[ZPO] START ICMP!!! \\/ \\/ \\/" << std::endl;
-    std::cout << "[ZPO] |- LEN = " << len << std::endl;
     std::cout << "[ZPO] |- l3proto = " << packet->l3_proto << std::endl;
 
-    switch (event_hdr.event_type) {
+    switch (event_hdr->GetEventType()) {
         case TYPE_ICMP_ECHO_REPLY_EVENT:
             std::cout << "[ZPO] |- event = ECHO_REPLY" << std::endl;
             break;
@@ -38,8 +37,8 @@ bool ZpoIcmpAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* pac
             break;
     }
 
-    std::cout << "[ZPO] |- src_addr = " << event_hdr.src_addr.AsString() << std::endl;
-    std::cout << "[ZPO] |- dst_addr = " << event_hdr.dst_addr.AsString() << std::endl;
+    std::cout << "[ZPO] |- src_addr = " << packet->ip_hdr->SrcAddr().AsString() << std::endl;
+    std::cout << "[ZPO] |- dst_addr = " << packet->ip_hdr->DstAddr().AsString() << std::endl;
     std::cout << "[ZPO] |- id       = " << ntohll(icmp_hdr->id) << std::endl;
     std::cout << "[ZPO] |- seq      = " << ntohll(icmp_hdr->seq) << std::endl;
     std::cout << "[ZPO] |- v6       = " << ntohs(icmp_hdr->v6) << std::endl;

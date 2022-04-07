@@ -16,9 +16,9 @@ parser ParserImpl(packet_in packet,
     state parse_ethernet {
         packet.extract(hdr.ethernet);
         transition select(hdr.ethernet.ethertype) {
-            TYPE_IPV4:     parse_ipv4;
-            TYPE_IPV6:     parse_ipv6;
-            default:       accept;
+            ETH_P_IPV4:     parse_ipv4;
+            ETH_P_IPV6:     parse_ipv6;
+            default:        accept;
         }
     }
 
@@ -26,20 +26,20 @@ parser ParserImpl(packet_in packet,
     state parse_ipv4 { // TODO: This may need to be adapted for variable-length headers.
         packet.extract(hdr.ipv4);
         transition select(hdr.ipv4.protocol) {
-            TYPE_ICMP: parse_icmp;
-            TYPE_TCP:  parse_tcp;
-            TYPE_UDP:  parse_udp;
-            default:   accept;
+            IPPROTO_ICMP: parse_icmp;
+            // IPPROTO_TCP:  parse_tcp;
+            // IPPROTO_UDP:  parse_udp;
+            default:      accept;
         }
     }
 
     state parse_ipv6 {
         packet.extract(hdr.ipv6);
         transition select(hdr.ipv6.next_header) {
-            TYPE_ICMPV6: parse_icmpv6;
-            TYPE_TCP:    parse_tcp;
-            TYPE_UDP:    parse_udp;
-            default:     accept;
+            IPPROTO_ICMPV6: parse_icmpv6;
+            // IPPROTO_TCP:    parse_tcp;
+            // IPPROTO_UDP:    parse_udp;
+            default:        accept;
         }
     }
 
@@ -55,41 +55,15 @@ parser ParserImpl(packet_in packet,
         transition accept;
     }
 
-    state parse_tcp {
-        packet.extract(hdr.tcp);
-        transition accept;
-    }
+    // state parse_tcp {
+    //     packet.extract(hdr.tcp);
+    //     transition accept;
+    // }
 
-    state parse_udp {
-        packet.extract(hdr.udp);
-        transition select(hdr.udp.src_port, hdr.udp.dst_port) {
-            (TYPE_NTP,_): parse_ntp;
-            (_,TYPE_NTP): parse_ntp;
-            (_,_): accept;
-        }
-    }
-
-    state parse_ntp {
-        transition select(packet.lookahead<ntp_flags_t>().mode) {
-            1: parse_ntp_std;
-            2: parse_ntp_std;
-            3: parse_ntp_std;
-            4: parse_ntp_std;
-            5: parse_ntp_std;
-            7: parse_ntp_priv;
-            default: accept;
-        }
-    }
-
-    state parse_ntp_std {
-        packet.extract(hdr.ntp_std);
-        transition accept;
-    }
-
-    state parse_ntp_priv {
-        packet.extract(hdr.ntp_priv);
-        transition accept;
-    }
+    // state parse_udp {
+    //     packet.extract(hdr.udp);
+    //     transition accept;
+    // }
 
 }
 
