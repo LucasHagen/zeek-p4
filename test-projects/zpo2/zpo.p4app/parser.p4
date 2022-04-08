@@ -18,6 +18,7 @@ parser ParserImpl(packet_in packet,
         transition select(hdr.ethernet.ethertype) {
             ETH_P_IPV4:     parse_ipv4;
             ETH_P_IPV6:     parse_ipv6;
+            ETH_P_ARP:      parse_arp;
             default:        accept;
         }
     }
@@ -27,8 +28,6 @@ parser ParserImpl(packet_in packet,
         packet.extract(hdr.ipv4);
         transition select(hdr.ipv4.protocol) {
             IPPROTO_ICMP: parse_icmp;
-            // IPPROTO_TCP:  parse_tcp;
-            // IPPROTO_UDP:  parse_udp;
             default:      accept;
         }
     }
@@ -37,10 +36,21 @@ parser ParserImpl(packet_in packet,
         packet.extract(hdr.ipv6);
         transition select(hdr.ipv6.next_header) {
             IPPROTO_ICMPV6: parse_icmpv6;
-            // IPPROTO_TCP:    parse_tcp;
-            // IPPROTO_UDP:    parse_udp;
             default:        accept;
         }
+    }
+
+    state parse_arp {
+        packet.extract(hdr.arp);
+        transition select(hdr.arp.proto_type) {
+            ETH_P_IPV4: parse_arp_ipv4;
+            default:    accept;
+        }
+    }
+
+    state parse_arp_ipv4 {
+        packet.extract(hdr.arp_ipv4);
+        transition accept;
     }
 
     // Layer 4

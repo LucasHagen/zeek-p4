@@ -64,6 +64,21 @@ header icmpv6_h {
     bit<16>   hdr_checksum;
 }
 
+header arp_h {
+    bit<16> hw_type;
+    bit<16> proto_type;
+    bit<8>  hw_addr_len;
+    bit<8>  proto_addr_len;
+    bit<16> opcode;
+}
+
+header arp_ipv4_h {
+    bit<48> src_hw_addr;
+    bit<32> src_proto_addr;
+    bit<48> dst_hw_addr;
+    bit<32> dst_proto_addr;
+}
+
 // Event Header for non-ip based events, for ex: ARP
 header eth_event_h {
     bit<32> pkt_num;            // 4
@@ -117,6 +132,8 @@ struct headers  {
     event_h     event;
     ipv4_h      ipv4;
     ipv6_h      ipv6;
+    arp_h       arp;
+    arp_ipv4_h  arp_ipv4;
     icmp_h      icmp;
     icmpv6_h    icmpv6;
     icmp_echo_request_event_h   icmp_echo_request_event;
