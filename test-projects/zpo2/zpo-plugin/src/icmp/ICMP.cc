@@ -7,6 +7,7 @@
 #include "event_ids.h"
 #include "zeek/Conn.h"
 #include "zeek/IPAddr.h"
+#include "ZPOPacket.h"
 
 using namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO::ICMP;
 
@@ -18,8 +19,8 @@ using ::zeek::packet_analysis::Analyzer;
 ZpoIcmpAnalyzer::ZpoIcmpAnalyzer() : Analyzer("ZPO_ICMP") {}
 
 bool ZpoIcmpAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
-    std::shared_ptr<ZPOEventHdr> event_hdr = ZPOEventHdr::InitEventHdr(ETH_P_EVENT_IP, data);
-    auto icmp_hdr = (const z_icmp_echo_and_reply_event_t*)event_hdr->GetPayload();
+    auto event_hdr = static_cast<ZPOPacket*>(packet)->event_hdr;
+    auto icmp_hdr = (const z_icmp_echo_and_reply_event_t*)data;
 
     std::cout << std::endl;
     std::cout << "[ZPO] START ICMP!!! \\/ \\/ \\/" << std::endl;

@@ -52,6 +52,8 @@ public:
     uint16_t GetDstPort() const;
     uint16_t GetEventType() const;
 
+    uint32_t GetHdrSize() const;
+
     std::shared_ptr<zeek::IP_Hdr> GetIPHdr() const;
 
     bool IsIPv4() const;
@@ -77,6 +79,7 @@ protected:
     const eth_event_h* eth_event_hdr = nullptr;
     const ip_event_h* ip_event_hdr = nullptr;
 
+    const uint32_t hdr_size = 0;
     const uint8_t* payload = nullptr;
 
     uint32_t packet_number = 0;

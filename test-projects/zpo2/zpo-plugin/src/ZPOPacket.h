@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "ZPOEventHdr.h"
-#include "zeek/Packet.h"
+#include "zeek/iosource/Packet.h"
 
 namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO {
 
@@ -14,15 +14,14 @@ public:
      *
      * @param packet Original Packet object.
      */
-    ZPOPacket(const Packet& packet, std::shared_ptr<ZPOEventHdr> event_hdr);
+    ZPOPacket(Packet* packet, const std::shared_ptr<ZPOEventHdr> event_hdr);
 
     /**
      * Destructor.
      */
     ~ZPOPacket();
 
-protected:
-    std::shared_ptr<ZPOEventHdr> event_hdr;
+    const std::shared_ptr<ZPOEventHdr> event_hdr = nullptr;
 };
 
 }  // namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO

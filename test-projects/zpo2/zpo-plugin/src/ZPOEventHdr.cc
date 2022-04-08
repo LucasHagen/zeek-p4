@@ -25,14 +25,14 @@ std::shared_ptr<ZPOEventHdr> ZPOEventHdr::InitEventHdr(const uint16_t l3_protoco
 }
 
 ZPOEventHdr::ZPOEventHdr(const uint8_t* data, const eth_event_h* hdr)
-    : data(data), eth_event_hdr(hdr), payload(data + ETH_EVENT_HEADER_SIZE) {
+    : data(data), eth_event_hdr(hdr), hdr_size(ETH_EVENT_HEADER_SIZE), payload(data + hdr_size) {
     packet_number = ntohl(hdr->pkt_num);
     l3_protocol = ntohs(hdr->protocol_l3);
     event_type = ntohs(hdr->event_type);
 }
 
 ZPOEventHdr::ZPOEventHdr(const uint8_t* data, const ip_event_h* hdr)
-    : data(data), ip_event_hdr(hdr), payload(data + IP_EVENT_HEADER_SIZE) {
+    : data(data), ip_event_hdr(hdr), hdr_size(IP_EVENT_HEADER_SIZE), payload(data + hdr_size) {
     packet_number = ntohl(hdr->pkt_num);
     l3_protocol = ETH_P_IP;
     event_type = ntohs(hdr->event_type);
@@ -56,6 +56,8 @@ uint16_t ZPOEventHdr::GetDstPort() const { return dst_port; }
 uint16_t ZPOEventHdr::GetEventType() const { return event_type; }
 
 std::shared_ptr<IP_Hdr> ZPOEventHdr::GetIPHdr() const { return ip_hdr; }
+
+uint32_t ZPOEventHdr::GetHdrSize() const { return hdr_size; }
 
 bool ZPOEventHdr::IsIPv4() const { return l3_protocol == ETH_P_IP; }
 
