@@ -64,20 +64,20 @@ function zpo_ip_event.dissector (buf, pkt, root)
   subtree:add(ip_diffserv, buf(11,1))
   subtree:add(ip_len, buf(12,2)) -- 16 bits
   subtree:add(ip_id, buf(14,2)) -- 16 bits
-  subtree:add(ip_flags, buf(16,2)) -- 16
-  subtree:add(ip_flags_offset, buf(16,2)) -- 16
+  subtree:add(ip_flags, buf(16,2)) -- 16 bits
+  subtree:add(ip_flags_offset, buf(16,2)) -- 16 bits
   subtree:add(ip_ttl, buf(18,1)) -- 8 bits
   subtree:add(ip_protocol, buf(19,1))
   subtree:add(ip_hdr_checksum, buf(20,2))
   subtree:add(src_addr, buf(22,4))
   subtree:add(dst_addr, buf(26,4))
 
-  local event_dis = event_table:get_dissector(buf(19,2):uint())
+  local event_dis = event_table:get_dissector(buf(8,2):uint())
 
   if event_dis ~= nil then
-    event_dis:call(buf(39):tvb(), pkt, root)
+    event_dis:call(buf(30):tvb(), pkt, root)
   else
-    data_dis:call(buf(39):tvb(), pkt, root)
+    data_dis:call(buf(30):tvb(), pkt, root)
   end
 end
 
@@ -123,6 +123,7 @@ function icmp_echo_req.dissector (buf, pkt, root)
   -- validate packet length is adequate, otherwise quit
   if buf:len() == 0 then return end
   pkt.cols.protocol = icmp_echo_req.name
+  pkt.cols.info = icmp_echo_req.description
 
   -- create subtree for myproto
   subtree = root:add(icmp_echo_req, buf(0))
@@ -174,6 +175,7 @@ function icmp_echo_reply.dissector (buf, pkt, root)
     -- validate packet length is adequate, otherwise quit
     if buf:len() == 0 then return end
     pkt.cols.protocol = icmp_echo_reply.name
+    pkt.cols.info = icmp_echo_reply.description
 
     -- create subtree for myproto
     subtree = root:add(icmp_echo_reply, buf(0))
