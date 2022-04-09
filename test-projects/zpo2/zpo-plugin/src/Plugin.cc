@@ -1,7 +1,8 @@
 #include "Plugin.h"
 
-#include "ZPO.h"
-#include "ZPOEventHdr.h"
+#include "ZpoEth.h"
+#include "ZpoIp.h"
+#include "ZpoEventHdr.h"
 #include "icmp/ICMP.h"
 #include "zeek/packet_analysis/Component.h"
 
@@ -15,7 +16,9 @@ using namespace plugin::BR_INF_UFRGS_ZPO;
 
 zeek::plugin::Configuration Plugin::Configure() {
     AddComponent(new zeek::packet_analysis::Component(
-        "ZPO", zeek::packet_analysis::BR_INF_UFRGS_ZPO::ZPO::Instantiate));
+        "ZPO_ETH", zeek::packet_analysis::BR_INF_UFRGS_ZPO::ZpoEth::Instantiate));
+    AddComponent(new zeek::packet_analysis::Component(
+        "ZPO_IP", zeek::packet_analysis::BR_INF_UFRGS_ZPO::ZpoIp::Instantiate));
     AddComponent(new zeek::packet_analysis::Component(
         "ZPO_ICMP", zeek::packet_analysis::BR_INF_UFRGS_ZPO::ICMP::ZpoIcmpAnalyzer::Instantiate));
 

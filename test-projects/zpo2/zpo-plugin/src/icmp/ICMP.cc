@@ -18,9 +18,13 @@ using ::zeek::packet_analysis::Analyzer;
 
 ZpoIcmpAnalyzer::ZpoIcmpAnalyzer() : Analyzer("ZPO_ICMP") {}
 
+#define ZPO_ICMP_DEBUG
+
 bool ZpoIcmpAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
     auto event_hdr = static_cast<ZPOPacket*>(packet)->event_hdr;
     auto icmp_hdr = (const z_icmp_echo_and_reply_event_t*)data;
+
+#ifdef ZPO_ICMP_DEBUG
 
     std::cout << std::endl;
     std::cout << "[ZPO] START ICMP!!! \\/ \\/ \\/" << std::endl;
@@ -49,6 +53,8 @@ bool ZpoIcmpAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* pac
     std::cout << "[ZPO] |- ttl      = " << ntohll(icmp_hdr->ttl) << std::endl;
     std::cout << "[ZPO] END ICMP!!!   /\\ /\\ /\\" << std::endl;
     std::cout << std::endl;
+
+#endif
 
     return true;
 }

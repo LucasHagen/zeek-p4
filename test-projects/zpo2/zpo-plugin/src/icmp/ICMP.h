@@ -1,7 +1,7 @@
 #pragma once
 
 #include "zeek/packet_analysis/Analyzer.h"
-#include "ZPOEventHdr.h"
+#include "ZpoEventHdr.h"
 
 namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO::ICMP {
 
@@ -32,7 +32,7 @@ typedef struct z_icmp_echo_and_reply_event_struct  {
 } z_icmp_echo_and_reply_event_t;
 
 /**
- * @brief Analyzer for the ZPO Event Header (ZPOEventHdr).
+ * @brief Analyzer for the ZPO Event Header (ZpoEventHdr).
  *
  */
 class ZpoIcmpAnalyzer : public Analyzer {

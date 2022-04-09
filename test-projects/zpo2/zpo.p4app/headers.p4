@@ -2,21 +2,11 @@
 #define ZPO_HEADERS
 
 #include "constants.p4"
+#include "types.p4"
+#include "events.p4"
 
 // Some header definitions were based on:
 // https://github.com/p4lang/papers/blob/master/sosr15/DC.p4/includes/headers.p4
-
-typedef bit<48>  mac_addr_t;
-typedef bit<32>  ipv4_addr_t;
-typedef bit<128> ipv6_addr_t;
-
-// START ZEEK DATATYPE DEFINITIONS
-
-typedef bit<8> z_bool;     // boolean      (1 byte)
-typedef bit<64> z_int;      // signed int   (8 bytes)
-typedef bit<64> z_count;    // unsigned int (8 bytes)
-
-// END ZEEK DATATYPE DEFINITIONS
 
 header ethernet_h {
     mac_addr_t dst_addr;
@@ -73,10 +63,10 @@ header arp_h {
 }
 
 header arp_ipv4_h {
-    bit<48> src_hw_addr;
-    bit<32> src_proto_addr;
-    bit<48> dst_hw_addr;
-    bit<32> dst_proto_addr;
+    mac_addr_t  src_hw_addr;
+    ipv4_addr_t src_proto_addr;
+    mac_addr_t  target_hw_addr;
+    ipv4_addr_t target_proto_addr;
 }
 
 // Event Header for non-ip based events, for ex: ARP
@@ -100,33 +90,6 @@ header_union event_h {
     ip_event_h ip_event;
 }
 
-struct z_icmp_info {
-    z_bool  v6;             // True if it's an ICMPv6 packet.
-	z_count itype;          // The ICMP type of the current packet.
-	z_count icode;          // The ICMP code of the current packet.
-	z_count len;            // The length of the ICMP payload.
-	z_count ttl;            // The encapsulating IP header's TTL (IPv4) or Hop Limit (IPv6).
-
-    // Total: 33 bytes
-}
-
-// Generated for ICMP *echo request* messages.
-header icmp_echo_request_event_h {
-    z_count id;         // id           (8 bytes)
-    z_count seq;        // seq          (8 bytes)
-    z_icmp_info info;   // icmp_info    (33 bytes)
-    // Total: 49 bytes
-}
-
-// Generated for ICMP *echo reply* messages.
-header icmp_echo_reply_event_h {
-    z_count id;         // id           (8 bytes)
-    z_count seq;        // seq          (8 bytes)
-    z_icmp_info info;   // icmp_info    (33 bytes)
-
-    // Total: 49 bytes
-}
-
 struct headers  {
     ethernet_h  ethernet;
     event_h     event;
@@ -136,8 +99,9 @@ struct headers  {
     arp_ipv4_h  arp_ipv4;
     icmp_h      icmp;
     icmpv6_h    icmpv6;
-    icmp_echo_request_event_h   icmp_echo_request_event;
-    icmp_echo_reply_event_h     icmp_echo_reply_event;
+    icmp_echo_request_event_h       icmp_echo_request_event;
+    icmp_echo_reply_event_h         icmp_echo_reply_event;
+    arp_request_or_reply_event_h    arp_req_or_reply_event;
 }
 
 struct metadata {

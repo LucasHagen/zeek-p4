@@ -34,15 +34,15 @@ typedef struct ip_event_h_struct {
  *
  * All data available in this object is already in Host ByteOrder, unless otherwise specified.
  */
-class ZPOEventHdr {
+class ZpoEventHdr {
 public:
     const static int ETH_EVENT_HEADER_SIZE = sizeof(eth_event_h);
     const static int IP_EVENT_HEADER_SIZE = sizeof(ip_event_h);
 
-    static std::shared_ptr<ZPOEventHdr> InitEventHdr(const uint16_t l3_protocol,
+    static std::shared_ptr<ZpoEventHdr> InitEventHdr(const uint16_t l3_protocol,
                                                      const uint8_t* data);
 
-    ~ZPOEventHdr() = default;
+    ~ZpoEventHdr() = default;
 
     uint16_t GetLayer3Protocol() const;
     uint8_t GetLayer4Protocol() const;
@@ -71,8 +71,8 @@ public:
      */
     const uint8_t* GetPayload() const;
 
-    ZPOEventHdr(const uint8_t* data, const eth_event_h* hdr);
-    ZPOEventHdr(const uint8_t* data, const ip_event_h* hdr);
+    ZpoEventHdr(const uint8_t* data, const eth_event_h* hdr);
+    ZpoEventHdr(const uint8_t* data, const ip_event_h* hdr);
 
 protected:
     const uint8_t* data = nullptr;

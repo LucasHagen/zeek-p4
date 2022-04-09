@@ -1,21 +1,21 @@
 #pragma once
 
 #include "zeek/packet_analysis/Analyzer.h"
-#include "ZPOEventHdr.h"
+#include "ZpoEventHdr.h"
 
 namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO {
 
 using namespace zeek::packet_analysis;
 
 /**
- * @brief Analyzer for the ZPO Event Header (ZPOEventHdr).
+ * @brief Analyzer for the ZPO Event Header (ZpoEventHdr).
  */
-class ZPO : public Analyzer {
+class ZpoIp : public Analyzer {
 public:
-    ZPO();
-    ~ZPO() override = default;
+    ZpoIp();
+    ~ZpoIp() override = default;
 
-    static zeek::packet_analysis::AnalyzerPtr Instantiate() { return std::make_shared<ZPO>(); }
+    static zeek::packet_analysis::AnalyzerPtr Instantiate() { return std::make_shared<ZpoIp>(); }
 
     bool AnalyzePacket(size_t len, const uint8_t* data, zeek::Packet* packet) override;
 };

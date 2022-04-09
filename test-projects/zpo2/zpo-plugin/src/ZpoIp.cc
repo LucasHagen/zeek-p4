@@ -1,4 +1,4 @@
-#include "ZPO.h"
+#include "ZpoIp.h"
 
 #include <netinet/ether.h>
 
@@ -17,10 +17,10 @@ using ::zeek::packet_analysis::Analyzer;
 
 // #define ZPO_DEBUG
 
-ZPO::ZPO() : Analyzer("ZPO") {}
+ZpoIp::ZpoIp() : Analyzer("ZPO_IP") {}
 
-bool ZPO::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
-    std::shared_ptr<ZPOEventHdr> hdr = ZPOEventHdr::InitEventHdr(ETH_P_EVENT_IP, data);
+bool ZpoIp::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
+    std::shared_ptr<ZpoEventHdr> hdr = ZpoEventHdr::InitEventHdr(ETH_P_EVENT_IP, data);
 
     std::shared_ptr<ZPOPacket> zpo_packet = std::make_shared<ZPOPacket>(packet, hdr);
 
