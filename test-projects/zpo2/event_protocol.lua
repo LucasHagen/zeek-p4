@@ -1,5 +1,8 @@
+event_table = DissectorTable.new("zpo_ip_event", "ZPO Event", uint16, base.DEC)
+
+-- ZPO IP EVENT
+
 zpo_ip_event = Proto("zpo_ip_event","ZPO Event Protocol")
-event_table = DissectorTable.new("zpo_ip_event", "ZPO Event", uint16, base.DEC, zpo_ip_event)
 local data_dis = Dissector.get("data")
 
 local pkt_num = ProtoField.uint32("zpo_ip_event.pkt_num", "Packet Number", base.DEC)
@@ -85,12 +88,53 @@ end
 function zpo_ip_event.init()
 end
 
--- subscribe for Ethernet packets on type 26118 (0x6606).
+-- subscribe for Ethernet packets on type 26114 (0x6602).
 local eth_table = DissectorTable.get("ethertype")
 eth_table:add(26114, zpo_ip_event)
 
 
+-- ZPO ETH EVENT
 
+zpo_eth_event = Proto("zpo_eth_event","ZPO Event Protocol (ETH)")
+
+local pkt_num_eth = ProtoField.uint32("zpo_eth_event.pkt_num", "Packet Number", base.DEC)
+local protocol_l3_eth = ProtoField.uint16("zpo_eth_event.protocol_l3", "Protocol L3", base.HEX)
+local event_type_eth = ProtoField.uint16("zpo_eth_event.event_type", "Event Type", base.DEC)
+
+zpo_eth_event.fields = {
+    pkt_num_eth,
+    protocol_l3_eth,
+    event_type_eth
+}
+
+-- myproto dissector function
+function zpo_eth_event.dissector (buf, pkt, root)
+  -- validate packet length is adequate, otherwise quit
+  if buf:len() == 0 then return end
+  pkt.cols.protocol = zpo_eth_event.name
+
+  -- create subtree for myproto
+  subtree = root:add(zpo_eth_event, buf(0))
+  -- add protocol fields to subtree
+  subtree:add(pkt_num_eth, buf(0,4))
+  subtree:add(protocol_l3_eth, buf(4,2))
+  subtree:add(event_type_eth, buf(6,2))
+
+  local event_dis = event_table:get_dissector(buf(6,2):uint())
+
+  if event_dis ~= nil then
+    event_dis:call(buf(8):tvb(), pkt, root)
+  else
+    data_dis:call(buf(8):tvb(), pkt, root)
+  end
+end
+
+-- Initialization routine
+function zpo_eth_event.init()
+end
+
+-- subscribe for Ethernet packets on type 26113 (0x6601).
+eth_table:add(26113, zpo_eth_event)
 
 ---- SUB EVENTS
 
@@ -197,3 +241,51 @@ function icmp_echo_reply.init()
 end
 
 event_table:add(1, icmp_echo_reply)
+
+-- ARP REQUEST
+
+
+arp_request = Proto("arp_request","ARP Request")
+
+local mac_src = ProtoField.ether("arp_request.mac_src", "mac_src")
+local mac_dst = ProtoField.ether("arp_request.mac_dst", "mac_dst")
+local src_proto_addr = ProtoField.ipv4("arp_request.src_proto_addr", "src_proto_addr")
+local src_hw_addr = ProtoField.ether("arp_request.src_hw_addr", "src_hw_addr")
+local target_proto_addr = ProtoField.ipv4("arp_request.target_proto_addr", "target_proto_addr")
+local target_hw_addr = ProtoField.ether("arp_request.target_hw_addr", "target_hw_addr")
+
+arp_request.fields = {
+    mac_src,
+    mac_dst,
+    src_proto_addr,
+    src_hw_addr,
+    target_proto_addr,
+    target_hw_addr
+}
+
+-- myproto dissector function
+function arp_request.dissector (buf, pkt, root)
+    -- validate packet length is adequate, otherwise quit
+    if buf:len() == 0 then return end
+    pkt.cols.protocol = arp_request.name
+    pkt.cols.info = arp_request.description
+
+    -- create subtree for myproto
+    subtree = root:add(arp_request, buf(0))
+    -- add protocol fields to subtree
+    subtree:add(mac_src,buf(0,6))
+    subtree:add(mac_dst,buf(6,6))
+    subtree:add(src_hw_addr,buf(12,6))
+    subtree:add(src_proto_addr,buf(18,4))
+    subtree:add(target_hw_addr,buf(22,6))
+    subtree:add(target_proto_addr,buf(28,4))
+
+    -- description of payload
+    data_dis:call(buf(32):tvb(), pkt, root)
+  end
+
+
+function arp_request.init()
+end
+
+event_table:add(3, arp_request)

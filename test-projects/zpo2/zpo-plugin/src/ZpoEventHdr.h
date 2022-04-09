@@ -64,7 +64,7 @@ public:
     /**
      * @brief Pointer to the Payload of the packet.
      *
-     * This adds the size of the `event_t` header to the pointer, returning the next segment of
+     * This adds the size of the event header to the pointer, returning the next segment of
      * data.
      *
      * @return const uint8_t* Pointer to the Payload

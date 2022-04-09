@@ -3,8 +3,6 @@
 #include <netinet/ether.h>
 #include <netinet/in.h>
 
-#include <iostream>
-
 #include "zeek/net_util.h"
 
 using namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO;

@@ -21,11 +21,7 @@ ZpoIp::ZpoIp() : Analyzer("ZPO_IP") {}
 
 bool ZpoIp::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
     std::shared_ptr<ZpoEventHdr> hdr = ZpoEventHdr::InitEventHdr(ETH_P_EVENT_IP, data);
-
     std::shared_ptr<ZPOPacket> zpo_packet = std::make_shared<ZPOPacket>(packet, hdr);
-
-    // packet->l3_proto = hdr->GetLayer3Proto();
-    // packet->ip_hdr = hdr->GetIPHdr();
 
 #ifdef ZPO_DEBUG
     std::cout << std::endl;

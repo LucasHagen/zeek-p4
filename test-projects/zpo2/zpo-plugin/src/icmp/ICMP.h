@@ -8,17 +8,6 @@ namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO::ICMP {
 using namespace zeek::packet_analysis;
 
 #pragma pack(1)
-typedef struct z_icmp_info_struct {
-    uint8_t  v6;     // 1
-    uint64_t itype;  // 8
-    uint64_t icode;  // 8
-    uint64_t len;    // 8
-    uint64_t ttl;    // 8
-
-    // Total bytes: 33 bytes
-} z_icmp_info;
-
-#pragma pack(1)
 typedef struct z_icmp_echo_and_reply_event_struct  {
     uint64_t id;     // 8
     uint64_t seq;    // 8

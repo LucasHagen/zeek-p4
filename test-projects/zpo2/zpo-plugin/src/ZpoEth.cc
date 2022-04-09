@@ -15,7 +15,7 @@ using ::zeek::Layer3Proto;
 using ::zeek::Packet;
 using ::zeek::packet_analysis::Analyzer;
 
-#define ZPO_DEBUG
+// #define ZPO_DEBUG
 
 ZpoEth::ZpoEth() : Analyzer("ZPO_ETH") {}
 
