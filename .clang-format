@@ -2,9 +2,10 @@
 BasedOnStyle: Google
 AccessModifierOffset: '-4'
 AlwaysBreakAfterReturnType: None
+ColumnLimit: '100'
+DerivePointerAlignment: 'false'
 IndentWidth: '4'
 TabWidth: '4'
 UseTab: Never
-ColumnLimit: 100
 
 ...
