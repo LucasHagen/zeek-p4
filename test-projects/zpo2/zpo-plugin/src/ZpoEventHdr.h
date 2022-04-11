@@ -74,6 +74,9 @@ public:
     ZpoEventHdr(const uint8_t* data, const eth_event_h* hdr);
     ZpoEventHdr(const uint8_t* data, const ip_event_h* hdr);
 
+    zeek::Connection* GetOrCreateConnection(const Packet* packet);
+    zeek::Connection* GetOrCreateConnection(const Packet* packet, const zeek::ConnTuple& tuple);
+
 protected:
     const uint8_t* data = nullptr;
     const eth_event_h* eth_event_hdr = nullptr;
@@ -89,6 +92,9 @@ protected:
     uint16_t event_type = 0;
 
     std::shared_ptr<zeek::IP_Hdr> ip_hdr = nullptr;
+
+    Connection* NewConn(const zeek::ConnTuple* id, const zeek::detail::ConnKey& key,
+                        const Packet* packet);
 };
 
 }  // namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO

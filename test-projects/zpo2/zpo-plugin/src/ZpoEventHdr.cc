@@ -3,12 +3,19 @@
 #include <netinet/ether.h>
 #include <netinet/in.h>
 
+#include "zeek/Conn.h"
+#include "zeek/Reporter.h"
+#include "zeek/RunState.h"
 #include "zeek/net_util.h"
+#include "zeek/session/Manager.h"
 
 using namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO;
+using ::zeek::Connection;
+using ::zeek::ConnTuple;
 using ::zeek::IP_Hdr;
 using ::zeek::IPAddr;
 using ::zeek::Layer3Proto;
+using ::zeek::detail::ConnKey;
 
 std::shared_ptr<ZpoEventHdr> ZpoEventHdr::InitEventHdr(const uint16_t l3_protocol,
                                                        const uint8_t* data) {
@@ -86,3 +93,50 @@ TransportProto ZpoEventHdr::GetTransportProto() const {
 }
 
 const uint8_t* ZpoEventHdr::GetPayload() const { return payload; }
+
+Connection* ZpoEventHdr::GetOrCreateConnection(const Packet* packet) {
+    ConnTuple tuple = {
+        GetSrcAddress(),    GetDstAddress(), htons(GetSrcPort()), htons(GetDstPort()), true,
+        GetTransportProto()};
+    return GetOrCreateConnection(packet, tuple);
+}
+
+Connection* ZpoEventHdr::GetOrCreateConnection(const Packet* packet, const ConnTuple& tuple) {
+    detail::ConnKey key(tuple);
+
+    Connection* conn = session_mgr->FindConnection(key);
+
+    if (!conn) {
+        conn = NewConn(&tuple, key, packet);
+        if (conn) {
+            session_mgr->Insert(conn, false);
+        }
+    } else {
+        // TODO: implement session adapter to check if the connection should be reused
+        // if (conn->IsReuse(run_state::processing_start_time, ip_hdr->Payload())) {
+        conn->Event(connection_reused, nullptr);
+
+        session_mgr->Remove(conn);
+        conn = NewConn(&tuple, key, packet);
+
+        if (conn) {
+            session_mgr->Insert(conn, false);
+        }
+        // } else {
+        //     conn->CheckEncapsulation(pkt->encap);
+        // }
+    }
+
+    return conn;
+}
+
+Connection* ZpoEventHdr::NewConn(const ConnTuple* id, const ConnKey& key, const Packet* packet) {
+    Connection* conn = new Connection(key, run_state::processing_start_time, id, 0, packet);
+    conn->SetTransport(id->proto);
+
+    if (new_connection) {
+        conn->Event(new_connection, nullptr);
+    }
+
+    return conn;
+}
