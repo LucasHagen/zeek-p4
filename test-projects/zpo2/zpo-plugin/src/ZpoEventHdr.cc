@@ -108,22 +108,21 @@ Connection* ZpoEventHdr::GetOrCreateConnection(const Packet* packet, const ConnT
 
     if (!conn) {
         conn = NewConn(&tuple, key, packet);
+
         if (conn) {
             session_mgr->Insert(conn, false);
         }
     } else {
-        // TODO: implement session adapter to check if the connection should be reused
-        // if (conn->IsReuse(run_state::processing_start_time, ip_hdr->Payload())) {
         conn->Event(connection_reused, nullptr);
 
-        session_mgr->Remove(conn);
-        conn = NewConn(&tuple, key, packet);
-
-        if (conn) {
-            session_mgr->Insert(conn, false);
-        }
-        // } else {
-        //     conn->CheckEncapsulation(pkt->encap);
+        // TODO: implement session adapter to check if the connection should be reused
+        // if (!conn->IsReuse(run_state::processing_start_time, ip_hdr->Payload())) {
+        //     session_mgr->Remove(conn);
+        //     conn = NewConn(&tuple, key, packet);
+        //
+        //     if (conn) {
+        //         session_mgr->Insert(conn, false);
+        //     }
         // }
     }
 
