@@ -39,6 +39,18 @@ public:
     const static int ETH_EVENT_HEADER_SIZE = sizeof(eth_event_h);
     const static int IP_EVENT_HEADER_SIZE = sizeof(ip_event_h);
 
+    /**
+     * @brief Creates an instance of a ZpoEventHdr.
+     *
+     * Using the `l3_protocol` as base to decide which header should be used. If l3_protocol is:
+     *  - ETH_P_EVENT_IP: `ip_event_h` will be used, meaning an ip-based event was seen on the switch, and
+     * it possibly requires an instance of a`zeek::Connection`.
+     *  - ETH_P_EVENT: `eth_event_h` will be used.
+     *
+     * @param l3_protocol L3 Protocol code of the packet received on the **HOST**.
+     * @param data Pointer to the beginning of the event header.
+     * @return std::shared_ptr<ZpoEventHdr> A new instance.
+     */
     static std::shared_ptr<ZpoEventHdr> InitEventHdr(const uint16_t l3_protocol,
                                                      const uint8_t* data);
 
@@ -67,10 +79,18 @@ public:
      * This adds the size of the event header to the pointer, returning the next segment of
      * data.
      *
-     * @return const uint8_t* Pointer to the Payload
+     * @return const uint8_t* Pointer to the payload.
      */
     const uint8_t* GetPayload() const;
 
+    /**
+     * @brief Construct a new ZpoEventHdr for a **NOT**-ip based event.
+     *
+     * This
+     *
+     * @param data
+     * @param hdr
+     */
     ZpoEventHdr(const uint8_t* data, const eth_event_h* hdr);
     ZpoEventHdr(const uint8_t* data, const ip_event_h* hdr);
 
