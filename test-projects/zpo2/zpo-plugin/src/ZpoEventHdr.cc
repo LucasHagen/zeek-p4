@@ -134,6 +134,7 @@ Connection* ZpoEventHdr::GetOrCreateConnection(const Packet* packet, const ConnT
 }
 
 Connection* ZpoEventHdr::NewConn(const ConnTuple* id, const ConnKey& key, const Packet* packet) {
+    // TODO: add timeout and memory deallocation.
     Connection* conn = new Connection(key, run_state::processing_start_time, id, 0, packet);
     conn->SetTransport(id->proto);
 
