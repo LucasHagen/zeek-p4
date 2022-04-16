@@ -2,6 +2,13 @@
 
 This prototype aims to offload ICMP echo reply and request.
 
+## Explanation
+
+Here is a diagram of how a ICMP echo request is processed, from the dataplane, to the event
+triggering in zeek.
+
+![](icmp_echo_req.jpg "ICMP Echo Request Lifecycle")
+
 ## Findings during the development
 
 - Analyse how to duplicate multiple times the packet to trigger multiple events.
