@@ -113,9 +113,13 @@ Connection* ZpoEventHdr::GetOrCreateConnection(const Packet* packet, const ConnT
             session_mgr->Insert(conn, false);
         }
     } else {
-        conn->Event(connection_reused, nullptr);
+        if (connection_reused) {
+            conn->Event(connection_reused, nullptr);
+        }
 
-        // TODO: implement session adapter to check if the connection should be reused
+        // TODO: implement session adapter to check if the connection should be reused and
+        // other controls (SessionAdapter) to make sure there is no memory leak.
+        //
         // if (!conn->IsReuse(run_state::processing_start_time, ip_hdr->Payload())) {
         //     session_mgr->Remove(conn);
         //     conn = NewConn(&tuple, key, packet);

@@ -29,12 +29,7 @@ event zeek_init() &priority=20
 
 event icmp_echo_request(c: connection, info: icmp_info, id: count, seq: count, payload: string)
 {
-    if(!("n" in c$history)) {
-        c$history += "n";
-        print "-- New Connection.";
-    }
 	print "ICMP Echo Request", c$id$orig_h, c$id$resp_h, id, seq;
-    print " |_ conn$history", c$history;
 }
 
 event icmp_echo_reply(c: connection, info: icmp_info, id: count, seq: count, payload: string)
