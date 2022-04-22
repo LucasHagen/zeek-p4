@@ -1,0 +1,11 @@
+{
+    "zpo_type": "PROTOCOL",
+    "zpo_version": "0.0.1",
+    "protocol_name": "arp",
+    "parent_protocol": "ethernet", // Special marker to say it's the root protocol
+    "header": {
+        "header_file": "arp_header.p4",
+        "header_struct": "arp_h"
+    },
+    "protocol_selector": "proto_type" // A field of the header template provided
+}
