@@ -1,0 +1,20 @@
+{
+    "zpo_type": "EVENT",
+    "zpo_version": "0.0.1",
+    "protocol": "icmp",
+    "event_header": {
+        "header_file": "icmp_reply_header.p4",
+        "header_struct": "icmp_echo_reply_event_h",
+        "constructor": "constructor.p4"
+    },
+    "zeek": {
+        "analyzer_namespace": "zeek::packet_analysis::BR_INF_UFRGS_ZPO::ICMP",
+        "analyzer_class": "ZpoIcmpReplyAnalyzer",
+        "header_files": [
+            "Icmp.h"
+        ],
+        "cc_files": [
+            "Icmp.cc"
+        ]
+    }
+}

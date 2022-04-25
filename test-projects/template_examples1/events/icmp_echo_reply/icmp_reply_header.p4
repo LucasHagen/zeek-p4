@@ -1,5 +1,5 @@
-// Generated for ICMP *echo request* messages.
-header icmp_echo_request_event_h {
+// Generated for ICMP *echo reply* messages.
+header icmp_echo_reply_event_h {
     z_count id;         // id           (8 bytes)
     z_count seq;        // seq          (8 bytes)
     // start 'icmp_info' struct

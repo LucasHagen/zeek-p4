@@ -1,0 +1,20 @@
+{
+    "zpo_type": "EVENT",
+    "zpo_version": "0.0.1",
+    "protocol": "arp_ipv4",
+    "event_header": {
+        "header_file": "arp_request_event.p4",
+        "header_struct": "arp_request_event_h",
+        "constructor": "constructor.p4"
+    },
+    "zeek": {
+        "analyzer_namespace": "zeek::packet_analysis::BR_INF_UFRGS_ZPO::ARP",
+        "analyzer_class": "ZpoArpReqAnalyzer",
+        "header_files": [
+            "ArpReq.h"
+        ],
+        "cc_files": [
+            "ArpReq.cc"
+        ]
+    }
+}
