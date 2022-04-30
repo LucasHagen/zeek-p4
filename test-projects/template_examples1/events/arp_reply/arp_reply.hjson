@@ -5,7 +5,8 @@
     "event_header": {
         "header_file": "arp_reply_event.p4",
         "header_struct": "arp_reply_event_h",
-        "constructor": "constructor.p4"
+        "constructor": "constructor.p4",
+        "identifier": "identifier.p4"
     },
     "zeek": {
         "analyzer_namespace": "zeek::packet_analysis::BR_INF_UFRGS_ZPO::ARP",

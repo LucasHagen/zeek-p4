@@ -5,7 +5,8 @@
     "event_header": {
         "header_file": "icmp_req_header.p4",
         "header_struct": "icmp_echo_request_event_h",
-        "constructor": "constructor.p4"
+        "constructor": "constructor.p4",
+        "identifier": "identifier.p4"
     },
     "zeek": {
         "analyzer_namespace": "zeek::packet_analysis::BR_INF_UFRGS_ZPO::ICMP",
