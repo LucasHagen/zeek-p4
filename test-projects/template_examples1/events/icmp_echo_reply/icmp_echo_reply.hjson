@@ -1,6 +1,7 @@
 {
     "zpo_type": "EVENT",
     "zpo_version": "0.0.1",
+    "id": "icmp_echo_reply",
     "protocol": "icmp",
     "event_header": {
         "header_file": "icmp_reply_header.p4",

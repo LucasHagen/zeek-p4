@@ -1,6 +1,7 @@
 {
     "zpo_type": "EVENT",
     "zpo_version": "0.0.1",
+    "id": "arp_reply",
     "protocol": "arp_ipv4",
     "event_header": {
         "header_file": "arp_reply_event.p4",

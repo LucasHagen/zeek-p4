@@ -35,5 +35,8 @@ build/
 # IDE files
 .vscode/
 
+# Python
+__pycache__/
+
 # Logs
 *.log
