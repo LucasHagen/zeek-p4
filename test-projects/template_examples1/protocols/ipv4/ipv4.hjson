@@ -1,7 +1,7 @@
 {
     "zpo_type": "PROTOCOL",
     "zpo_version": "0.0.1",
-    "protocol_name": "ipv4",
+    "id": "ipv4",
     "parent_protocol": "ethernet", // Special marker to say it's the root protocol
     "header": {
         "header_file": "ipv4_header.p4",

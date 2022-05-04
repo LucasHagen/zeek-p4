@@ -1,6 +1,8 @@
 import argparse
+import logging
 import json
 import os
+from template_tree import TemplateTree
 from templates import load_templates
 from zpo_settings import ZPO_ARGS
 from protocol_template import ProtocolTemplate
@@ -29,20 +31,23 @@ def main():
     ZPO_ARGS["pwd"] = os.getcwd()
     ZPO_ARGS["main_py"] = os.path.dirname(__file__)
 
-    DEBUG = ZPO_ARGS["debug"]
+    logging.basicConfig(
+        format='[%(levelname)s] %(message)s',
+        level=logging.DEBUG if ZPO_ARGS["debug"] else logging.INFO)
 
-    if (DEBUG):
-        print(f"ZPO_ARGS: {json.dumps(ZPO_ARGS, indent=4)}\n")
+    logging.debug(f"ZPO_ARGS: {json.dumps(ZPO_ARGS, indent=4)}\n")
 
-    print(f"Starting ZPO for '{ZPO_ARGS['output']}':")
+    print(f"Starting ZPO for '{ZPO_ARGS['output']}'\n")
 
     templates = load_templates(ZPO_ARGS["template_folders"])
 
-    if DEBUG:
-        print("Templates:")
-        print(f" - Protocols:", [t.id for t in templates if type(t) == ProtocolTemplate])
-        print(f" - Events:", [t.id for t in templates if type(t) == EventTemplate])
+    logging.debug("Templates:")
+    logging.debug(f" - Protocols: %s", [t.id for t in templates if type(t) == ProtocolTemplate])
+    logging.debug(f" - Events: %s", [t.id for t in templates if type(t) == EventTemplate])
 
+    TemplateTree(templates)
+
+    print("Done!")
 
 
 if (__name__ == "__main__"):

@@ -1,18 +1,36 @@
+from template import Template
 from zpo_settings import ZPO_ARGS
 
-class EventTemplate:
 
-    def __init__(self, path, hjson_data):
+class EventTemplate(Template):
+    """A template for an event
+    """
+
+    def __init__(self, path: str, hjson_data: str):
+        """Constructs a template
+
+        Args:
+            path (str): path to the hjson template file
+            hjson_data (str): hjson parsed data
+
+        Raises:
+            ValueError: if the template is invalid
+        """
+
         global ZPO_ARGS
 
         self.path = path
         self.data = hjson_data
+        self.parent = None
+        self.children = []
 
         if (self.data["zpo_type"] != "EVENT"):
-            raise ValueError("Wrong file format, 'zpo_type' doesn't match EVENT")
+            raise ValueError(
+                "Wrong file format, 'zpo_type' doesn't match EVENT")
 
         if (self.data["zpo_version"] != ZPO_ARGS["version"]):
-            raise ValueError(f"Wrong file version, expected {ZPO_ARGS['version']} was {self.data['zpo_version']}")
+            raise ValueError(
+                f"Wrong file version, expected {ZPO_ARGS['version']} was {self.data['zpo_version']}")
 
         self.id = self.data["id"]
 

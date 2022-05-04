@@ -1,7 +1,7 @@
 {
     "zpo_type": "PROTOCOL",
     "zpo_version": "0.0.1",
-    "protocol_name": "arp_ipv4",
+    "id": "arp_ipv4",
     "parent_protocol": "arp", // Special marker to say it's the root protocol
     "header": {
         "header_file": "arp_ipv4_header.p4",

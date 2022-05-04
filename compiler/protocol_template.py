@@ -1,13 +1,27 @@
 from zpo_settings import ZPO_ARGS
+from template import Template
 
 
-class ProtocolTemplate:
+class ProtocolTemplate(Template):
+    """A template for a protocol
+    """
 
-    def __init__(self, path, hjson_data):
+    def __init__(self, path: str, hjson_data: str):
+        """Constructs a template
+
+        Args:
+            path (str): path to the hjson template file
+            hjson_data (str): hjson parsed data
+
+        Raises:
+            ValueError: if the template is invalid
+        """
         global ZPO_ARGS
 
         self.path = path
         self.data = hjson_data
+        self.parent = None
+        self.children = []
 
         if (self.data["zpo_type"] != "PROTOCOL"):
             raise ValueError(
@@ -17,14 +31,15 @@ class ProtocolTemplate:
             raise ValueError(
                 f"Wrong file version, expected {ZPO_ARGS['version']} was {self.data['zpo_version']}")
 
-        self.id = self.data["protocol_name"]
+        self.id = self.data["id"]
+        self.parent_protocol_id = self.data["parent_protocol"]
 
 # Example of a PROTOCOL template:
 #
 # {
 #     "zpo_type": "PROTOCOL",
 #     "zpo_version": "0.0.1",
-#     "protocol_name": "arp",
+#     "id": "arp",
 #     "parent_protocol": "ethernet", // Special marker to say it's the root protocol
 #     "header": {
 #         "header_file": "arp_header.p4",
