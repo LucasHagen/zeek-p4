@@ -21,8 +21,6 @@ class EventTemplate(Template):
 
         self.path = path
         self.data = hjson_data
-        self.parent = None
-        self.children = []
 
         if (self.data["zpo_type"] != "EVENT"):
             raise ValueError(
@@ -33,12 +31,14 @@ class EventTemplate(Template):
                 f"Wrong file version, expected {ZPO_ARGS['version']} was {self.data['zpo_version']}")
 
         self.id = self.data["id"]
+        self.protocol_id = self.data["protocol"]
 
 # Example of an EVENT template:
 #
 # {
 #     "zpo_type": "EVENT",
 #     "zpo_version": "0.0.1",
+#     "id": "arp_reply",
 #     "protocol": "arp_ipv4",
 #     "event_header": {
 #         "header_file": "arp_reply_event.p4",

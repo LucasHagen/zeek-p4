@@ -2,7 +2,7 @@ import os
 import glob
 import hjson
 
-from typing import List
+from typing import Dict, List
 
 from template import Template
 from protocol_template import ProtocolTemplate

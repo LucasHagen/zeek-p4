@@ -25,7 +25,7 @@ class TemplateTree:
         self.protocols = dict([(t.id, t) for t in self.protocol_list])
         self.events = dict([(t.id, t) for t in self.event_list])
 
-        self.root = self.find_root()
+        self.root = self.find_root_protocol()
 
         # Set references for parent and children objects
         for id, p in self.protocols.items():
@@ -40,14 +40,15 @@ class TemplateTree:
 
             parent = self.protocols[parent_id]
 
-            p.parent = parent
-            parent.children.append(p)
+            parent.add_child(p)
 
         self.validate_protocol_tree()
 
+        self.attach_events()
+
         logging.debug("Protocol Tree validated")
 
-    def find_root(self) -> ProtocolTemplate:
+    def find_root_protocol(self) -> ProtocolTemplate:
         """Finds the root protocol
         """
         roots = [
@@ -65,10 +66,22 @@ class TemplateTree:
                 raise ValueError("Circular dependency found in protocol tree")
 
             visited.add(protocol)
-            for child in protocol.children:
+            for child in protocol.children.values():
                 validate_aux(child)
 
         validate_aux(self.root)
 
         if(visited != set(self.protocol_list)):
             raise ValueError("Unreachable protocol found")
+
+    def attach_events(self):
+        """Attach EventTemplates to the ProtocolTemplate object.
+
+        Raises:
+            ValueError: if protocol not found
+        """
+        for event in self.events.values():
+            if event.protocol_id not in self.protocols:
+                raise ValueError(f"Event '{event.id}' requires protocol '{event.protocol_id}'")
+
+            self.protocols[event.protocol_id].add_event(event)

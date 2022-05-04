@@ -1,6 +1,7 @@
 from zpo_settings import ZPO_ARGS
 from template import Template
 
+from event_template import EventTemplate
 
 class ProtocolTemplate(Template):
     """A template for a protocol
@@ -21,7 +22,8 @@ class ProtocolTemplate(Template):
         self.path = path
         self.data = hjson_data
         self.parent = None
-        self.children = []
+        self.children = {}
+        self.events = {}
 
         if (self.data["zpo_type"] != "PROTOCOL"):
             raise ValueError(
@@ -33,6 +35,13 @@ class ProtocolTemplate(Template):
 
         self.id = self.data["id"]
         self.parent_protocol_id = self.data["parent_protocol"]
+
+    def add_child(self, protocol):
+        self.children[protocol.id] = protocol
+        protocol.parent = self
+
+    def add_event(self, event: EventTemplate):
+        self.events[event.id] = event
 
 # Example of a PROTOCOL template:
 #
