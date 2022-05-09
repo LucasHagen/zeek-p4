@@ -1,6 +1,7 @@
 import logging
 
 from typing import List
+from zpo_settings import ZPO_ARGS
 
 from protocol_template import ProtocolTemplate
 from event_template import EventTemplate
@@ -43,10 +44,9 @@ class TemplateTree:
             parent.add_child(p)
 
         self.validate_protocol_tree()
-
         self.attach_events()
-
-        logging.debug("Protocol Tree validated")
+        self.trim_unused_protocols()
+        self.print_tree()
 
     def find_root_protocol(self) -> ProtocolTemplate:
         """Finds the root protocol
@@ -74,14 +74,57 @@ class TemplateTree:
         if(visited != set(self.protocol_list)):
             raise ValueError("Unreachable protocol found")
 
+        logging.debug("Protocol tree validated")
+
     def attach_events(self):
-        """Attach EventTemplates to the ProtocolTemplate object.
+        """Attach **REQUIRED** EventTemplates to the ProtocolTemplate object.
 
         Raises:
             ValueError: if protocol not found
         """
+        global ZPO_ARGS
         for event in self.events.values():
+            # Ignore events that are not interested for this compilation run
+            if event.id not in ZPO_ARGS["events"]:
+                continue
+
             if event.protocol_id not in self.protocols:
                 raise ValueError(f"Event '{event.id}' requires protocol '{event.protocol_id}'")
 
             self.protocols[event.protocol_id].add_event(event)
+        logging.debug("Events attached to protocol templates")
+
+    def print_tree(self):
+        def print_aux(node, depth):
+            spacing = " " * depth * 4
+
+            if(depth != 0):
+                logging.debug(f"{spacing} |")
+            logging.debug(f"{spacing} |- {node.id}: [{', '.join(node.events)}]")
+
+
+            for child in node.children.values():
+                print_aux(child, depth + 1)
+
+        logging.debug("Current Template Tree:")
+        print_aux(self.root, 0)
+
+
+    def trim_unused_protocols(self):
+        removed = 0
+        def aux_trim_unused(template: ProtocolTemplate):
+            amount = len(template.events)
+            for child in set(template.children.values()):
+                child_amount = aux_trim_unused(child)
+                amount += child_amount
+
+                # remove `child`, if `child_amount` < 0
+                if child_amount <= 0:
+                    template.children.pop(child.id)
+                    removed += 1
+
+            return amount
+
+        aux_trim_unused(self.root)
+
+        logging.debug(f"Trimmed unused protocols from tree ({removed} protocols)")
