@@ -3,9 +3,10 @@
     "zpo_version": "0.0.1",
     "id": "ethernet",
     "parent_protocol": "!root", // Special marker to say it's the root protocol
+    "identifier_for_parent_protocol": null, // either not defined, or set to null: will be ignored
     "header": {
         "header_file": "eth_header.p4",
         "header_struct": "ethernet_h"
     },
-    "protocol_selector": "ethertype" // A field of the header template provided
+    "next_protocol_selector": "ethertype" // A field of the header template provided
 }
