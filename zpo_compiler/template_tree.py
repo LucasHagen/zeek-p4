@@ -48,7 +48,6 @@ class TemplateTree:
         self.attach_events()
         self.trim_unused_protocols()
         self.print_tree()
-        self.print_transitions()
 
     def find_root_protocol(self) -> ProtocolTemplate:
         """Finds the root protocol.
@@ -149,13 +148,3 @@ class TemplateTree:
 
         logging.debug(
             f"Trimmed unused protocols from tree ({removed_protocols} protocols)")
-
-    def print_transitions(self):
-        def print_aux(protocol):
-            print(str(ParserState(protocol)))
-            for c in protocol.children.values():
-                print_aux(c)
-
-        print_aux(self.root)
-
-        print("Done printing states")
