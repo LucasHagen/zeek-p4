@@ -1,11 +1,12 @@
 import logging
-
 from typing import List
-from zpo_settings import ZPO_ARGS
 
-from protocol_template import ProtocolTemplate
-from event_template import EventTemplate
-from template import Template
+from zpo_compiler.p4.parser_state import ParserState
+from zpo_compiler.zpo_settings import ZPO_ARGS
+
+from zpo_compiler.protocol_template import ProtocolTemplate
+from zpo_compiler.event_template import EventTemplate
+from zpo_compiler.template import Template
 
 
 class TemplateTree:
@@ -47,6 +48,7 @@ class TemplateTree:
         self.attach_events()
         self.trim_unused_protocols()
         self.print_tree()
+        self.print_transitions()
 
     def find_root_protocol(self) -> ProtocolTemplate:
         """Finds the root protocol.
@@ -55,7 +57,7 @@ class TemplateTree:
             ValueError: if no root or more than one root is found.
         """
         roots = [
-            p for p in self.protocol_list if p.data["parent_protocol"] == "!root"]
+            p for p in self.protocol_list if p.is_root_protocol()]
         if(len(roots) != 1):
             raise ValueError(f"Expected 1 root protocol, found {len(roots)}")
 
@@ -147,3 +149,13 @@ class TemplateTree:
 
         logging.debug(
             f"Trimmed unused protocols from tree ({removed_protocols} protocols)")
+
+    def print_transitions(self):
+        def print_aux(protocol):
+            print(str(ParserState(protocol)))
+            for c in protocol.children.values():
+                print_aux(c)
+
+        print_aux(self.root)
+
+        print("Done printing states")

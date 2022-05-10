@@ -1,7 +1,6 @@
-from zpo_settings import ZPO_ARGS
-from template import Template
-
-from event_template import EventTemplate
+from zpo_compiler.zpo_settings import ZPO_ARGS
+from zpo_compiler.template import Template
+from zpo_compiler.event_template import EventTemplate
 
 class ProtocolTemplate(Template):
     """A template for a protocol
@@ -20,21 +19,25 @@ class ProtocolTemplate(Template):
         global ZPO_ARGS
 
         self.path = path
-        self.data = hjson_data
+        self._data = hjson_data
         self.parent = None
         self.children = {}
         self.events = {}
 
-        if (self.data["zpo_type"] != "PROTOCOL"):
+        if (self._data["zpo_type"] != "PROTOCOL"):
             raise ValueError(
                 "Wrong file format, 'zpo_type' doesn't match PROTOCOL")
 
-        if (self.data["zpo_version"] != ZPO_ARGS["version"]):
+        if (self._data["zpo_version"] != ZPO_ARGS["version"]):
             raise ValueError(
-                f"Wrong file version, expected {ZPO_ARGS['version']} was {self.data['zpo_version']}")
+                f"Wrong file version, expected {ZPO_ARGS['version']} was {self._data['zpo_version']}")
 
-        self.id = self.data["id"]
-        self.parent_protocol_id = self.data["parent_protocol"]
+        self.id = self._data["id"]
+        self.parent_protocol_id = self._data["parent_protocol"]
+        self.struct_accessor = f"hdr.{self.id}"
+        self.next_protocol_selector = self._data["next_protocol_selector"]
+        self.identifier_for_parent_protocol = self._data["identifier_for_parent_protocol"]
+        self.parsing_state = f"parse_{self.id}"
 
     def add_child(self, child):
         self.children[child.id] = child
@@ -46,6 +49,9 @@ class ProtocolTemplate(Template):
 
     def add_event(self, event: EventTemplate):
         self.events[event.id] = event
+
+    def is_root_protocol(self):
+        return self._data["parent_protocol"] == "!root"
 
 # Example of a PROTOCOL template:
 #

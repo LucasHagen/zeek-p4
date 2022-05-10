@@ -1,5 +1,5 @@
-from template import Template
-from zpo_settings import ZPO_ARGS
+from zpo_compiler.template import Template
+from zpo_compiler.zpo_settings import ZPO_ARGS
 
 
 class EventTemplate(Template):
@@ -20,18 +20,18 @@ class EventTemplate(Template):
         global ZPO_ARGS
 
         self.path = path
-        self.data = hjson_data
+        self._data = hjson_data
 
-        if (self.data["zpo_type"] != "EVENT"):
+        if (self._data["zpo_type"] != "EVENT"):
             raise ValueError(
                 "Wrong file format, 'zpo_type' doesn't match EVENT")
 
-        if (self.data["zpo_version"] != ZPO_ARGS["version"]):
+        if (self._data["zpo_version"] != ZPO_ARGS["version"]):
             raise ValueError(
-                f"Wrong file version, expected {ZPO_ARGS['version']} was {self.data['zpo_version']}")
+                f"Wrong file version, expected {ZPO_ARGS['version']} was {self._data['zpo_version']}")
 
-        self.id = self.data["id"]
-        self.protocol_id = self.data["protocol"]
+        self.id = self._data["id"]
+        self.protocol_id = self._data["protocol"]
 
 # Example of an EVENT template:
 #

@@ -2,11 +2,11 @@ import argparse
 import logging
 import json
 import os
-from template_tree import TemplateTree
-from templates import load_templates
-from zpo_settings import ZPO_ARGS
-from protocol_template import ProtocolTemplate
-from event_template import EventTemplate
+from zpo_compiler.template_tree import TemplateTree
+from zpo_compiler.templates import load_templates
+from zpo_compiler.zpo_settings import ZPO_ARGS
+from zpo_compiler.protocol_template import ProtocolTemplate
+from zpo_compiler.event_template import EventTemplate
 
 def main():
     global ZPO_ARGS
