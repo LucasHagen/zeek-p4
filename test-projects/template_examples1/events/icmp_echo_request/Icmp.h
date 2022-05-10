@@ -22,10 +22,10 @@ class IcmpSessionAdapter;
 
 class ZpoIcmpReqAnalyzer : public Analyzer {
 public:
-    ZpoIcmpAnalyzer();
-    ~ZpoIcmpAnalyzer() override = default;
+    ZpoIcmpReqAnalyzer();
+    ~ZpoIcmpReqAnalyzer() override = default;
 
-    static AnalyzerPtr Instantiate() { return std::make_shared<ZpoIcmpAnalyzer>(); }
+    static AnalyzerPtr Instantiate() { return std::make_shared<ZpoIcmpReqAnalyzer>(); }
 
     bool AnalyzePacket(size_t len, const uint8_t* data, zeek::Packet* packet) override;
 };
