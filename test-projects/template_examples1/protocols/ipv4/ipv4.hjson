@@ -3,7 +3,7 @@
     "zpo_version": "0.0.1",
     "id": "ipv4",
     "parent_protocol": "ethernet",
-    "identifier_for_parent_protocol": 2058, // DECIMAL id to identify this protocol in the parent protocol
+    "identifier_for_parent_protocol": 2048, // DECIMAL id to identify this protocol in the parent protocol
     "header": {
         "header_file": "ipv4_header.p4",
         "header_struct": "ipv4_h"
