@@ -18,11 +18,11 @@ def load_templates(paths: List[str]) -> List[Template]:
     Returns:
         List[Template]: A list of templates
     """
-    candidates = []
+    candidates = set()
     for template_root in paths:
         for walk in os.walk(template_root):
             for filepath in glob.glob(os.path.join(walk[0], '*.hjson')):
-                candidates.append(filepath)
+                candidates.add(os.path.abspath(filepath))
 
     return [load_template(path) for path in candidates]
 
