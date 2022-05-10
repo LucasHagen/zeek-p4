@@ -49,7 +49,10 @@ class TemplateTree:
         self.print_tree()
 
     def find_root_protocol(self) -> ProtocolTemplate:
-        """Finds the root protocol
+        """Finds the root protocol.
+
+        Raises:
+            ValueError: if no root or more than one root is found.
         """
         roots = [
             p for p in self.protocol_list if p.data["parent_protocol"] == "!root"]
@@ -59,6 +62,12 @@ class TemplateTree:
         return roots[0]
 
     def validate_protocol_tree(self):
+        """Checks if the protocol tree is valid.
+
+        Raises:
+            ValueError: Circular dependency found.
+            ValueError: Unreachable protocol found.
+        """
         visited = set()
 
         def validate_aux(protocol):
@@ -96,6 +105,10 @@ class TemplateTree:
         logging.debug("Events attached to protocol templates")
 
     def print_tree(self):
+        """
+        Prints the current protocol tree, showing all protocol and the events associated with
+        them.
+        """
         def print_aux(node, depth):
             spacing = " " * depth * 4
 
@@ -111,23 +124,26 @@ class TemplateTree:
         print_aux(self.root, 0)
 
     def trim_unused_protocols(self):
-
-        def aux_trim_unused(template: ProtocolTemplate, removed_protocols=0):
+        """
+        Removes ProtocolTemplates (nodes) that have no events associated to them or to any of
+        their children (or to their children's children and so on....).
+        """
+        def aux_trim_unused(template: ProtocolTemplate):
             amount = len(template.events)
-            removed = 0
+            removed_protocols = 0
             for child in set(template.children.values()):
-                child_amount, removed = aux_trim_unused(
-                    child, removed_protocols)
+                child_amount, child_removed = aux_trim_unused(child)
                 amount += child_amount
+                removed_protocols += child_removed
 
                 # remove `child`, if `child_amount` < 0
                 if child_amount <= 0:
                     template.rem_child(child)
-                    removed += 1
+                    removed_protocols += 1
 
-            return (amount, removed_protocols + removed)
+            return (amount, removed_protocols)
 
-        events, removed_protocols = aux_trim_unused(self.root)
+        total_events, removed_protocols = aux_trim_unused(self.root)
 
         logging.debug(
             f"Trimmed unused protocols from tree ({removed_protocols} protocols)")
