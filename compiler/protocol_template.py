@@ -36,9 +36,13 @@ class ProtocolTemplate(Template):
         self.id = self.data["id"]
         self.parent_protocol_id = self.data["parent_protocol"]
 
-    def add_child(self, protocol):
-        self.children[protocol.id] = protocol
-        protocol.parent = self
+    def add_child(self, child):
+        self.children[child.id] = child
+        child.parent = self
+
+    def rem_child(self, child):
+        self.children.pop(child.id)
+        child.parent = None
 
     def add_event(self, event: EventTemplate):
         self.events[event.id] = event
