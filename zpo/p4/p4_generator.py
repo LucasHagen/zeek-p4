@@ -1,6 +1,6 @@
 from typing import List
 
-from zpo_compiler.p4.parser_state import ParserState
+from zpo.p4.parser_state import ParserState
 
 PARSING_STATE_MARKER = "@@PARSING_STATES@@"
 

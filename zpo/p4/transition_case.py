@@ -1,4 +1,4 @@
-from zpo_compiler.protocol_template import ProtocolTemplate
+from zpo.protocol_template import ProtocolTemplate
 
 class TransitionCase:
 

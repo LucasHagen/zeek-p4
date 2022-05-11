@@ -1,5 +1,5 @@
-from zpo_compiler.protocol_template import ProtocolTemplate
-from zpo_compiler.p4.transition import Transition, TransitionAccept, TransitionSelector
+from zpo.protocol_template import ProtocolTemplate
+from zpo.p4.transition import Transition, TransitionAccept, TransitionSelector
 
 
 class ParserState:

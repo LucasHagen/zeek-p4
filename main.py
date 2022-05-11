@@ -2,11 +2,12 @@ import argparse
 import logging
 import json
 import os
-from zpo_compiler.template_tree import TemplateTree
-from zpo_compiler.templates import load_templates
-from zpo_compiler.zpo_settings import ZpoSettings
-from zpo_compiler.protocol_template import ProtocolTemplate
-from zpo_compiler.event_template import EventTemplate
+from zpo.template_tree import TemplateTree
+from zpo.templates import load_templates
+from zpo.zpo import Zpo
+from zpo.zpo_settings import ZpoSettings
+from zpo.protocol_template import ProtocolTemplate
+from zpo.event_template import EventTemplate
 
 CURRENT_VERSION = "0.0.1"
 
@@ -37,19 +38,9 @@ def main():
         format='[%(levelname)s] %(message)s',
         level=logging.DEBUG if settings.debug else logging.INFO)
 
-    logging.debug(f"Settings: {settings}\n")
+    zpo = Zpo(settings)
 
-    print(f"Starting ZPO for '{settings.output_dir}'\n")
-
-    templates = load_templates(settings.template_folders)
-
-    logging.debug("Templates:")
-    logging.debug(f" - Protocols: %s", [t.id for t in templates if type(t) == ProtocolTemplate])
-    logging.debug(f" - Events: %s", [t.id for t in templates if type(t) == EventTemplate])
-
-    TemplateTree(settings, templates)
-
-    print("Done!")
+    zpo.run()
 
 
 if (__name__ == "__main__"):

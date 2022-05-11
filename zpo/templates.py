@@ -4,9 +4,9 @@ import hjson
 
 from typing import List
 
-from zpo_compiler.template import Template
-from zpo_compiler.protocol_template import ProtocolTemplate
-from zpo_compiler.event_template import EventTemplate
+from zpo.template import Template
+from zpo.protocol_template import ProtocolTemplate
+from zpo.event_template import EventTemplate
 
 
 def load_templates(paths: List[str]) -> List[Template]:

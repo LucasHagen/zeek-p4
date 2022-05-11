@@ -2,12 +2,12 @@ import logging
 from re import T
 from typing import List, Dict
 
-from zpo_compiler.p4.parser_state import ParserState
+from zpo.p4.parser_state import ParserState
 
-from zpo_compiler.protocol_template import ProtocolTemplate
-from zpo_compiler.event_template import EventTemplate
-from zpo_compiler.template import Template
-from zpo_compiler.zpo_settings import ZpoSettings
+from zpo.protocol_template import ProtocolTemplate
+from zpo.event_template import EventTemplate
+from zpo.template import Template
+from zpo.zpo_settings import ZpoSettings
 
 
 def _filter_by_type(template_list: List[Template], template_type) -> List[Template]:

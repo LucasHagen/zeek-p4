@@ -1,4 +1,4 @@
-from zpo_compiler.template import Template
+from zpo.template import Template
 
 
 class EventTemplate(Template):

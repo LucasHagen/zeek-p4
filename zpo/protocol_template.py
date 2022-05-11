@@ -1,5 +1,5 @@
-from zpo_compiler.template import Template
-from zpo_compiler.event_template import EventTemplate
+from zpo.template import Template
+from zpo.event_template import EventTemplate
 
 class ProtocolTemplate(Template):
     """A template for a protocol

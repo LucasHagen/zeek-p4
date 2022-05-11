@@ -1,7 +1,7 @@
 from typing import List
 
-from zpo_compiler.p4.transition_case import TransitionCase, DefaultTransitionCase, ProtocolTransitionCase
-from zpo_compiler.protocol_template import ProtocolTemplate
+from zpo.p4.transition_case import TransitionCase, DefaultTransitionCase, ProtocolTransitionCase
+from zpo.protocol_template import ProtocolTemplate
 
 
 def _make_protocol_transition(protocol: ProtocolTemplate) -> ProtocolTransitionCase:
