@@ -1,4 +1,3 @@
-from zpo_compiler.zpo_settings import ZPO_ARGS
 from zpo_compiler.template import Template
 from zpo_compiler.event_template import EventTemplate
 
@@ -16,8 +15,6 @@ class ProtocolTemplate(Template):
         Raises:
             ValueError: if the template is invalid
         """
-        global ZPO_ARGS
-
         self.path = path
         self._data = hjson_data
         self.parent = None
@@ -28,11 +25,8 @@ class ProtocolTemplate(Template):
             raise ValueError(
                 "Wrong file format, 'zpo_type' doesn't match PROTOCOL")
 
-        if (self._data["zpo_version"] != ZPO_ARGS["version"]):
-            raise ValueError(
-                f"Wrong file version, expected {ZPO_ARGS['version']} was {self._data['zpo_version']}")
-
         self.id = self._data["id"]
+        self.version = self._data["zpo_version"]
         self.parent_protocol_id = self._data["parent_protocol"]
         self.struct_accessor = f"hdr.{self.id}"
         self.next_protocol_selector = self._data["next_protocol_selector"]

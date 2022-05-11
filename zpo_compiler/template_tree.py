@@ -2,16 +2,16 @@ import logging
 from typing import List
 
 from zpo_compiler.p4.parser_state import ParserState
-from zpo_compiler.zpo_settings import ZPO_ARGS
 
 from zpo_compiler.protocol_template import ProtocolTemplate
 from zpo_compiler.event_template import EventTemplate
 from zpo_compiler.template import Template
+from zpo_compiler.zpo_settings import ZpoSettings
 
 
 class TemplateTree:
 
-    def __init__(self, templates: List[Template]):
+    def __init__(self, settings: ZpoSettings, templates: List[Template]):
         """Constructs a TemplateTree
 
         Args:
@@ -20,6 +20,10 @@ class TemplateTree:
         Raises:
             ValueError: if the tree is not valid
         """
+        self.settings = settings
+
+        self.validate_templates_version(templates)
+
         self.protocol_list = [
             t for t in templates if type(t) == ProtocolTemplate]
         self.event_list = [t for t in templates if type(t) == EventTemplate]
@@ -48,6 +52,14 @@ class TemplateTree:
         self.attach_events()
         self.trim_unused_protocols()
         self.print_tree()
+
+    def validate_templates_version(self, templates: List[Template]):
+        bad_version = [
+            f"{t.id} ({t.version})" for t in templates if not self.settings.validate_version(t.version)]
+
+        if len(bad_version) > 0:
+            raise ValueError(
+                f"Expected templates with version '{self.settings.version}', but wrong the wrong version was found in: %s" % ", ".join(bad_version))
 
     def find_root_protocol(self) -> ProtocolTemplate:
         """Finds the root protocol.
@@ -87,15 +99,14 @@ class TemplateTree:
         logging.debug("Protocol tree validated")
 
     def attach_events(self):
-        """Attach only **REQUIRED** (from ZPO_ARGS) EventTemplates to the ProtocolTemplate object.
+        """Attach only **REQUIRED** (from settings) EventTemplates to the ProtocolTemplate object.
 
         Raises:
             ValueError: if protocol not found
         """
-        global ZPO_ARGS
         for event in self.events.values():
             # Ignore events that are not interested for this compilation run
-            if event.id not in ZPO_ARGS["events"]:
+            if event.id not in self.settings.events:
                 continue
 
             if event.protocol_id not in self.protocols:

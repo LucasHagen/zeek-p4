@@ -4,12 +4,13 @@ import json
 import os
 from zpo_compiler.template_tree import TemplateTree
 from zpo_compiler.templates import load_templates
-from zpo_compiler.zpo_settings import ZPO_ARGS
+from zpo_compiler.zpo_settings import ZpoSettings
 from zpo_compiler.protocol_template import ProtocolTemplate
 from zpo_compiler.event_template import EventTemplate
 
+CURRENT_VERSION = "0.0.1"
+
 def main():
-    global ZPO_ARGS
 
     parser = argparse.ArgumentParser(
         description="Process and compile a Zeek-P4 Offloader (ZPO).")
@@ -24,28 +25,29 @@ def main():
 
     args = parser.parse_args()
 
-    ZPO_ARGS["output"] = args.output[0]
-    ZPO_ARGS["events"] = args.event
-    ZPO_ARGS["template_folders"] = args.template
-    ZPO_ARGS["debug"] = args.debug
-    ZPO_ARGS["pwd"] = os.getcwd()
-    ZPO_ARGS["main_py"] = os.path.dirname(__file__)
+    settings = ZpoSettings(CURRENT_VERSION,
+                args.output[0],
+                args.event,
+                args.template,
+                os.getcwd(),
+                os.path.dirname(__file__),
+                args.debug)
 
     logging.basicConfig(
         format='[%(levelname)s] %(message)s',
-        level=logging.DEBUG if ZPO_ARGS["debug"] else logging.INFO)
+        level=logging.DEBUG if settings.debug else logging.INFO)
 
-    logging.debug(f"ZPO_ARGS: {json.dumps(ZPO_ARGS, indent=4)}\n")
+    logging.debug(f"Settings: {settings}\n")
 
-    print(f"Starting ZPO for '{ZPO_ARGS['output']}'\n")
+    print(f"Starting ZPO for '{settings.output_dir}'\n")
 
-    templates = load_templates(ZPO_ARGS["template_folders"])
+    templates = load_templates(settings.template_folders)
 
     logging.debug("Templates:")
     logging.debug(f" - Protocols: %s", [t.id for t in templates if type(t) == ProtocolTemplate])
     logging.debug(f" - Events: %s", [t.id for t in templates if type(t) == EventTemplate])
 
-    TemplateTree(templates)
+    TemplateTree(settings, templates)
 
     print("Done!")
 
