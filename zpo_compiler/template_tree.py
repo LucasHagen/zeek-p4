@@ -1,5 +1,6 @@
 import logging
-from typing import List
+from re import T
+from typing import List, Dict
 
 from zpo_compiler.p4.parser_state import ParserState
 
@@ -7,6 +8,14 @@ from zpo_compiler.protocol_template import ProtocolTemplate
 from zpo_compiler.event_template import EventTemplate
 from zpo_compiler.template import Template
 from zpo_compiler.zpo_settings import ZpoSettings
+
+
+def _filter_by_type(template_list: List[Template], template_type) -> List[Template]:
+    return [t for t in template_list if type(t) == template_type]
+
+
+def _make_template_dict(template_list) -> Dict[str, Template]:
+    return dict([(t.id, t) for t in template_list])
 
 
 class TemplateTree:
@@ -24,18 +33,29 @@ class TemplateTree:
 
         self.validate_templates_version(templates)
 
-        self.protocol_list = [
-            t for t in templates if type(t) == ProtocolTemplate]
-        self.event_list = [t for t in templates if type(t) == EventTemplate]
+        self.protocol_list = _filter_by_type(templates, ProtocolTemplate)
+        self.event_list = _filter_by_type(templates, EventTemplate)
 
-        self.protocols = dict([(t.id, t) for t in self.protocol_list])
-        self.events = dict([(t.id, t) for t in self.event_list])
+        self.protocols = _make_template_dict(self.protocol_list)
+        self.events = _make_template_dict(self.event_list)
 
         self.root = self.find_root_protocol()
 
-        # Set references for parent and children objects
-        for id, p in self.protocols.items():
-            parent_id = p.parent_protocol_id
+        self.build_tree()
+
+        self.validate_protocol_tree()
+        self.attach_events()
+        self.trim_unused_protocols()
+        self.print_tree()
+
+    def build_tree(self):
+        """Builds the tree by setting the references of parents and children properly.
+
+        Raises:
+            ValueError: if parent protocol is not found.
+        """
+        for id, protocol in self.protocols.items():
+            parent_id = protocol.parent_protocol_id
 
             if(parent_id == "!root"):
                 continue
@@ -45,21 +65,21 @@ class TemplateTree:
                     f"Parent protocol '{parent_id}' not found for protocol '{id}'")
 
             parent = self.protocols[parent_id]
-
-            parent.add_child(p)
-
-        self.validate_protocol_tree()
-        self.attach_events()
-        self.trim_unused_protocols()
-        self.print_tree()
+            parent.add_child(protocol)
 
     def validate_templates_version(self, templates: List[Template]):
-        bad_version = [
-            f"{t.id} ({t.version})" for t in templates if not self.settings.validate_version(t.version)]
+        """Validates the versions of all templates.
+
+        Raises:
+            ValueError: wrong version
+        """
+        bad_version = list(
+            filter(lambda t: not self.settings.validate_version(t.version), templates))
 
         if len(bad_version) > 0:
             raise ValueError(
-                f"Expected templates with version '{self.settings.version}', but wrong the wrong version was found in: %s" % ", ".join(bad_version))
+                f"Expected templates with version '{self.settings.version}', but wrong the wrong version was found in: %s" %
+                ", ".join(f"{t.id} ({t.version})" for t in bad_version))
 
     def find_root_protocol(self) -> ProtocolTemplate:
         """Finds the root protocol.
