@@ -1,0 +1,4 @@
+[package]
+script_dir = scripts/BR_INF_UFRGS/ZPO
+build_command = ./configure && make
+test_command = cd tests && btest
