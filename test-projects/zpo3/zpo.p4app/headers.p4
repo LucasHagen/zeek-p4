@@ -138,6 +138,7 @@ struct headers  {
 
 struct metadata {
     bit<32> nhop_ipv4;
+    bit<128> nhop_ipv6;
     bit<32> pkt_num;
     bit<16> protocol_l3;
     bit<8>  protocol_l4;

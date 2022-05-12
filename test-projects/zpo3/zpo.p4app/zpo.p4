@@ -36,6 +36,27 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
         default_action = NoAction();
     }
 
+    // IPv6 Routing
+
+    // Update next hop, set egress port, and decrement TTL.
+    action set_nhop_v6(bit<128> nhop_ipv6, bit<9> port) {
+        meta.nhop_ipv6 = nhop_ipv6;
+        standard_metadata.egress_spec = port;
+        hdr.ipv6.hop_limit = hdr.ipv6.hop_limit - 1;
+    }
+
+    table ipv6_lpm {
+        actions = {
+            set_nhop_v6;
+            NoAction;
+        }
+        key = {
+            hdr.ipv6.dst_addr: lpm;
+        }
+        size = 1024;
+        default_action = NoAction();
+    }
+
     // IPv4 Forwarding
 
     // Update destination MAC address based on the next-hop IPv4 (akin to an ARP lookup).
@@ -55,6 +76,18 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
         default_action = NoAction();
     }
 
+    table forward_v6 {
+        actions = {
+            set_dmac;
+            NoAction;
+        }
+        key = {
+            meta.nhop_ipv6: exact;
+        }
+        size = 512;
+        default_action = NoAction();
+    }
+
     // ZPO Data Plane Logic
     apply {
         if (standard_metadata.instance_type == INSTANCE_TYPE_NORMAL) {
@@ -65,19 +98,20 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
             meta.pkt_num = meta.pkt_num + 1;
             pkt_counter.write(0, meta.pkt_num);
 
+            clone3(CloneType.I2E, MIRROR_SESSION, { meta });
+
             if (hdr.ipv4.isValid()) {
                 meta.protocol_l4 = hdr.ipv4.protocol;
 
                 // Perform usual routing and forwarding.
                 ipv4_lpm.apply();
                 forward.apply();
-
-                // Generate an event packet.
-                clone3(CloneType.I2E, MIRROR_SESSION, { meta });
             } else if(hdr.ipv6.isValid()) {
                 meta.protocol_l4 = hdr.ipv6.next_header;
 
-                // TODO: forward packet
+                // Perform usual routing and forwarding.
+                ipv6_lpm.apply();
+                forward_v6.apply();
             }
 
             if(hdr.icmp.isValid()) {
@@ -127,19 +161,12 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
                     meta.event_type = TYPE_ICMP_ECHO_REQ_EVENT;
                 }
 
-            } else if(hdr.arp.isValid() && hdr.arp_ipv4.isValid()) {
+            } else if(hdr.arp_ipv4.isValid()) {
                 if(hdr.arp.opcode == 1) {        // ARP REQ
                     meta.event_type = TYPE_ARP_REQUEST_EVENT;
                 } else if(hdr.arp.opcode == 2) { // ARP REPLY
                     meta.event_type = TYPE_ARP_REPLY_EVENT;
                 }
-
-                pkt_counter.read(meta.pkt_num, 0);      // Packet Counter
-                meta.pkt_num = meta.pkt_num + 1;
-                pkt_counter.write(0, meta.pkt_num);
-
-                // Generate an event packet.
-                clone3(CloneType.I2E, MIRROR_SESSION, { meta });
             }
         }
     }
@@ -292,7 +319,7 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
     apply {
         // NORMAL PACKETS
         if (standard_metadata.instance_type == INSTANCE_TYPE_NORMAL) {
-            if (hdr.ethernet.isValid()) { // TODO: Is this condition necessary?
+            if (hdr.ethernet.isValid()) {
                 send_frame.apply();
             }
 
@@ -300,45 +327,50 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
         } else if (standard_metadata.instance_type == INSTANCE_TYPE_CLONE) {
             if(meta.event_type == TYPE_NO_EVENT) {
                 mark_to_drop(standard_metadata);
-            } else
+            } else {
+                // IPV4-BASED EVENT HEADER
+                #ifdef ZPO_PROTOCOL_IPV4
+                if(meta.protocol_l3 == ETH_P_IPV4) {
+                    construct_ipv4_event_header();
+                } else
+                #endif
 
-            // IPV4-BASED EVENTS
-            #ifdef ZPO_PROTOCOL_IPV4
-            if(meta.protocol_l3 == ETH_P_IPV4) {
-                construct_ipv4_event_header();
+                // IPV6-BASED EVENTS
+                #ifdef ZPO_PROTOCOL_IPV6
+                if(meta.protocol_l3 == ETH_P_IPV6) {
+                    construct_ipv6_event_header();
+                } else
+                #endif
 
-                // Here we construct all ipv4-based events
-                if (meta.event_type == TYPE_ICMP_ECHO_REQ_EVENT) {
-                    construct_icmp_echo_request_event();
-                } else if(meta.event_type == TYPE_ICMP_ECHO_REPLY_EVENT) {
-                    construct_icmp_echo_reply_event();
+                // ETHERNET-BASED EVENTS
+                {
+                    construct_eth_event_header();
                 }
-            } else
-            #endif
 
-            // IPV6-BASED EVENTS
-            #ifdef ZPO_PROTOCOL_IPV6
-            if(meta.protocol_l3 == ETH_P_IPV6) {
-                construct_ipv6_event_header();
-
-                // Here we construct all ipv6-based events
+                // CONSTRUCT EVENT SPECIFIC HEADER
                 if (meta.event_type == TYPE_ICMP_ECHO_REQ_EVENT) {
+                    z_bool is_ipv6 = 8w0x00;
+                    if(hdr.ipv6.isValid()) {
+                        is_ipv6 = 8w0xFF;
+                    }
+
                     construct_icmp_echo_request_event();
+
+                    hdr.icmp_echo_reply_event.info.v6 = is_ipv6;
                 } else if(meta.event_type == TYPE_ICMP_ECHO_REPLY_EVENT) {
+                    z_bool is_ipv6 = 8w0x00;
+                    if(hdr.ipv6.isValid()) {
+                        is_ipv6 = 8w0xFF;
+                    }
+
                     construct_icmp_echo_reply_event();
-                }
-            } else
-            #endif
 
-            // ETHERNET-BASED EVENTS
-            {
-                construct_eth_event_header();
-
-                // Here we construct all ethernet-based events
-                if(meta.event_type == TYPE_ARP_REPLY_EVENT
+                    hdr.icmp_echo_reply_event.info.v6 = is_ipv6;
+                } else if(meta.event_type == TYPE_ARP_REPLY_EVENT
                             || meta.event_type == TYPE_ARP_REQUEST_EVENT) {
                     construct_arp_req_or_reply_event();
                 }
+
             }
         }
     }
