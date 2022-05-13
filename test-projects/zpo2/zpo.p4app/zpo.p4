@@ -16,42 +16,27 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
     register<bit<32>>(1) pkt_counter;
 
     // IPv4 Routing
+    action drop() {
+        mark_to_drop(standard_metadata);
+    }
 
-    // Update next hop, set egress port, and decrement TTL.
-    action set_nhop(bit<32> nhop_ipv4, bit<9> port) {
-        meta.nhop_ipv4 = nhop_ipv4;
+    action ipv4_forward(mac_addr_t dst_addr, egress_spec_t port) {
         standard_metadata.egress_spec = port;
+        hdr.ethernet.src_addr = hdr.ethernet.dst_addr;
+        hdr.ethernet.dst_addr = dst_addr;
         hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
     }
 
     table ipv4_lpm {
-        actions = {
-            set_nhop;
-            NoAction;
-        }
         key = {
             hdr.ipv4.dst_addr: lpm;
         }
-        size = 1024;
-        default_action = NoAction();
-    }
-
-    // IPv4 Forwarding
-
-    // Update destination MAC address based on the next-hop IPv4 (akin to an ARP lookup).
-    action set_dmac(bit<48> dmac) {
-        hdr.ethernet.dst_addr = dmac;
-    }
-
-    table forward {
         actions = {
-            set_dmac;
+            ipv4_forward;
             NoAction;
+            drop();
         }
-        key = {
-            meta.nhop_ipv4: exact;
-        }
-        size = 512;
+        size = 1024;
         default_action = NoAction();
     }
 
@@ -106,7 +91,6 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
 
                 // Perform usual routing and forwarding.
                 ipv4_lpm.apply();
-                forward.apply();
 
                 // Update state.
                 pkt_counter.read(meta.pkt_num, 0);      // Packet Counter
@@ -135,23 +119,6 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
 }
 
 control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t standard_metadata) {
-
-    // Before emitting the frame, set the its source MAC address to the egress port's.
-    action rewrite_mac(bit<48> smac) {
-        hdr.ethernet.src_addr = smac;
-    }
-
-    table send_frame {
-        actions = {
-            rewrite_mac;
-            NoAction;
-        }
-        key = {
-            standard_metadata.egress_port: exact;
-        }
-        size = 256;
-        default_action = NoAction();
-    }
 
     action construct_icmp_echo_request_event() {
         hdr.icmp_echo_request_event.setValid();
@@ -200,7 +167,7 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
         // Emit normal packets.
         if (standard_metadata.instance_type == INSTANCE_TYPE_NORMAL) {
             if (hdr.ethernet.isValid()) { // TODO: Is this condition necessary?
-                send_frame.apply();
+                // send_frame.apply();
             }
         } else if (standard_metadata.instance_type == INSTANCE_TYPE_CLONE) {
             if(meta.event_type == TYPE_NO_EVENT) {
