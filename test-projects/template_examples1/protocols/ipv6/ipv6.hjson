@@ -1,0 +1,16 @@
+{
+    "zpo_type": "PROTOCOL",
+    "zpo_version": "0.0.1",
+    "id": "ipv6",
+    "parent_protocols": [
+        {
+            "id": "ethernet",
+            "id_for_parent_protocol": 34525 // DECIMAL id to identify this protocol in the parent protocol
+        }
+    ],
+    "header": {
+        "header_file": "ipv6_header.p4",
+        "header_struct": "ipv6_h"
+    },
+    "next_protocol_selector": "next_header" // A field of the header template provided
+}

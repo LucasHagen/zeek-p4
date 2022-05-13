@@ -1,4 +1,5 @@
-
+import json
+import os
 from typing import List
 
 
@@ -10,7 +11,6 @@ class ZpoSettings:
                  events: List[str],
                  template_folders: List[str],
                  pwd: str,
-                 main_py: str,
                  debug: bool = False,
                  ):
         self.version: str = version
@@ -18,8 +18,15 @@ class ZpoSettings:
         self.events: List[str] = events
         self.template_folders: List[str] = template_folders
         self.pwd: str = pwd
-        self.main_py: str = main_py
         self.debug: bool = debug
+        self.master_template: str = os.path.join(
+            os.path.dirname(__file__), "master_template")
+
+        self.p4_output_dir: str = os.path.join(output_dir, "zpo.p4app")
+        self.zeek_output_dir: str = os.path.join(output_dir, "zpo.zeek")
 
     def validate_version(self, other_version):
         return self.version == other_version
+
+    def __str__(self):
+        return json.dumps(vars(self), indent=4)

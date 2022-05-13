@@ -2,8 +2,6 @@ import argparse
 import logging
 import json
 import os
-from zpo.template_tree import TemplateTree
-from zpo.templates import load_templates
 from zpo.zpo import Zpo
 from zpo.zpo_settings import ZpoSettings
 from zpo.protocol_template import ProtocolTemplate
@@ -31,7 +29,6 @@ def main():
                 args.event,
                 args.template,
                 os.getcwd(),
-                os.path.dirname(__file__),
                 args.debug)
 
     logging.basicConfig(

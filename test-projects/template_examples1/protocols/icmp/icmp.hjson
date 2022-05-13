@@ -2,8 +2,16 @@
     "zpo_type": "PROTOCOL",
     "zpo_version": "0.0.1",
     "id": "icmp",
-    "parent_protocol": "ipv4",
-    "identifier_for_parent_protocol": 1, // DECIMAL id to identify this protocol in the parent protocol
+    "parent_protocols": [
+        {
+            "id": "ipv4",
+            "id_for_parent_protocol": 1 // DECIMAL id to identify this protocol in the parent protocol
+        },
+        {
+            "id": "ipv6",
+            "id_for_parent_protocol": 58
+        }
+    ],
     "header": {
         "header_file": "icmp_header.p4",
         "header_struct": "icmp_h"

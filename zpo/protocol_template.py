@@ -1,5 +1,14 @@
+from typing import Dict
 from zpo.template import Template
 from zpo.event_template import EventTemplate
+
+
+class ParentProtocol:
+
+    def __init__(self, parent_id: str, id_for_parent_protocol):
+        self.parent_id = parent_id
+        self.id_for_parent_protocol = id_for_parent_protocol
+
 
 class ProtocolTemplate(Template):
     """A template for a protocol
@@ -17,7 +26,6 @@ class ProtocolTemplate(Template):
         """
         self.path = path
         self._data = hjson_data
-        self.parent = None
         self.children = {}
         self.events = {}
 
@@ -27,25 +35,40 @@ class ProtocolTemplate(Template):
 
         self.id = self._data["id"]
         self.version = self._data["zpo_version"]
-        self.parent_protocol_id = self._data["parent_protocol"]
+        self.is_root = self._check_if_is_root()
+        self.parent_protocols: Dict[str,
+                                    ParentProtocol] = self._parse_parent_protocols()
         self.struct_accessor = f"hdr.{self.id}"
         self.next_protocol_selector = self._data["next_protocol_selector"]
-        self.identifier_for_parent_protocol = self._data["identifier_for_parent_protocol"]
         self.parsing_state = f"parse_{self.id}"
+
+        if (self.is_root and len(self.parent_protocols) > 0):
+            raise ValueError(
+                f"Root protocol ({self.id}) can't have parent protocols")
+
+    def _parse_parent_protocols(self) -> Dict[str, ParentProtocol]:
+        protocols = dict()
+
+        if("parent_protocols" not in self._data):
+            return protocols
+
+        for p in self._data["parent_protocols"]:
+            parent = ParentProtocol(p["id"], p["id_for_parent_protocol"])
+            protocols[parent.parent_id] = parent
+
+        return protocols
+
+    def _check_if_is_root(self):
+        return self._data["is_root_protocol"] if "is_root_protocol" in self._data else False
 
     def add_child(self, child):
         self.children[child.id] = child
-        child.parent = self
 
     def rem_child(self, child):
         self.children.pop(child.id)
-        child.parent = None
 
     def add_event(self, event: EventTemplate):
         self.events[event.id] = event
-
-    def is_root_protocol(self):
-        return self._data["parent_protocol"] == "!root"
 
 # Example of a PROTOCOL template:
 #
@@ -54,7 +77,7 @@ class ProtocolTemplate(Template):
 #     "zpo_version": "0.0.1",
 #     "id": "arp",
 #     "parent_protocol": "ethernet",
-#     "identifier_for_parent_protocol": 2054, // DECIMAL id to identify this protocol in the parent protocol
+#     "id_for_parent_protocol": 2054, // DECIMAL id to identify this protocol in the parent protocol
 #     "header": {
 #         "header_file": "arp_header.p4",
 #         "header_struct": "arp_h"
