@@ -1,3 +1,4 @@
+import os
 from zpo.template import Template
 
 
@@ -26,6 +27,12 @@ class EventTemplate(Template):
         self.id = self._data["id"]
         self.version = self._data["zpo_version"]
         self.protocol_id = self._data["protocol"]
+        self.header_struct = self._data["event_header"]["header_struct"]
+        self.header_file_path = os.path.join(
+            os.path.dirname(path), self._data["event_header"]["header_file"])
+
+    def type_str(self):
+        return "event"
 
 # Example of an EVENT template:
 #

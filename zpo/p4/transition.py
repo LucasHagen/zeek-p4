@@ -2,6 +2,7 @@ from typing import List
 
 from zpo.p4.transition_case import TransitionCase, DefaultTransitionCase, ProtocolTransitionCase
 from zpo.protocol_template import ProtocolTemplate
+from zpo.utils import indent, lmap
 
 
 def _make_protocol_transition(parent: ProtocolTemplate, child: ProtocolTemplate) -> ProtocolTransitionCase:
@@ -17,7 +18,7 @@ class Transition:
 class TransitionAccept(Transition):
 
     def __str__(self):
-        return "transition accept;"
+        return indent("transition accept;")
 
 
 class TransitionSelector(Transition):
@@ -31,11 +32,11 @@ class TransitionSelector(Transition):
         self.selector_cases.append(DefaultTransitionCase())
 
     def cases_to_str(self):
-        return "\n".join(list(map(str, self.selector_cases)))
+        return "\n".join(lmap(str, self.selector_cases))
 
     def __str__(self):
-        return """
+        return indent("""
 transition select(%s) {
 %s
 }
-        """.strip() % (self.selector_field, self.cases_to_str())
+        """.strip() % (self.selector_field, self.cases_to_str()))

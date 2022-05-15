@@ -1,4 +1,7 @@
+import os
 from typing import Dict
+
+import hjson
 from zpo.template import Template
 from zpo.event_template import EventTemplate
 
@@ -24,23 +27,26 @@ class ProtocolTemplate(Template):
         Raises:
             ValueError: if the template is invalid
         """
+        if (hjson_data["zpo_type"] != "PROTOCOL"):
+            raise ValueError(
+                "Wrong file format, 'zpo_type' doesn't match PROTOCOL")
+
         self.path = path
         self._data = hjson_data
         self.children = {}
         self.events = {}
 
-        if (self._data["zpo_type"] != "PROTOCOL"):
-            raise ValueError(
-                "Wrong file format, 'zpo_type' doesn't match PROTOCOL")
-
         self.id = self._data["id"]
         self.version = self._data["zpo_version"]
         self.is_root = self._check_if_is_root()
-        self.parent_protocols: Dict[str,
-                                    ParentProtocol] = self._parse_parent_protocols()
+        self.parent_protocols = self._parse_parent_protocols()
         self.struct_accessor = f"hdr.{self.id}"
         self.next_protocol_selector = self._data["next_protocol_selector"]
         self.parsing_state = f"parse_{self.id}"
+        self.header_struct = self._data["header"]["header_struct"]
+        self.priority = None
+        self.header_file_path = os.path.join(
+            os.path.dirname(path), self._data["header"]["header_file"])
 
         if (self.is_root and len(self.parent_protocols) > 0):
             raise ValueError(
@@ -69,6 +75,9 @@ class ProtocolTemplate(Template):
 
     def add_event(self, event: EventTemplate):
         self.events[event.id] = event
+
+    def type_str(self):
+        return "protocol"
 
 # Example of a PROTOCOL template:
 #

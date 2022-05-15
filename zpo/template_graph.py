@@ -1,5 +1,4 @@
 import logging
-from os import remove
 from re import T
 from typing import List, Dict, Set
 
@@ -56,6 +55,8 @@ class TemplateGraph:
         self.trim_unused_protocols()
         self.remove_unreachable_protocols()
 
+        self.set_protocol_priorities()
+
         self.print_tree()
 
     def build_graph(self):
@@ -74,6 +75,38 @@ class TemplateGraph:
                 else:
                     parent = self.protocols[parent_id]
                     parent.add_child(protocol)
+
+    def set_protocol_priorities(self):
+        queue = []
+
+        queue.append((self.root, 0))
+
+        while len(queue) != 0:
+            node, depth = queue.pop(0)
+
+            if node.priority == None:
+                node.priority = depth
+            else:
+                node.priority = max(node.priority, depth)
+
+            # At this stage there are no more cycles, so there is no need to check for it again
+            for child in node.children.values():
+                queue.append((child, depth + 1))
+
+        self._protocols_by_priority = list(self.protocols.values())
+        self._protocols_by_priority.sort(key=lambda p: p.priority)
+
+        self._events_by_priority = []
+        for protocol in self._protocols_by_priority:
+            for e in protocol.events.values():
+                self._events_by_priority.append(e)
+
+    def protocols_by_priority(self) -> List[ProtocolTemplate]:
+        return self._protocols_by_priority
+
+    def events_by_priority(self) -> List[EventTemplate]:
+        return self._events_by_priority
+
 
     def remove_unreachable_protocols(self):
         unreachable_protocols = set(self.protocols.keys())
@@ -172,10 +205,15 @@ class TemplateGraph:
         def print_aux(node, depth):
             spacing = " " * depth * 4
 
-            if(depth != 0):
+            if depth != 0:
                 logging.debug(f"{spacing} |")
-            logging.debug(
-                f"{spacing} |- {node.id}: [{', '.join(node.events)}]")
+
+            if len(node.events) > 0:
+                logging.debug(
+                    f"{spacing} |- {node.id} ({node.priority}): [{', '.join(node.events)}]")
+            else:
+                logging.debug(
+                    f"{spacing} |- {node.id} ({node.priority})")
 
             for child in node.children.values():
                 print_aux(child, depth + 1)

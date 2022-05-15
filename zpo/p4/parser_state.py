@@ -1,5 +1,6 @@
 from zpo.protocol_template import ProtocolTemplate
 from zpo.p4.transition import Transition, TransitionAccept, TransitionSelector
+from zpo.utils import indent
 
 
 class ParserState:
@@ -12,10 +13,13 @@ class ParserState:
         self.next_transition: Transition = TransitionAccept() if len(
             protocol.children) == 0 else TransitionSelector(protocol)
 
+        self.packet_extractor = indent(
+            "packet.extract(%s);" % self.header_accessor)
+
     def __str__(self):
-        return """
+        return indent("""
 state %s {
-packet.extract(%s);
+%s
 %s
 }
-        """.strip() % (self.state_name, self.header_accessor, str(self.next_transition))
+        """.strip() % (self.state_name, self.packet_extractor, str(self.next_transition)))

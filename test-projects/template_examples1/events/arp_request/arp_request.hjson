@@ -4,7 +4,7 @@
     "id": "arp_request",
     "protocol": "arp_ipv4",
     "event_header": {
-        "header_file": "arp_request_event.p4",
+        "header_file": "arp_request_header.p4",
         "header_struct": "arp_request_event_h",
         "constructor": "constructor.p4",
         "identifier": "identifier.p4"

@@ -35,6 +35,7 @@ class Zpo:
         p4Generator: P4Generator = P4Generator(self.settings)
         p4Generator.create_p4_folders()
         p4Generator.generate_parser(templateGraph)
+        p4Generator.generate_headers(templateGraph)
 
         logging.info("Done!")
 
