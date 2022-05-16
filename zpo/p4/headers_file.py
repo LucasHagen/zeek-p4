@@ -2,6 +2,7 @@
 
 import os
 from zpo.file_generator_template import TemplateBasedFileGenerator
+from zpo.p4.event_uid_definition import EventUidDefinition
 from zpo.p4.headers_struct import HeadersStruct
 from zpo.p4.parser_file import ParserFileGenerator
 from zpo.p4.parser_state import ParserState
@@ -31,9 +32,16 @@ class HeadersFileGenerator(TemplateBasedFileGenerator):
 
 def _get_loaded_protocols(template_graph: TemplateGraph, _: ParserFileGenerator) -> str:
     def define_proto(proto: ProtocolTemplate):
-        return "#define ZPO_PROTOCOL_%s\n" % proto.id.upper()
+        return "#define ZPO_PROTOCOL_%s" % proto.id.upper()
 
-    return "".join(map(define_proto, template_graph.protocols_by_priority()))
+    protocols_definitions = list(
+        map(define_proto, template_graph.protocols_by_priority()))
+    events_uids = list(map(
+        lambda e: str(EventUidDefinition(e)),
+        template_graph.events_by_priority())
+    )
+
+    return "\n".join(protocols_definitions + events_uids)
 
 
 def _merge_headers_definitions(template_graph: TemplateGraph, _: ParserFileGenerator) -> str:

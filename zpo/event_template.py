@@ -30,9 +30,31 @@ class EventTemplate(Template):
         self.header_struct = self._data["event_header"]["header_struct"]
         self.header_file_path = os.path.join(
             os.path.dirname(path), self._data["event_header"]["header_file"])
+        self.identifier_file_path = os.path.join(
+            os.path.dirname(path), self._data["event_header"]["identifier"])
+        self.constructor_file_path = os.path.join(
+            os.path.dirname(path), self._data["event_header"]["constructor"])
+        self.uid = None
+        self.uid_constant = "ZPO_%s_EVENT_UID" % self.id.upper()
 
     def type_str(self):
         return "event"
+
+    def read_p4_identifier(self) -> str:
+        if not os.path.exists(self.identifier_file_path):
+            raise ValueError("P4 identifier file (%s) not found for protocol template %s" % (
+                self.identifier_file_path, self.id))
+
+        with open(self.identifier_file_path, 'r') as file:
+            return file.read().strip()
+
+    def read_p4_header_constructor(self) -> str:
+        if not os.path.exists(self.constructor_file_path):
+            raise ValueError("P4 header constructor file (%s) not found for protocol template %s" % (
+                self.constructor_file_path, self.id))
+
+        with open(self.constructor_file_path, 'r') as file:
+            return file.read().strip()
 
 # Example of an EVENT template:
 #

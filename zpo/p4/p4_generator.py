@@ -3,6 +3,7 @@ import os
 from typing import Iterable, List
 from zpo.p4.headers_file import HeadersFileGenerator
 from zpo.p4.headers_struct import HeadersStruct
+from zpo.p4.main_p4_file import MainP4FileGenerator
 from zpo.p4.parser_file import ParserFileGenerator
 
 from zpo.p4.parser_state import ParserState
@@ -24,6 +25,7 @@ class P4Generator:
         self.create_p4_folders()
         self.generate_headers(template_graph)
         self.generate_parser(template_graph)
+        self.generate_main_p4(template_graph)
 
     def create_p4_folders(self):
         if not os.path.exists(self.settings.output_dir):
@@ -37,3 +39,6 @@ class P4Generator:
 
     def generate_parser(self, template_graph: TemplateGraph):
         ParserFileGenerator(self.settings).generate(template_graph)
+
+    def generate_main_p4(self, template_graph: TemplateGraph):
+        MainP4FileGenerator(self.settings).generate(template_graph)

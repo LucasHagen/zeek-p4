@@ -28,7 +28,7 @@ class EventHeaderStructEntry(HeaderStructEntry):
 
     def __init__(self, event: EventTemplate):
         super().__init__(
-            event.header_struct, event.id
+            event.header_struct, "%s_event" % event.id
         )
 
 

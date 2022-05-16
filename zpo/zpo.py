@@ -30,12 +30,10 @@ class Zpo:
         logging.debug(f" - Events: %s",
                       [t.id for t in templates if type(t) == EventTemplate])
 
-        templateGraph = TemplateGraph(self.settings, templates)
+        template_graph = TemplateGraph(self.settings, templates)
 
-        p4Generator: P4Generator = P4Generator(self.settings)
-        p4Generator.create_p4_folders()
-        p4Generator.generate_parser(templateGraph)
-        p4Generator.generate_headers(templateGraph)
+        p4_generator: P4Generator = P4Generator(self.settings)
+        p4_generator.generate_all(template_graph)
 
         logging.info("Done!")
 

@@ -12,5 +12,6 @@
         "header_file": "ipv4_header.p4",
         "header_struct": "ipv4_h"
     },
-    "next_protocol_selector": "protocol" // A field of the header template provided
+    "next_protocol_selector": "protocol", // A field of the header template provided
+    "ingress_processor": "ingress_processor.p4" // Optional
 }

@@ -56,6 +56,7 @@ class TemplateGraph:
         self.remove_unreachable_protocols()
 
         self.set_protocol_priorities()
+        self.set_events_int_ids()
 
         self.print_tree()
 
@@ -75,6 +76,13 @@ class TemplateGraph:
                 else:
                     parent = self.protocols[parent_id]
                     parent.add_child(protocol)
+
+    def set_events_int_ids(self):
+        next_event_uid = 0
+
+        for e in self.events_by_priority():
+            e.uid = next_event_uid
+            next_event_uid += 1
 
     def set_protocol_priorities(self):
         queue = []
@@ -101,12 +109,17 @@ class TemplateGraph:
             for e in protocol.events.values():
                 self._events_by_priority.append(e)
 
+        self._events_by_priority_reversed = list(self._events_by_priority)
+        self._events_by_priority_reversed.reverse()
+
     def protocols_by_priority(self) -> List[ProtocolTemplate]:
         return self._protocols_by_priority
 
     def events_by_priority(self) -> List[EventTemplate]:
         return self._events_by_priority
 
+    def events_by_priority_reversed(self) -> List[EventTemplate]:
+        return self._events_by_priority_reversed
 
     def remove_unreachable_protocols(self):
         unreachable_protocols = set(self.protocols.keys())

@@ -48,6 +48,12 @@ class ProtocolTemplate(Template):
         self.header_file_path = os.path.join(
             os.path.dirname(path), self._data["header"]["header_file"])
 
+        if "ingress_processor" in self._data:
+            self.ingress_processor_file_path = os.path.join(
+                os.path.dirname(path), self._data["ingress_processor"])
+        else:
+            self.ingress_processor_file_path = None
+
         if (self.is_root and len(self.parent_protocols) > 0):
             raise ValueError(
                 f"Root protocol ({self.id}) can't have parent protocols")
@@ -79,6 +85,9 @@ class ProtocolTemplate(Template):
     def type_str(self):
         return "protocol"
 
+    def has_ingress_processor(self):
+        return self.ingress_processor_file_path != None and len(self.ingress_processor_file_path) > 0
+
 # Example of a PROTOCOL template:
 #
 # {
@@ -91,5 +100,6 @@ class ProtocolTemplate(Template):
 #         "header_file": "arp_header.p4",
 #         "header_struct": "arp_h"
 #     },
-#     "next_protocol_selector": "proto_type" // A field of the header template provided
+#     "next_protocol_selector": "proto_type", // A field of the header template provided
+#     "ingress_processor": "ingress_processor.p4" // Optional
 # }

@@ -8,5 +8,6 @@
         "header_file": "eth_header.p4",
         "header_struct": "ethernet_h"
     },
-    "next_protocol_selector": "ethertype" // A field of the header template provided
+    "next_protocol_selector": "ethertype", // A field of the header template provided
+    "ingress_processor": "ingress_processor.p4" // Optional
 }
