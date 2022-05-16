@@ -1,6 +1,8 @@
 #ifndef ZPO_HEADERS
 #define ZPO_HEADERS
 
+@@LOADED_PROTOCOLS@@
+
 // ZEEK TYPES
 typedef bit<8> z_bool;      // boolean      (1 byte)
 typedef bit<64> z_int;      // signed int   (8 bytes)
