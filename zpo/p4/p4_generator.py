@@ -17,8 +17,7 @@ class P4Generator:
 
     def __init__(self, settings: ZpoSettings):
         self.settings: ZpoSettings = settings
-        self.master_p4_template = os.path.join(
-            self.settings.master_template, "p4")
+        self.master_p4_template = self.settings.p4_master_template_dir
         self.output_p4 = self.settings.p4_output_dir
 
     def generate_all(self, template_graph: TemplateGraph):

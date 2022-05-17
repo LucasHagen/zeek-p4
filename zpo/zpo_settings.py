@@ -24,6 +24,8 @@ class ZpoSettings:
 
         self.p4_master_template_dir = os.path.join(self.master_template, "p4")
         self.p4_output_dir: str = os.path.join(output_dir, "zpo.p4app")
+
+        self.zeek_master_template_dir = os.path.join(self.master_template, "zeek")
         self.zeek_output_dir: str = os.path.join(output_dir, "zpo.zeek")
 
     def validate_version(self, other_version):
