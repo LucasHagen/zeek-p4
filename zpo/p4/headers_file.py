@@ -2,10 +2,9 @@
 
 import os
 from zpo.file_generator_template import TemplateBasedFileGenerator
-from zpo.p4.event_uid_definition import EventUidDefinition
+from zpo.p4.event_uid_definition import EventUidDefinition, NoEventDefinition
 from zpo.p4.headers_struct import HeadersStruct
 from zpo.p4.parser_file import ParserFileGenerator
-from zpo.p4.parser_state import ParserState
 from zpo.protocol_template import ProtocolTemplate
 from zpo.template_graph import TemplateGraph
 from zpo.utils import lmap
@@ -36,7 +35,8 @@ def _get_loaded_protocols(template_graph: TemplateGraph, _: ParserFileGenerator)
 
     protocols_definitions = list(
         map(define_proto, template_graph.protocols_by_priority()))
-    events_uids = list(map(
+    events_uids = [str(NoEventDefinition())]
+    events_uids = events_uids + list(map(
         lambda e: str(EventUidDefinition(e)),
         template_graph.events_by_priority())
     )

@@ -14,7 +14,7 @@ class IngressProcessor:
 
     def __str__(self):
         return indent("""
-if (%s) {
+if (%s.isValid()) {
 %s
 }
 """.strip() % (self.struct_accessor, indent(self._read_processor())), spaces=12)

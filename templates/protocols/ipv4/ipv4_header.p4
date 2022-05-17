@@ -1,6 +1,5 @@
 // L4 PROTOCOL CODES
 const bit<8>    IPPROTO_ICMP    = 0x01;
-const bit<8>    IPPROTO_ICMPV6  = 0x3A;
 const bit<8>    IPPROTO_TCP     = 0x06;
 const bit<8>    IPPROTO_UDP     = 0x11;
 

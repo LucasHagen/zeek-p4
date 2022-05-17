@@ -68,13 +68,14 @@ header_union event_h {
 }
 
 struct metadata {
-    bit<32> nhop_ipv4;
-    bit<32> pkt_num;
-    bit<16> protocol_l3;
-    bit<8>  protocol_l4;
-    bit<16> src_port;
-    bit<16> dst_port;
-    bit<16> event_type;
+    bit<32>  nhop_ipv4;
+    bit<128> nhop_ipv6;
+    bit<32>  pkt_num;
+    bit<16>  protocol_l3;
+    bit<8>   protocol_l4;
+    bit<16>  src_port;
+    bit<16>  dst_port;
+    bit<16>  event_type;
 }
 
 // AUTOMATICALLY GENERATED HEADER STRUCT     \/ \/ \/

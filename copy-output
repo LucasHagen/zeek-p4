@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+SCRIPT=`realpath $0`
+SCRIPTPATH=`dirname $SCRIPT`
+
+cp $SCRIPTPATH/output/zpo.p4app/* $SCRIPTPATH/test-projects/zpo3/zpo.p4app/
+mv $SCRIPTPATH/test-projects/zpo3/zpo.p4app/main.p4 $SCRIPTPATH/test-projects/zpo3/zpo.p4app/zpo.p4
+
+echo Copied...

@@ -52,7 +52,7 @@ class HeadersStruct:
 
     def __str__(self):
         return """
-struct hdr {
+struct headers {
 %s
 }
         """.strip() % ("\n".join(map(str, self.declarations)))

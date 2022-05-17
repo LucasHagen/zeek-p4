@@ -78,7 +78,7 @@ class TemplateGraph:
                     parent.add_child(protocol)
 
     def set_events_int_ids(self):
-        next_event_uid = 0
+        next_event_uid = 1
 
         for e in self.events_by_priority():
             e.uid = next_event_uid

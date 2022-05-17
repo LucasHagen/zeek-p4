@@ -14,6 +14,11 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
 
     register<bit<32>>(1) pkt_counter;
 
+    // Update destination MAC address based on the next-hop IP (akin to an ARP lookup).
+    action set_dmac(bit<48> dmac) {
+        hdr.ethernet.dst_addr = dmac;
+    }
+
 #ifdef ZPO_PROTOCOL_IPV4
 
     // IPv4 Routing
@@ -92,15 +97,10 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
 
 #endif
 
-    // Update destination MAC address based on the next-hop IPv4 (akin to an ARP lookup).
-    action set_dmac(bit<48> dmac) {
-        hdr.ethernet.dst_addr = dmac;
-    }
-
     // ZPO Data Plane Logic
     apply {
         if (standard_metadata.instance_type == INSTANCE_TYPE_NORMAL) {
-            meta.event_type = TYPE_NO_EVENT;
+            meta.event_type = ZPO_NO_EVENT_UID;
 
             pkt_counter.read(meta.pkt_num, 0);
             meta.pkt_num = meta.pkt_num + 1;
@@ -204,7 +204,7 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
 
         // EVENT PACKETS
         } else if (standard_metadata.instance_type == INSTANCE_TYPE_CLONE) {
-            if(meta.event_type == TYPE_NO_EVENT) {
+            if(meta.event_type == ZPO_NO_EVENT_UID) {
                 mark_to_drop(standard_metadata);
             } else {
                 // IPV4-BASED EVENT HEADER
