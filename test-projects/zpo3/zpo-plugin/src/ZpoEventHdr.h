@@ -21,13 +21,22 @@ typedef struct eth_event_h_struct {
 } eth_event_h;
 
 #pragma pack(1)
-typedef struct ip_event_h_struct {
+typedef struct ipv4_event_h_struct {
     uint32_t pkt_num;
     uint16_t src_port;
     uint16_t dst_port;
     uint16_t event_type;
     struct ip ip_hdr;
-} ip_event_h;
+} ipv4_event_h;
+
+#pragma pack(1)
+typedef struct ipv6_event_h_struct {
+    uint32_t pkt_num;
+    uint16_t src_port;
+    uint16_t dst_port;
+    uint16_t event_type;
+    struct ip6_hdr ipv6_hdr;
+} ipv6_event_h;
 
 /**
  * @brief Representation of the ZPO Event Header.
@@ -37,22 +46,24 @@ typedef struct ip_event_h_struct {
 class ZpoEventHdr {
 public:
     const static int ETH_EVENT_HEADER_SIZE = sizeof(eth_event_h);
-    const static int IP_EVENT_HEADER_SIZE = sizeof(ip_event_h);
+    const static int IPV4_EVENT_HEADER_SIZE = sizeof(ipv4_event_h);
+    const static int IPV6_EVENT_HEADER_SIZE = sizeof(ipv6_event_h);
 
     /**
-     * @brief Creates an instance of a ZpoEventHdr.
+     * @brief Creates an instance of a ethernet-based ZpoEventHdr.
      *
-     * Using the `l3_protocol` as base to decide which header should be used. If l3_protocol is:
-     *  - ETH_P_EVENT_IP: `ip_event_h` will be used, meaning an ip-based event was seen on the switch, and
-     * it possibly requires an instance of a`zeek::Connection`.
-     *  - ETH_P_EVENT: `eth_event_h` will be used.
-     *
-     * @param l3_protocol L3 Protocol code of the packet received on the **HOST**.
      * @param data Pointer to the beginning of the event header.
      * @return std::shared_ptr<ZpoEventHdr> A new instance.
      */
-    static std::shared_ptr<ZpoEventHdr> InitEventHdr(const uint16_t l3_protocol,
-                                                     const uint8_t* data);
+    static std::shared_ptr<ZpoEventHdr> InitEthEventHdr(const uint8_t* data);
+
+    /**
+     * @brief Creates an instance of a ip-based ZpoEventHdr (v4 or v6 is decided automatically).
+     *
+     * @param data Pointer to the beginning of the event header.
+     * @return std::shared_ptr<ZpoEventHdr> A new instance.
+     */
+    static std::shared_ptr<ZpoEventHdr> InitIpEventHdr(const uint8_t* data);
 
     ~ZpoEventHdr() = default;
 
@@ -69,6 +80,7 @@ public:
     std::shared_ptr<zeek::IP_Hdr> GetIPHdr() const;
 
     bool IsIPv4() const;
+    bool IsIPv6() const;
 
     TransportProto GetTransportProto() const;
     zeek::Layer3Proto GetLayer3Proto() const;
@@ -92,7 +104,8 @@ public:
      * @param hdr
      */
     ZpoEventHdr(const uint8_t* data, const eth_event_h* hdr);
-    ZpoEventHdr(const uint8_t* data, const ip_event_h* hdr);
+    ZpoEventHdr(const uint8_t* data, const ipv4_event_h* hdr);
+    ZpoEventHdr(const uint8_t* data, const ipv6_event_h* hdr);
 
     zeek::Connection* GetOrCreateConnection(const Packet* packet);
     zeek::Connection* GetOrCreateConnection(const Packet* packet, const zeek::ConnTuple& tuple);
@@ -100,7 +113,8 @@ public:
 protected:
     const uint8_t* data = nullptr;
     const eth_event_h* eth_event_hdr = nullptr;
-    const ip_event_h* ip_event_hdr = nullptr;
+    const ipv4_event_h* ipv4_event_hdr = nullptr;
+    const ipv6_event_h* ipv6_event_hdr = nullptr;
 
     const uint32_t hdr_size = 0;
     const uint8_t* payload = nullptr;

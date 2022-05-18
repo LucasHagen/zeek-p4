@@ -17,13 +17,21 @@ using ::zeek::IPAddr;
 using ::zeek::Layer3Proto;
 using ::zeek::detail::ConnKey;
 
-std::shared_ptr<ZpoEventHdr> ZpoEventHdr::InitEventHdr(const uint16_t l3_protocol,
-                                                       const uint8_t* data) {
-    switch (l3_protocol) {
-        case ETH_P_EVENT:
-            return std::make_shared<ZpoEventHdr>(data, (const eth_event_h*)data);
-        case ETH_P_EVENT_IP:
-            return std::make_shared<ZpoEventHdr>(data, (const ip_event_h*)data);
+std::shared_ptr<ZpoEventHdr> ZpoEventHdr::InitEthEventHdr(const uint8_t* data) {
+    return std::make_shared<ZpoEventHdr>(data, (const eth_event_h*)data);
+}
+
+std::shared_ptr<ZpoEventHdr> ZpoEventHdr::InitIpEventHdr(const uint8_t* data) {
+    // Just for IP version checking:
+    auto hdr = (const ipv4_event_h*)data;
+
+    switch (hdr->ip_hdr.ip_v) {
+        case 4:
+            return std::make_shared<ZpoEventHdr>(data, (const ipv4_event_h*)data);
+            break;
+        case 6:
+            return std::make_shared<ZpoEventHdr>(data, (const ipv6_event_h*)data);
+            break;
         default:
             return nullptr;
     }
@@ -36,14 +44,24 @@ ZpoEventHdr::ZpoEventHdr(const uint8_t* data, const eth_event_h* hdr)
     event_type = ntohs(hdr->event_type);
 }
 
-ZpoEventHdr::ZpoEventHdr(const uint8_t* data, const ip_event_h* hdr)
-    : data(data), ip_event_hdr(hdr), hdr_size(IP_EVENT_HEADER_SIZE), payload(data + hdr_size) {
+ZpoEventHdr::ZpoEventHdr(const uint8_t* data, const ipv4_event_h* hdr)
+    : data(data), ipv4_event_hdr(hdr), hdr_size(IPV4_EVENT_HEADER_SIZE), payload(data + hdr_size) {
     packet_number = ntohl(hdr->pkt_num);
     l3_protocol = ETH_P_IP;
     event_type = ntohs(hdr->event_type);
     src_port = ntohs(hdr->src_port);
     dst_port = ntohs(hdr->dst_port);
     ip_hdr = std::make_shared<IP_Hdr>(&hdr->ip_hdr, false, false);
+}
+
+ZpoEventHdr::ZpoEventHdr(const uint8_t* data, const ipv6_event_h* hdr)
+    : data(data), ipv6_event_hdr(hdr), hdr_size(IPV6_EVENT_HEADER_SIZE), payload(data + hdr_size) {
+    packet_number = ntohl(hdr->pkt_num);
+    l3_protocol = ETH_P_IPV6;
+    event_type = ntohs(hdr->event_type);
+    src_port = ntohs(hdr->src_port);
+    dst_port = ntohs(hdr->dst_port);
+    ip_hdr = std::make_shared<IP_Hdr>(&hdr->ipv6_hdr, false, false);
 }
 
 IPAddr ZpoEventHdr::GetSrcAddress() const { return ip_hdr->SrcAddr(); }
@@ -66,6 +84,8 @@ uint32_t ZpoEventHdr::GetHdrSize() const { return hdr_size; }
 
 bool ZpoEventHdr::IsIPv4() const { return l3_protocol == ETH_P_IP; }
 
+bool ZpoEventHdr::IsIPv6() const { return l3_protocol == ETH_P_IPV6; }
+
 Layer3Proto ZpoEventHdr::GetLayer3Proto() const {
     switch (l3_protocol) {
         case ETH_P_IP:
@@ -86,6 +106,8 @@ TransportProto ZpoEventHdr::GetTransportProto() const {
         case IPPROTO_UDP:
             return TRANSPORT_UDP;
         case IPPROTO_ICMP:
+            return TRANSPORT_ICMP;
+        case IPPROTO_ICMPV6:
             return TRANSPORT_ICMP;
         default:
             return TRANSPORT_UNKNOWN;

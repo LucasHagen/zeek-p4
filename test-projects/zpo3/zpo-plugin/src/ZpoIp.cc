@@ -20,7 +20,7 @@ using ::zeek::packet_analysis::Analyzer;
 ZpoIp::ZpoIp() : Analyzer("ZPO_IP") {}
 
 bool ZpoIp::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
-    std::shared_ptr<ZpoEventHdr> hdr = ZpoEventHdr::InitEventHdr(ETH_P_EVENT_IP, data);
+    std::shared_ptr<ZpoEventHdr> hdr = ZpoEventHdr::InitIpEventHdr(data);
     std::shared_ptr<ZpoPacket> zpo_packet = std::make_shared<ZpoPacket>(packet, hdr);
 
 #ifdef ZPO_DEBUG
