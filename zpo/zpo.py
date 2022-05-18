@@ -6,6 +6,7 @@ from zpo.p4.p4_generator import P4Generator
 from zpo.protocol_template import ProtocolTemplate
 from zpo.template_graph import TemplateGraph
 from zpo.templates import load_templates
+from zpo.zeek.zeek_generator import ZeekGenerator
 
 from zpo.zpo_settings import ZpoSettings
 
@@ -34,6 +35,9 @@ class Zpo:
 
         p4_generator: P4Generator = P4Generator(self.settings)
         p4_generator.generate_all(template_graph)
+
+        zeek_generator: ZeekGenerator = ZeekGenerator(self.settings)
+        zeek_generator.generate_all(template_graph)
 
         logging.info("Done!")
 

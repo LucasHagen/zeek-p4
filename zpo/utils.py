@@ -1,3 +1,4 @@
+import shutil
 from typing import List
 
 
@@ -16,3 +17,11 @@ def indent(text: str, spaces=4) -> str:
             output.append(indentation + line)
 
     return "\n".join(output)
+
+
+def copy_file(source, destination):
+    shutil.copy2(source, destination)
+
+
+def copy_tree(source, destination, dirs_exist_ok=False):
+    shutil.copytree(source, destination, dirs_exist_ok=dirs_exist_ok)
