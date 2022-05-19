@@ -39,6 +39,8 @@ bool ZpoArpReplyAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet*
     auto event_hdr = static_cast<ZpoPacket*>(packet)->event_hdr;
     auto arp_hdr = (const arp_ipv4_reply*)data;
 
+// #define ARP_REPLY_DEBUG
+#ifdef ARP_REPLY_DEBUG
     std::cout << "ARP REQUEST/REPLY:" << std::endl;
     std::cout << " - SrcIp: "
               << IPAddr(IPv4, (const uint32_t*)&arp_hdr->src_proto_addr, IPAddr::ByteOrder::Network)
@@ -48,6 +50,7 @@ bool ZpoArpReplyAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet*
               << IPAddr(IPv4, (const uint32_t*)&arp_hdr->src_proto_addr, IPAddr::ByteOrder::Network)
                      .AsString()
               << std::endl;
+#endif
 
     EventHandlerPtr e;
 

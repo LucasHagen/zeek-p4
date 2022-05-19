@@ -56,8 +56,8 @@ bool ZpoIcmpReqAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* 
 
     auto conn = event_hdr->GetOrCreateConnection(packet);
 
-#define ZPO_ICMP_DEBUG
-#ifdef ZPO_ICMP_DEBUG
+// #define ZPO_ICMP_REQUEST_DEBUG
+#ifdef ZPO_ICMP_REQUEST_DEBUG
 
     std::cout << std::endl;
     std::cout << "[ZPO] START ICMP!!! \\/ \\/ \\/" << std::endl;
