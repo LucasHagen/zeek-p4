@@ -2,7 +2,7 @@
 
 #include "zeek/packet_analysis/Analyzer.h"
 
-namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO::ICMP {
+namespace zeek::packet_analysis::BR_UFRGS_INF_ZPO::ICMP {
 
 #pragma pack(1)
 typedef struct icmp_echo_and_reply_event_struct {
@@ -30,4 +30,4 @@ public:
     bool AnalyzePacket(size_t len, const uint8_t* data, zeek::Packet* packet) override;
 };
 
-}  // namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO::ICMP
+}  // namespace zeek::packet_analysis::BR_UFRGS_INF_ZPO::ICMP

@@ -1,5 +1,9 @@
-
 BR_UFRGS_INF::ZPO
+
 =================================
 
-This is a test plugin.
+A Zeek P4 Otimizer (ZPO) generated plugin to offload Zeek event detection to the
+dataplane.
+
+The following events have been offloaded:
+@@EVENTS_LIST@@

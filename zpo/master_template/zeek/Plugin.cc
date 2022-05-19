@@ -7,6 +7,8 @@
 #include "zeek/analyzer/Component.h"
 #include "zeek/packet_analysis/Component.h"
 
+@@INCLUDE_ANALYZERS@@
+
 namespace plugin {
 namespace BR_UFRGS_INF_ZPO {
 Plugin plugin;
@@ -21,11 +23,13 @@ zeek::plugin::Configuration Plugin::Configure() {
     AddComponent(new zeek::packet_analysis::Component(
         "ZPO_IP", zeek::packet_analysis::BR_UFRGS_INF_ZPO::ZpoIp::Instantiate));
 
+@@REGISTER_ANALYZERS@@
+
     zeek::plugin::Configuration config;
     config.name = "BR_UFRGS_INF::ZPO";
-    config.description = "This is a test plugin";
-    config.version.major = VERSION_1;
-    config.version.minor = VERSION_2;
-    config.version.patch = VERSION_3;
+    config.description = "Zeek-P4 Optimizer Plugin";
+    config.version.major = ZPO_VERSION_1;
+    config.version.minor = ZPO_VERSION_2;
+    config.version.patch = ZPO_VERSION_3;
     return config;
 }

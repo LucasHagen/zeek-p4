@@ -10,8 +10,9 @@
         "identifier": "identifier.p4"
     },
     "zeek": {
-        "analyzer_namespace": "zeek::packet_analysis::BR_INF_UFRGS_ZPO::ARP",
+        "analyzer_namespace": "zeek::packet_analysis::BR_UFRGS_INF_ZPO::ARP",
         "analyzer_class": "ZpoArpReplyAnalyzer",
+        "analyzer_id": "ZPO_ARP_REP",
         "header_files": [
             "ArpReply.h"
         ],

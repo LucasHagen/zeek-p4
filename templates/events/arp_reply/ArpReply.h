@@ -6,7 +6,7 @@
 #include "ZpoEventHdr.h"
 #include "zeek/packet_analysis/Analyzer.h"
 
-namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO::ARP {
+namespace zeek::packet_analysis::BR_UFRGS_INF_ZPO::ARP {
 
 using namespace zeek::packet_analysis;
 
@@ -32,4 +32,4 @@ public:
     bool AnalyzePacket(size_t len, const uint8_t* data, zeek::Packet* packet) override;
 };
 
-}  // namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO::ARP
+}  // namespace zeek::packet_analysis::BR_UFRGS_INF_ZPO::ARP

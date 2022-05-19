@@ -3,6 +3,7 @@
     "zpo_version": "0.0.1",
     "id": "icmp_echo_reply",
     "protocol": "icmp",
+    "is_ip_based": true,
     "event_header": {
         "header_file": "icmp_reply_header.p4",
         "header_struct": "icmp_echo_reply_event_h",
@@ -10,8 +11,9 @@
         "identifier": "identifier.p4"
     },
     "zeek": {
-        "analyzer_namespace": "zeek::packet_analysis::BR_INF_UFRGS_ZPO::ICMP",
+        "analyzer_namespace": "zeek::packet_analysis::BR_UFRGS_INF_ZPO::ICMP",
         "analyzer_class": "ZpoIcmpReplyAnalyzer",
+        "analyzer_id": "ZPO_ICMP_REP",
         "header_files": [
             "Icmp.h"
         ],

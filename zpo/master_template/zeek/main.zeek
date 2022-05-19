@@ -17,11 +17,11 @@ event zeek_init() &priority=20
 
 	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_ETHERNET, 0x6601, PacketAnalyzer::ANALYZER_ZPO_ETH);
 	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_ETHERNET, 0x6602, PacketAnalyzer::ANALYZER_ZPO_IP);
+
     print "Registered Main PacketAnalyzers.";
 
-	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_ZPO_IP, 0x0001, PacketAnalyzer::ANALYZER_ZPO_ICMP);
-	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_ZPO_IP, 0x0002, PacketAnalyzer::ANALYZER_ZPO_ICMP);
-	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_ZPO_ETH, 0x0003, PacketAnalyzer::ANALYZER_ZPO_ARP);
+@@REGISTER_EVENTS@@
+
     print "Registered Event PacketAnalyzers.";
 
     print "Initialized ZPO Plugin.";

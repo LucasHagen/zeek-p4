@@ -22,7 +22,7 @@ enum ICMP_EndpointState {
     ICMP_ACTIVE,    // packets seen
 };
 
-using namespace zeek::packet_analysis::BR_INF_UFRGS_ZPO::ICMP;
+using namespace zeek::packet_analysis::BR_UFRGS_INF_ZPO::ICMP;
 using namespace zeek::packet_analysis::IP;
 using ::zeek::make_intrusive;
 using ::zeek::ntohll;
@@ -32,7 +32,7 @@ using ::zeek::RecordValPtr;
 using ::zeek::val_mgr;
 using ::zeek::packet_analysis::IP::SessionAdapter;
 
-ZpoIcmpReqAnalyzer::ZpoIcmpReqAnalyzer() : Analyzer("ZPO_ICMP") {}
+ZpoIcmpReqAnalyzer::ZpoIcmpReqAnalyzer() : Analyzer("ZPO_ICMP_REQ") {}
 
 RecordValPtr BuildInfo(const icmp_echo_and_reply_event_h* icmp) {
     static auto icmp_info = zeek::id::find_type<RecordType>("icmp_info");

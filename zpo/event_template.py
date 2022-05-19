@@ -1,5 +1,6 @@
 import os
 from zpo.template import Template
+from zpo.utils import lmap
 
 
 class EventTemplate(Template):
@@ -18,6 +19,7 @@ class EventTemplate(Template):
         """
 
         self.path = path
+        self.path_dir = os.path.dirname(self.path)
         self._data = hjson_data
 
         if (self._data["zpo_type"] != "EVENT"):
@@ -29,13 +31,22 @@ class EventTemplate(Template):
         self.protocol_id = self._data["protocol"]
         self.header_struct = self._data["event_header"]["header_struct"]
         self.header_file_path = os.path.join(
-            os.path.dirname(path), self._data["event_header"]["header_file"])
+            self.path_dir, self._data["event_header"]["header_file"])
         self.identifier_file_path = os.path.join(
-            os.path.dirname(path), self._data["event_header"]["identifier"])
+            self.path_dir, self._data["event_header"]["identifier"])
         self.constructor_file_path = os.path.join(
-            os.path.dirname(path), self._data["event_header"]["constructor"])
+            self.path_dir, self._data["event_header"]["constructor"])
         self.uid = None
         self.uid_constant = "ZPO_%s_EVENT_UID" % self.id.upper()
+        self.is_ip_based = bool(
+            self._data["is_ip_based"]) if "is_ip_based" in self._data else False
+
+        self.zeek_header_files = self._data["zeek"]["header_files"]
+        self.zeek_cc_files = self._data["zeek"]["cc_files"]
+        self.zeek_files = self.zeek_header_files + self.zeek_cc_files
+        self.zeek_analyzer_id = self._data["zeek"]["analyzer_id"]
+        self.zeek_analyzer_namespace = self._data["zeek"]["analyzer_namespace"]
+        self.zeek_analyzer_class = self._data["zeek"]["analyzer_class"]
 
     def type_str(self):
         return "event"
@@ -63,6 +74,7 @@ class EventTemplate(Template):
 #     "zpo_version": "0.0.1",
 #     "id": "arp_reply",
 #     "protocol": "arp_ipv4",
+#     "is_ip_based": false,
 #     "event_header": {
 #         "header_file": "arp_reply_event.p4",
 #         "header_struct": "arp_reply_event_h",
@@ -72,6 +84,7 @@ class EventTemplate(Template):
 #     "zeek": {
 #         "analyzer_namespace": "zeek::packet_analysis::BR_INF_UFRGS_ZPO::ARP",
 #         "analyzer_class": "ZpoArpReplyAnalyzer",
+#         "analyzer_id": "ZPO_ARP_REP",
 #         "header_files": [
 #             "ArpReply.h"
 #         ],
