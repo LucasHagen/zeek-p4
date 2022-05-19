@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "ZpoPacket.h"
-#include "event_ids.h"
+#include "constants.h"
 #include "zeek/Conn.h"
 #include "zeek/Desc.h"
 #include "zeek/Reporter.h"
@@ -34,7 +34,7 @@ using ::zeek::packet_analysis::IP::SessionAdapter;
 
 ZpoIcmpReplyAnalyzer::ZpoIcmpReplyAnalyzer() : Analyzer("ZPO_ICMP_REP") {}
 
-RecordValPtr BuildInfo(const icmp_echo_and_reply_event_h* icmp) {
+RecordValPtr BuildInfo(const icmp_echo_reply_event_h* icmp) {
     static auto icmp_info = zeek::id::find_type<RecordType>("icmp_info");
     auto rval = make_intrusive<RecordVal>(icmp_info);
     rval->Assign(0, val_mgr->Bool(icmp->v6));
@@ -48,25 +48,25 @@ RecordValPtr BuildInfo(const icmp_echo_and_reply_event_h* icmp) {
 bool ZpoIcmpReplyAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
     auto zpo_packet = static_cast<ZpoPacket*>(packet);
     auto event_hdr = zpo_packet->event_hdr;
-    auto icmp_hdr = (const icmp_echo_and_reply_event_h*)event_hdr->GetPayload();
+    auto icmp_hdr = (const icmp_echo_reply_event_h*)event_hdr->GetPayload();
 
-    auto payload = event_hdr->GetPayload() + sizeof(icmp_echo_and_reply_event_h);
+    auto payload = event_hdr->GetPayload() + sizeof(icmp_echo_reply_event_h);
     auto payload_len = ntohll(icmp_hdr->len);
     String* payloadStr = new String(payload, payload_len, false);
 
     auto conn = event_hdr->GetOrCreateConnection(packet);
 
-// #define ZPO_ICMP_DEBUG
+#define ZPO_ICMP_DEBUG
 #ifdef ZPO_ICMP_DEBUG
 
     std::cout << std::endl;
     std::cout << "[ZPO] START ICMP!!! \\/ \\/ \\/" << std::endl;
 
     switch (event_hdr->GetEventType()) {
-        case TYPE_ICMP_ECHO_REPLY_EVENT:
+        case ZPO_ICMP_ECHO_REPLY_EVENT_UID:
             std::cout << "[ZPO] |- event = ECHO_REPLY" << std::endl;
             break;
-        case TYPE_ICMP_ECHO_REQ_EVENT:
+        case ZPO_ICMP_ECHO_REQUEST_EVENT_UID:
             std::cout << "[ZPO] |- event = ECHO_REQ" << std::endl;
             break;
         default:
@@ -92,10 +92,10 @@ bool ZpoIcmpReplyAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet
 
     EventHandlerPtr e;
     switch (event_hdr->GetEventType()) {
-        case TYPE_ICMP_ECHO_REQ_EVENT:
+        case ZPO_ICMP_ECHO_REQUEST_EVENT_UID:
             e = icmp_echo_request;
             break;
-        case TYPE_ICMP_ECHO_REPLY_EVENT:
+        case ZPO_ICMP_ECHO_REPLY_EVENT_UID:
             e = icmp_echo_reply;
             break;
         default:

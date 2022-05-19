@@ -6,7 +6,7 @@ SCRIPTPATH=`dirname $SCRIPT`
 cp $SCRIPTPATH/output/zpo.p4app/* $SCRIPTPATH/test-projects/zpo3/zpo.p4app/
 mv $SCRIPTPATH/test-projects/zpo3/zpo.p4app/main.p4 $SCRIPTPATH/test-projects/zpo3/zpo.p4app/zpo.p4
 
-rm -rf $SCRIPTPATH/test-projects/zpo3/zpo-plugin/*
+sudo rm -rf $SCRIPTPATH/test-projects/zpo3/zpo-plugin/*
 cp -r $SCRIPTPATH/output/zpo.zeek/* $SCRIPTPATH/test-projects/zpo3/zpo-plugin/
 cp $SCRIPTPATH/test-projects/zpo2/zpo-plugin/run $SCRIPTPATH/test-projects/zpo3/zpo-plugin/
 

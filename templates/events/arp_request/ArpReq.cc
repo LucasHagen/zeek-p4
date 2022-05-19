@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "ZpoPacket.h"
-#include "event_ids.h"
+#include "constants.h"
 #include "zeek/Conn.h"
 #include "zeek/Event.h"
 #include "zeek/IPAddr.h"
@@ -23,11 +23,11 @@ using ::zeek::packet_analysis::Analyzer;
 
 ZpoArpReqAnalyzer::ZpoArpReqAnalyzer() : Analyzer("ZPO_ARP_REQ") {}
 
-AddrValPtr ToIPv4AddrVal(const struct in_addr& addr) {
+AddrValPtr ToIPv4AddrValReq(const struct in_addr& addr) {
     return zeek::make_intrusive<AddrVal>(ntohl(addr.s_addr));
 }
 
-StringValPtr ToEthAddrStr(const struct ether_addr& addr) {
+StringValPtr ToEthAddrStrReq(const struct ether_addr& addr) {
     const uint8_t* ptr = addr.ether_addr_octet;
     char buf[1024];
     snprintf(buf, sizeof(buf), "%02x:%02x:%02x:%02x:%02x:%02x", ptr[0], ptr[1], ptr[2], ptr[3],
@@ -37,7 +37,7 @@ StringValPtr ToEthAddrStr(const struct ether_addr& addr) {
 
 bool ZpoArpReqAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
     auto event_hdr = static_cast<ZpoPacket*>(packet)->event_hdr;
-    auto arp_hdr = (const arp_ipv4_req_or_reply*)data;
+    auto arp_hdr = (const arp_ipv4_request*)data;
 
     std::cout << "ARP REQUEST/REPLY:" << std::endl;
     std::cout << " - SrcIp: "
@@ -52,23 +52,20 @@ bool ZpoArpReqAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* p
     EventHandlerPtr e;
 
     switch (event_hdr->GetEventType()) {
-        case TYPE_ARP_REQUEST_EVENT:
+        case ZPO_ARP_REQUEST_EVENT_UID:
             e = arp_request;
             break;
-        case TYPE_ARP_REPLY_EVENT:
+        case ZPO_ARP_REPLY_EVENT_UID:
             e = arp_reply;
             break;
-        case TYPE_ARP_BAD_EVENT:
-            // TODO: add arp_bad event
-            return false;
         default:
             return false;
     }
 
-    event_mgr.Enqueue(e, ToEthAddrStr(arp_hdr->mac_src), ToEthAddrStr(arp_hdr->mac_dst),
-                      ToIPv4AddrVal(arp_hdr->src_proto_addr), ToEthAddrStr(arp_hdr->src_hw_addr),
-                      ToIPv4AddrVal(arp_hdr->target_proto_addr),
-                      ToEthAddrStr(arp_hdr->target_hw_addr));
+    event_mgr.Enqueue(e, ToEthAddrStrReq(arp_hdr->mac_src), ToEthAddrStrReq(arp_hdr->mac_dst),
+                      ToIPv4AddrValReq(arp_hdr->src_proto_addr), ToEthAddrStrReq(arp_hdr->src_hw_addr),
+                      ToIPv4AddrValReq(arp_hdr->target_proto_addr),
+                      ToEthAddrStrReq(arp_hdr->target_hw_addr));
 
     return true;
 }

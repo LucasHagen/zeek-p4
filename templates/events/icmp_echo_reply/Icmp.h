@@ -5,7 +5,7 @@
 namespace zeek::packet_analysis::BR_UFRGS_INF_ZPO::ICMP {
 
 #pragma pack(1)
-typedef struct icmp_echo_and_reply_event_struct {
+typedef struct icmp_echo_reply_event_struct {
     uint64_t id;     // 8
     uint64_t seq;    // 8
     uint8_t v6;      // 1
@@ -15,7 +15,7 @@ typedef struct icmp_echo_and_reply_event_struct {
     uint64_t ttl;    // 8
 
     // Total: 49 bytes
-} icmp_echo_and_reply_event_h;
+} icmp_echo_reply_event_h;
 
 using AnalyzerPtr = std::shared_ptr<Analyzer>;
 class IcmpSessionAdapter;
