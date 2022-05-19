@@ -13,6 +13,7 @@ zeek_plugin_cc(
     src/ZpoIp.cc
     src/Plugin.cc
     src/zpo.bif
+@@CC_FILES@@
 )
 zeek_plugin_dist_files(README CHANGES COPYING VERSION)
 zeek_plugin_scripts(

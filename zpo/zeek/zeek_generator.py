@@ -5,11 +5,13 @@ from re import template
 from zpo.template_graph import TemplateGraph
 from zpo.utils import copy_file, copy_tree
 from zpo.zeek.changes_file import ChangesFile
+from zpo.zeek.cmakelists_file import CMakeListsFile
 from zpo.zeek.constants_file import ConstantsFile
 from zpo.zeek.events_classes import EventsFilesCopier
 from zpo.zeek.main_zeek_script import MainZeekFile
 from zpo.zeek.plugin_cc_file import PluginCcFile
 from zpo.zeek.readme_file import ReadmeFile
+from zpo.zeek.version_file import VersionFile
 from zpo.zpo_settings import ZpoSettings
 
 
@@ -29,6 +31,8 @@ class ZeekGenerator:
         self.copy_events_classes(template_graph)
         self.generate_main_zeek_file(template_graph)
         self.generate_plugin_cc_file(template_graph)
+        self.generate_cmakelists_file(template_graph)
+        self.generate_version_file()
 
     def create_zeek_folders(self):
         if not os.path.exists(self.settings.output_dir):
@@ -57,8 +61,14 @@ class ZeekGenerator:
     def copy_events_classes(self, template_graph: TemplateGraph):
         EventsFilesCopier(self.settings).copy_files(template_graph)
 
-    def generate_main_zeek_file(self, template_graph):
+    def generate_main_zeek_file(self, template_graph: TemplateGraph):
         MainZeekFile(self.settings).generate(template_graph)
 
-    def generate_plugin_cc_file(self, template_graph):
+    def generate_plugin_cc_file(self, template_graph: TemplateGraph):
         PluginCcFile(self.settings).generate(template_graph)
+
+    def generate_cmakelists_file(self, template_graph: TemplateGraph):
+        CMakeListsFile(self.settings).generate(template_graph)
+
+    def generate_version_file(self):
+        VersionFile(self.settings).generate()
