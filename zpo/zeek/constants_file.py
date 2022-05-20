@@ -17,8 +17,8 @@ class ConstantsFile(TemplateBasedFileGenerator):
         )
 
         self.settings: ZpoSettings = settings
-        self.set_marker(EVENT_IDS, _get_event_ids)
-        self.set_marker(VERSION_CONSTANTS, _get_version_constants)
+        self.add_marker(EVENT_IDS, _get_event_ids)
+        self.add_marker(VERSION_CONSTANTS, _get_version_constants)
 
 
 def _get_event_ids(template_graph: TemplateGraph, _: ConstantsFile) -> str:

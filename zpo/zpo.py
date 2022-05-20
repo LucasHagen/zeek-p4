@@ -32,6 +32,8 @@ class Zpo:
                       [t.id for t in templates if type(t) == EventTemplate])
 
         template_graph = TemplateGraph(self.settings, templates)
+        template_graph.build()
+        template_graph.print_tree()
 
         p4_generator: P4Generator = P4Generator(self.settings)
         p4_generator.generate_all(template_graph)

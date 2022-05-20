@@ -15,7 +15,7 @@ class ReadmeFile(TemplateBasedFileGenerator):
             os.path.join(settings.zeek_output_dir, "README")
         )
 
-        self.set_marker(EVENTS_LIST, _get_events_list)
+        self.add_marker(EVENTS_LIST, _get_events_list)
 
 
 def _get_events_list(template_graph: TemplateGraph, _: TemplateBasedFileGenerator) -> str:

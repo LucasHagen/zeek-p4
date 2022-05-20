@@ -23,8 +23,8 @@ class PluginCcFile(TemplateBasedFileGenerator):
         )
 
         self.settings: ZpoSettings = settings
-        self.set_marker(INCLUDE_ANALYZERS, _include_analyzers)
-        self.set_marker(REGISTER_ANALYZERS, _register_analyzers)
+        self.add_marker(INCLUDE_ANALYZERS, _include_analyzers)
+        self.add_marker(REGISTER_ANALYZERS, _register_analyzers)
 
 
 def _include_analyzers(template_graph: TemplateGraph, _: PluginCcFile) -> str:

@@ -36,7 +36,6 @@ class EventTemplate(Template):
             self.path_dir, self._data["event_header"]["identifier"])
         self.constructor_file_path = os.path.join(
             self.path_dir, self._data["event_header"]["constructor"])
-        self.uid = None
         self.uid_constant = "ZPO_%s_EVENT_UID" % self.id.upper()
         self.is_ip_based = bool(
             self._data["is_ip_based"]) if "is_ip_based" in self._data else False
@@ -48,10 +47,22 @@ class EventTemplate(Template):
         self.zeek_analyzer_namespace = self._data["zeek"]["analyzer_namespace"]
         self.zeek_analyzer_class = self._data["zeek"]["analyzer_class"]
 
-    def type_str(self):
+        # Set later when the TemplateGraph is built
+        self.uid = None
+        self.protocol_priority = None
+
+    def type_str(self) -> str:
         return "event"
 
     def read_p4_identifier(self) -> str:
+        """Reads the P4 Identifier file and returns it's content.
+
+        Raises:
+            ValueError: file not found
+
+        Returns:
+            str: file content
+        """
         if not os.path.exists(self.identifier_file_path):
             raise ValueError("P4 identifier file (%s) not found for protocol template %s" % (
                 self.identifier_file_path, self.id))
@@ -60,6 +71,14 @@ class EventTemplate(Template):
             return file.read().strip()
 
     def read_p4_header_constructor(self) -> str:
+        """Reads the P4 Header file and returns it's content.
+
+        Raises:
+            ValueError: file not found
+
+        Returns:
+            str: file content
+        """
         if not os.path.exists(self.constructor_file_path):
             raise ValueError("P4 header constructor file (%s) not found for protocol template %s" % (
                 self.constructor_file_path, self.id))

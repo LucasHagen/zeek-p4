@@ -1,14 +1,18 @@
 import os
 from typing import Dict
 
-import hjson
 from zpo.template import Template
 from zpo.event_template import EventTemplate
 
 
 class ParentProtocol:
+    """A class to store a parent protocol, and an id that will be used to identify
+    the child protocol.
 
-    def __init__(self, parent_id: str, id_for_parent_protocol):
+    Used as a simple (but typed and named) pair.
+    """
+
+    def __init__(self, parent_id: str, id_for_parent_protocol: str or int):
         self.parent_id = parent_id
         self.id_for_parent_protocol = id_for_parent_protocol
 
@@ -59,6 +63,9 @@ class ProtocolTemplate(Template):
                 f"Root protocol ({self.id}) can't have parent protocols")
 
     def _parse_parent_protocols(self) -> Dict[str, ParentProtocol]:
+        """Parses the parent protocols in the hjson data and returns a Dict with the
+        `ParentProtocol`s indexed by the parent id.
+        """
         protocols = dict()
 
         if("parent_protocols" not in self._data):
@@ -70,22 +77,42 @@ class ProtocolTemplate(Template):
 
         return protocols
 
-    def _check_if_is_root(self):
+    def _check_if_is_root(self) -> bool:
+        """Internal use. For public usage, use the `is_root` variable
+        """
         return self._data["is_root_protocol"] if "is_root_protocol" in self._data else False
 
-    def add_child(self, child):
+    def add_child(self, child: Template):
+        """Adds a child to the children list.
+
+        Args:
+            child (ProtocolTemplate): the child protocol.
+        """
         self.children[child.id] = child
 
-    def rem_child(self, child):
+    def rem_child(self, child: Template):
+        """Removes a child protocol.
+
+        Args:
+            child (ProtocolTemplate): the child protocol to be removed.
+        """
         self.children.pop(child.id)
 
     def add_event(self, event: EventTemplate):
+        """Adds an event to this protocol. The event should be added only to the last protocol of
+        it's stack.
+
+        Args:
+            event (EventTemplate): the event template
+        """
         self.events[event.id] = event
 
-    def type_str(self):
+    def type_str(self) -> str:
         return "protocol"
 
-    def has_ingress_processor(self):
+    def has_ingress_processor(self) -> bool:
+        """Return whether this template has an ingress processor (file).
+        """
         return self.ingress_processor_file_path != None and len(self.ingress_processor_file_path) > 0
 
 # Example of a PROTOCOL template:

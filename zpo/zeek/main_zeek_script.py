@@ -23,7 +23,7 @@ class MainZeekFile(TemplateBasedFileGenerator):
         )
 
         self.settings: ZpoSettings = settings
-        self.set_marker(REGISTER_EVENTS, _get_register_events)
+        self.add_marker(REGISTER_EVENTS, _get_register_events)
 
 
 def _register_event(event: EventTemplate):

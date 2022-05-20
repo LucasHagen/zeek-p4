@@ -25,7 +25,7 @@ def _make_template_dict(template_list) -> Dict[str, Template]:
 class TemplateGraph:
 
     def __init__(self, settings: ZpoSettings, templates: List[Template]):
-        """Constructs a TemplateTree
+        """Constructor
 
         Args:
             templates (List[Template]): a list of Templates
@@ -34,11 +34,16 @@ class TemplateGraph:
             ValueError: if the tree is not valid
         """
         self.settings = settings
+        self.raw_templates = templates
 
-        self.validate_templates_version(templates)
+    def build(self):
+        """Builds the graph and validates it.
+        """
+        self._validate_templates_list(self.raw_templates)
 
-        protocol_list = _filter_list_by_type(templates, ProtocolTemplate)
-        event_list = _filter_list_by_type(templates, EventTemplate)
+        protocol_list = _filter_list_by_type(
+            self.raw_templates, ProtocolTemplate)
+        event_list = _filter_list_by_type(self.raw_templates, EventTemplate)
 
         # Remove events not requested by the user
         event_list = _filter_list(
@@ -47,20 +52,74 @@ class TemplateGraph:
         self.protocols = _make_template_dict(protocol_list)
         self.events = _make_template_dict(event_list)
 
-        self.root = self.find_root_protocol()
+        self.root = self._find_root_protocol()
 
-        self.build_graph()
-        self.attach_events()
-        self.check_for_cycles()
-        self.trim_unused_protocols()
-        self.remove_unreachable_protocols()
+        self._link_graph()
+        self._attach_events()
+        self._check_for_cycles()
+        self._trim_unused_protocols()
+        self._remove_unreachable_protocols()
 
-        self.set_protocol_priorities()
-        self.set_events_int_ids()
+        self._set_protocol_priorities()
+        self._set_events_int_ids()
 
-        self.print_tree()
+    def protocols_by_priority(self) -> List[ProtocolTemplate]:
+        """A list of all ProtocolTemplates sorted by priority.
 
-    def build_graph(self):
+        Priority is the depth in the protocol graph:
+
+        TLDR: lower level protocol first, higher level protocols last.
+        """
+        return self._protocols_by_priority
+
+    def events_by_priority(self) -> List[EventTemplate]:
+        """A list of all EventTemplates sorted by it's protocol priority, then
+        by id (alphabetical order).
+
+        Priority is the depth of the protocol in the protocol graph:
+
+        TLDR: lower level protocol first, higher level protocols last. If same
+        protocol priority, sorted by alphabetical order.
+        """
+        return self._events_by_priority
+
+    def events_by_priority_reversed(self) -> List[EventTemplate]:
+        """A list of all EventTemplates sorted (DESCENDING) by it's protocol priority, then
+        by id (alphabetical order).
+
+        Priority is the depth of the protocol in the protocol graph:
+
+        TLDR: high level protocols first, lower level protocols last. If same
+        protocol priority, sorted by (reversed) alphabetical order.
+        """
+        return self._events_by_priority_reversed
+
+    def print_tree(self, print_method=logging.debug):
+        """
+        Prints the current protocol graph as a tree, showing all protocol and
+        the events associated with them. The protocols that have more than one
+        parent protocol will show up twice, once for each parent.
+        """
+        def print_aux(node, depth):
+            spacing = " " * depth * 4
+
+            if depth != 0:
+                print_method(f"{spacing} |")
+
+            if len(node.events) > 0:
+                print_method(
+                    f"{spacing} |- {node.id} ({node.priority}): [{', '.join(node.events)}]")
+            else:
+                print_method(
+                    f"{spacing} |- {node.id} ({node.priority})")
+
+            for child in node.children.values():
+                print_aux(child, depth + 1)
+
+        print_method("Current Template Tree:")
+        print_aux(self.root, 0)
+
+    def _link_graph(self):
         """Builds the tree by setting the references of parents and children properly.
         """
         for id, protocol in self.protocols.items():
@@ -77,14 +136,14 @@ class TemplateGraph:
                     parent = self.protocols[parent_id]
                     parent.add_child(protocol)
 
-    def set_events_int_ids(self):
+    def _set_events_int_ids(self):
         next_event_uid = 1
 
         for e in self.events_by_priority():
             e.uid = next_event_uid
             next_event_uid += 1
 
-    def set_protocol_priorities(self):
+    def _set_protocol_priorities(self):
         queue = []
 
         queue.append((self.root, 0))
@@ -92,10 +151,13 @@ class TemplateGraph:
         while len(queue) != 0:
             node, depth = queue.pop(0)
 
-            if node.priority == None:
-                node.priority = depth
-            else:
-                node.priority = max(node.priority, depth)
+            new_priority = depth if node.priority == None else max(
+                node.priority, depth)
+
+            if node.priority != new_priority:
+                node.priority = new_priority
+                for e in node.children.values():
+                    e.protocol_priority = new_priority
 
             # At this stage there are no more cycles, so there is no need to check for it again
             for child in node.children.values():
@@ -106,22 +168,16 @@ class TemplateGraph:
 
         self._events_by_priority = []
         for protocol in self._protocols_by_priority:
+            events = list(protocol.events.values())
+            events.sort(key=lambda e: e.id)
+
             for e in protocol.events.values():
                 self._events_by_priority.append(e)
 
         self._events_by_priority_reversed = list(self._events_by_priority)
         self._events_by_priority_reversed.reverse()
 
-    def protocols_by_priority(self) -> List[ProtocolTemplate]:
-        return self._protocols_by_priority
-
-    def events_by_priority(self) -> List[EventTemplate]:
-        return self._events_by_priority
-
-    def events_by_priority_reversed(self) -> List[EventTemplate]:
-        return self._events_by_priority_reversed
-
-    def remove_unreachable_protocols(self):
+    def _remove_unreachable_protocols(self):
         unreachable_protocols = set(self.protocols.keys())
 
         def aux_reachable(protocol):
@@ -142,7 +198,7 @@ class TemplateGraph:
             for protocol_id in unreachable_protocols:
                 self.protocols.pop(protocol_id)
 
-    def check_for_cycles(self):
+    def _check_for_cycles(self):
         visited = set()
         rec_stack = set()
 
@@ -164,8 +220,8 @@ class TemplateGraph:
             if has_cycle(p):
                 raise ValueError("Cycle detected in protocol graph")
 
-    def validate_templates_version(self, templates: List[Template]):
-        """Validates the versions of all templates.
+    def _validate_templates_list(self, templates: List[Template]):
+        """Validates the versions of all templates and checks for duplicate ids.
 
         Raises:
             ValueError: wrong version
@@ -178,7 +234,15 @@ class TemplateGraph:
                 f"Expected templates with version '{self.settings.version}', but wrong the wrong version was found in: %s" %
                 ", ".join(f"{t.id} ({t.version})" for t in bad_version))
 
-    def find_root_protocol(self) -> ProtocolTemplate:
+        # Check for duplicated keys
+        seen = set()
+        duplicates = set(
+            [t.id for t in templates if t.id in seen or seen.add(t.id)])
+
+        if len(duplicates) > 0:
+            raise ValueError("Found duplicated ids in templates: %s" % duplicates)
+
+    def _find_root_protocol(self) -> ProtocolTemplate:
         """Finds the root protocol.
 
         Raises:
@@ -190,7 +254,7 @@ class TemplateGraph:
 
         return roots[0]
 
-    def attach_events(self):
+    def _attach_events(self):
         """Attach only **REQUIRED** (from settings) EventTemplates to the ProtocolTemplate object.
 
         Raises:
@@ -210,31 +274,7 @@ class TemplateGraph:
 
         logging.debug("Events attached to protocol templates")
 
-    def print_tree(self):
-        """
-        Prints the current protocol tree, showing all protocol and the events associated with
-        them.
-        """
-        def print_aux(node, depth):
-            spacing = " " * depth * 4
-
-            if depth != 0:
-                logging.debug(f"{spacing} |")
-
-            if len(node.events) > 0:
-                logging.debug(
-                    f"{spacing} |- {node.id} ({node.priority}): [{', '.join(node.events)}]")
-            else:
-                logging.debug(
-                    f"{spacing} |- {node.id} ({node.priority})")
-
-            for child in node.children.values():
-                print_aux(child, depth + 1)
-
-        logging.debug("Current Template Tree:")
-        print_aux(self.root, 0)
-
-    def trim_unused_protocols(self):
+    def _trim_unused_protocols(self):
         """
         Removes ProtocolTemplates (nodes) that have no events associated to them or to any of
         their children (or to their children's children and so on....).

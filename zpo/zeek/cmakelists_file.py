@@ -18,7 +18,7 @@ class CMakeListsFile(TemplateBasedFileGenerator):
         )
 
         self.settings: ZpoSettings = settings
-        self.set_marker(CC_FILES, _include_ccs)
+        self.add_marker(CC_FILES, _include_ccs)
 
 
 def _include_ccs(template_graph: TemplateGraph, _: CMakeListsFile) -> str:

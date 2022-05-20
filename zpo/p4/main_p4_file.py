@@ -21,10 +21,10 @@ class MainP4FileGenerator(TemplateBasedFileGenerator):
             os.path.join(settings.p4_output_dir, "main.p4")
         )
 
-        self.set_marker(PROTOCOL_INGRESS_PROCESSORS,
+        self.add_marker(PROTOCOL_INGRESS_PROCESSORS,
                         _get_protocol_ingress_processors)
-        self.set_marker(EVENT_IDENTIFICATION, _get_event_identification)
-        self.set_marker(EVENT_CONSTRUCTORS, _get_event_constructors)
+        self.add_marker(EVENT_IDENTIFICATION, _get_event_identification)
+        self.add_marker(EVENT_CONSTRUCTORS, _get_event_constructors)
 
 
 def _get_protocol_ingress_processors(template_graph: TemplateGraph, _: MainP4FileGenerator) -> str:

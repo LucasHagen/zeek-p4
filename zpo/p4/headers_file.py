@@ -24,9 +24,9 @@ class HeadersFileGenerator(TemplateBasedFileGenerator):
             os.path.join(settings.p4_output_dir, "headers.p4")
         )
 
-        self.set_marker(HEADER_DEFINITIONS, _merge_headers_definitions)
-        self.set_marker(HEADERS_STRUCT, _generate_headers_struct)
-        self.set_marker(LOADED_PROTOCOLS, _get_loaded_protocols)
+        self.add_marker(HEADER_DEFINITIONS, _merge_headers_definitions)
+        self.add_marker(HEADERS_STRUCT, _generate_headers_struct)
+        self.add_marker(LOADED_PROTOCOLS, _get_loaded_protocols)
 
 
 def _get_loaded_protocols(template_graph: TemplateGraph, _: ParserFileGenerator) -> str:
