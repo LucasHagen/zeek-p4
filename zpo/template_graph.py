@@ -307,6 +307,7 @@ class TemplateGraph:
                 queue.append((child, depth + 1))
 
         self._protocols_by_priority = list(self.protocols.values())
+        self._protocols_by_priority.sort(key=lambda p: p.id)
         self._protocols_by_priority.sort(key=lambda p: p.priority)
 
         self._events_by_priority = []

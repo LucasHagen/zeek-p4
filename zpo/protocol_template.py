@@ -1,4 +1,6 @@
+import json
 import os
+import hashlib
 from typing import Dict
 
 from zpo.template import Template
@@ -51,6 +53,7 @@ class ProtocolTemplate(Template):
         self.priority = None
         self.header_file_path = os.path.join(
             os.path.dirname(path), self._data["header"]["header_file"])
+        self._hash_cache = None
 
         if "ingress_processor" in self._data:
             self.ingress_processor_file_path = os.path.join(
@@ -114,6 +117,34 @@ class ProtocolTemplate(Template):
         """Return whether this template has an ingress processor (file).
         """
         return self.ingress_processor_file_path != None and len(self.ingress_processor_file_path) > 0
+
+    def read_p4_ingress_processor(self) -> str:
+        """Reads the P4 ingress processor file for the template.
+
+        Returns:
+            str: file content
+        """
+        if not self.has_ingress_processor():
+            return ""
+
+
+        with open(self.ingress_processor_file_path, 'r') as file:
+            return file.read().strip()
+
+    def compute_hash(self):
+        if self._hash_cache is None:
+            m = hashlib.sha256()
+
+            m.update(json.dumps(self._data, sort_keys=True).encode())
+            m.update(self.read_p4_header().encode('utf-8'))
+            m.update(self.read_p4_ingress_processor().encode('utf-8'))
+
+            self._hash_cache = m.hexdigest()
+
+        return self._hash_cache
+
+
+
 
 # Example of a PROTOCOL template:
 #
