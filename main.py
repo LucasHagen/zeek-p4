@@ -4,8 +4,6 @@ import json
 import os
 from zpo.zpo import Zpo
 from zpo.zpo_settings import ZpoSettings
-from zpo.protocol_template import ProtocolTemplate
-from zpo.event_template import EventTemplate
 
 CURRENT_VERSION = "0.0.1"
 

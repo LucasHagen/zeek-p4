@@ -2,8 +2,6 @@ import logging
 from re import T
 from typing import List, Dict, Set
 
-from zpo.p4.parser_state import ParserState
-
 from zpo.protocol_template import ProtocolTemplate
 from zpo.event_template import EventTemplate
 from zpo.template import Template
@@ -119,107 +117,6 @@ class TemplateGraph:
         print_method("Current Template Tree:")
         print_aux(self.root, 0)
 
-    def _link_graph(self):
-        """Builds the tree by setting the references of parents and children properly.
-        """
-        for id, protocol in self.protocols.items():
-            if protocol.is_root:
-                continue
-
-            parents = protocol.parent_protocols
-
-            for parent_id in parents:
-                if(parent_id not in self.protocols):
-                    logging.warning(
-                        f"Parent protocol '{parent_id}' not found for protocol '{id}'")
-                else:
-                    parent = self.protocols[parent_id]
-                    parent.add_child(protocol)
-
-    def _set_events_int_ids(self):
-        next_event_uid = 1
-
-        for e in self.events_by_priority():
-            e.uid = next_event_uid
-            next_event_uid += 1
-
-    def _set_protocol_priorities(self):
-        queue = []
-
-        queue.append((self.root, 0))
-
-        while len(queue) != 0:
-            node, depth = queue.pop(0)
-
-            new_priority = depth if node.priority == None else max(
-                node.priority, depth)
-
-            if node.priority != new_priority:
-                node.priority = new_priority
-                for e in node.children.values():
-                    e.protocol_priority = new_priority
-
-            # At this stage there are no more cycles, so there is no need to check for it again
-            for child in node.children.values():
-                queue.append((child, depth + 1))
-
-        self._protocols_by_priority = list(self.protocols.values())
-        self._protocols_by_priority.sort(key=lambda p: p.priority)
-
-        self._events_by_priority = []
-        for protocol in self._protocols_by_priority:
-            events = list(protocol.events.values())
-            events.sort(key=lambda e: e.id)
-
-            for e in protocol.events.values():
-                self._events_by_priority.append(e)
-
-        self._events_by_priority_reversed = list(self._events_by_priority)
-        self._events_by_priority_reversed.reverse()
-
-    def _remove_unreachable_protocols(self):
-        unreachable_protocols = set(self.protocols.keys())
-
-        def aux_reachable(protocol):
-            if protocol.id not in unreachable_protocols:
-                return
-
-            unreachable_protocols.remove(protocol.id)
-
-            for child in protocol.children.values():
-                aux_reachable(child)
-
-        aux_reachable(self.root)
-
-        logging.debug(
-            f"Checked for unreachable protocols: {len(unreachable_protocols)} unreachable protocols found")
-
-        if len(unreachable_protocols) > 0:
-            for protocol_id in unreachable_protocols:
-                self.protocols.pop(protocol_id)
-
-    def _check_for_cycles(self):
-        visited = set()
-        rec_stack = set()
-
-        def has_cycle(protocol):
-            visited.add(protocol.id)
-            rec_stack.add(protocol.id)
-
-            for child in protocol.children.values():
-                if child.id not in visited:
-                    if has_cycle(child):
-                        return True
-                else:
-                    if child.id in rec_stack:
-                        return True
-
-            rec_stack.remove(protocol.id)
-
-        for p in self.protocols.values():
-            if has_cycle(p):
-                raise ValueError("Cycle detected in protocol graph")
-
     def _validate_templates_list(self, templates: List[Template]):
         """Validates the versions of all templates and checks for duplicate ids.
 
@@ -240,10 +137,13 @@ class TemplateGraph:
             [t.id for t in templates if t.id in seen or seen.add(t.id)])
 
         if len(duplicates) > 0:
-            raise ValueError("Found duplicated ids in templates: %s" % duplicates)
+            raise ValueError(
+                "Found duplicated ids in templates: %s" % duplicates)
 
     def _find_root_protocol(self) -> ProtocolTemplate:
         """Finds the root protocol.
+
+        Simple search on the protocols list.
 
         Raises:
             ValueError: if no root or more than one root is found.
@@ -253,6 +153,23 @@ class TemplateGraph:
             raise ValueError(f"Expected 1 root protocol, found {len(roots)}")
 
         return roots[0]
+
+    def _link_graph(self):
+        """Builds the graph by setting the references of parents and children properly.
+        """
+        for id, protocol in self.protocols.items():
+            if protocol.is_root:
+                continue
+
+            parents = protocol.parent_protocols
+
+            for parent_id in parents:
+                if(parent_id not in self.protocols):
+                    logging.warning(
+                        f"Parent protocol '{parent_id}' not found for protocol '{id}'")
+                else:
+                    parent = self.protocols[parent_id]
+                    parent.add_child(protocol)
 
     def _attach_events(self):
         """Attach only **REQUIRED** (from settings) EventTemplates to the ProtocolTemplate object.
@@ -273,6 +190,32 @@ class TemplateGraph:
             self.protocols[event.protocol_id].add_event(event)
 
         logging.debug("Events attached to protocol templates")
+
+    def _check_for_cycles(self):
+        """Checks for cycles in the graph.
+
+        Based on: https://www.geeksforgeeks.org/detect-cycle-in-a-graph/
+        """
+        visited = set()
+        rec_stack = set()
+
+        def has_cycle(protocol):
+            visited.add(protocol.id)
+            rec_stack.add(protocol.id)
+
+            for child in protocol.children.values():
+                if child.id not in visited:
+                    if has_cycle(child):
+                        return True
+                else:
+                    if child.id in rec_stack:
+                        return True
+
+            rec_stack.remove(protocol.id)
+
+        for p in self.protocols.values():
+            if has_cycle(p):
+                raise ValueError("Cycle detected in protocol graph")
 
     def _trim_unused_protocols(self):
         """
@@ -315,3 +258,73 @@ class TemplateGraph:
 
         logging.debug(
             f"Checked for unused protocols ({len(removed_protocols)} protocol(s) removed)")
+
+    def _remove_unreachable_protocols(self):
+        """DFS through the graph until all reachable nodes have been marked visisted.
+
+        The nodes not marked "visited" are removed.
+        """
+        unreachable_protocols = set(self.protocols.keys())
+
+        def aux_reachable(protocol):
+            if protocol.id not in unreachable_protocols:
+                return
+
+            unreachable_protocols.remove(protocol.id)
+
+            for child in protocol.children.values():
+                aux_reachable(child)
+
+        aux_reachable(self.root)
+
+        logging.debug("Checked for unreachable protocols: %s unreachable protocols found" % len(
+            unreachable_protocols))
+
+        if len(unreachable_protocols) > 0:
+            for protocol_id in unreachable_protocols:
+                self.protocols.pop(protocol_id)
+
+    def _set_protocol_priorities(self):
+        """BFS through the graph setting protocol priority/depth. The highest depth is kept.
+        """
+        queue = []
+
+        queue.append((self.root, 0))
+
+        while len(queue) != 0:
+            node, depth = queue.pop(0)
+
+            new_priority = depth if node.priority == None else max(
+                node.priority, depth)
+
+            if node.priority != new_priority:
+                node.priority = new_priority
+                for e in node.children.values():
+                    e.protocol_priority = new_priority
+
+            # At this stage there are no more cycles, so there is no need to check for it again
+            for child in node.children.values():
+                queue.append((child, depth + 1))
+
+        self._protocols_by_priority = list(self.protocols.values())
+        self._protocols_by_priority.sort(key=lambda p: p.priority)
+
+        self._events_by_priority = []
+        for protocol in self._protocols_by_priority:
+            events = list(protocol.events.values())
+            events.sort(key=lambda e: e.id)
+
+            for e in protocol.events.values():
+                self._events_by_priority.append(e)
+
+        self._events_by_priority_reversed = list(self._events_by_priority)
+        self._events_by_priority_reversed.reverse()
+
+    def _set_events_int_ids(self):
+        """Sets events ids in order of priority.
+        """
+        next_event_uid = 1
+
+        for e in self.events_by_priority():
+            e.uid = next_event_uid
+            next_event_uid += 1

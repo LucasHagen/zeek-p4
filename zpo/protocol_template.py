@@ -121,12 +121,15 @@ class ProtocolTemplate(Template):
 #     "zpo_type": "PROTOCOL",
 #     "zpo_version": "0.0.1",
 #     "id": "arp",
-#     "parent_protocol": "ethernet",
-#     "id_for_parent_protocol": 2054, // DECIMAL id to identify this protocol in the parent protocol
+#     "parent_protocols": [
+#         {
+#             "id": "ethernet",
+#             "id_for_parent_protocol": 2054 // DECIMAL id to identify this protocol in the parent protocol
+#         }
+#     ],
 #     "header": {
 #         "header_file": "arp_header.p4",
 #         "header_struct": "arp_h"
 #     },
-#     "next_protocol_selector": "proto_type", // A field of the header template provided
-#     "ingress_processor": "ingress_processor.p4" // Optional
+#     "next_protocol_selector": "proto_type" // A field of the header template provided
 # }
