@@ -7,6 +7,38 @@ Oriented by:
 - Jonatas Marques ([@jonadmark](https://github.com/jonadmark))
 - Alexandre Ilha ([@asilha](https://github.com/asilha))
 
+## How to run
+
+```bash
+
+# Initialize all submodules of this repo
+./init-submodules
+
+# OPTIONAL: if you don't want to download the docker images from docker hub, you can build them:
+./build-images full
+
+# Verify if you have installed the dependencies for ZPO (python)
+sudo pip3 install -r ./zpo/requirements.txt
+
+# Run ZPO, here is an example with the built-in templates/events:
+python3 main.py output -t templates/ arp_reply arp_request icmp_echo_request icmp_echo_reply
+
+# Prepare the previously created output to be run:
+./prepare-output output
+
+# In two different terminals, run the p4app and zeek:
+./output/run_p4app
+
+./output/run_zeek
+
+```
+
+### Requirements:
+
+Main requirements are:
+- Docker
+- Python 3
+
 ## Prototypes
 
 The prototypes aim to help finding problems to be solved and getting experience with the frameworks.
