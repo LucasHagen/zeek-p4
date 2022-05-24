@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+SCRIPT=`realpath $0`
+SCRIPTPATH=`dirname $SCRIPT`
+
+if [ "$1" != "standalone" ] ; then
+
+    ################################################################################
+    # Code from p4.org
+    container_id=${P4APP_NAME:-$(docker ps | grep -m1 p4app_ | awk '{print $1}')}
+
+    if [ -z "$container_id" ]; then
+        echo "Couldn't find any p4app currently running."
+        echo "Use './run_zeek standalone' to run in standalone mode."
+        exit 1
+    fi
+    # End of code from p4.org
+    ################################################################################
+
+    docker run \
+    -it \
+    --rm \
+    --name zpo-zeek \
+    --network container:$container_id \
+    -v ${SCRIPTPATH}/zpo.zeek:/root/plugin \
+    --workdir /root/plugin \
+    lucashagen/zeek-full
+
+else
+
+    docker run \
+    -it \
+    --rm \
+    --name zpo-zeek \
+    -v ${SCRIPTPATH}/zpo.zeek:/root/plugin \
+    --workdir /root/plugin \
+    lucashagen/zeek-full
+
+fi

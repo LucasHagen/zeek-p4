@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+SCRIPT_PATH=`realpath $0`
+SCRIPT_NAME=`basename $SCRIPT_PATH`
+SCRIPT_DIR=`dirname $SCRIPT_PATH`
+
+EXEC_FILES="$SCRIPT_DIR/exec_files"
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]
+then
+    echo "This prepares your ZPO output folder with all required files for you to run it using docker."
+    echo ""
+    echo "Usage: ./$SCRIPT_NAME <zpo_output_dir>"
+    exit
+fi
+
+if [ -z "$1" ]
+then
+    echo "Error! Correct usage: ./$SCRIPT_NAME <zpo_output_dir>"
+    exit
+fi
+
+OUTPUT_DIR=`realpath $1`
+
+if [ ! -d "$1" ] || [ ! -d "$1/zpo.zeek" ] || [ ! -d "$1/zpo.zeek" ]
+then
+    echo "Error! '$1' is not a valid ZPO output folder! Did you run ZPO?"
+    exit
+fi
+
+
+echo "Preparing executable ZPO at '$1'"
+
+cp "$EXEC_FILES/p4app.json" "$OUTPUT_DIR/zpo.p4app/"
+cp "$EXEC_FILES/zpo.config" "$OUTPUT_DIR/zpo.p4app/"
+
+cp "$EXEC_FILES/run_zeek" "$OUTPUT_DIR/"
+cp "$EXEC_FILES/run" "$OUTPUT_DIR/zpo.zeek/"
+
+echo "$SCRIPT_DIR/p4app run $OUTPUT_DIR/zpo.p4app" > $OUTPUT_DIR/run_p4app
+
+chmod +x "$OUTPUT_DIR/run_zeek"
+chmod +x "$OUTPUT_DIR/zpo.zeek/run"
+chmod +x "$OUTPUT_DIR/run_p4app"
+
+echo "Done!"
