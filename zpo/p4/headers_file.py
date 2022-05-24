@@ -6,6 +6,7 @@ from zpo.p4.event_uid_definition import EventUidDefinition, NoEventDefinition
 from zpo.p4.headers_struct import HeadersStruct
 from zpo.p4.parser_file import ParserFileGenerator
 from zpo.protocol_template import ProtocolTemplate
+from zpo.template import Template
 from zpo.template_graph import TemplateGraph
 from zpo.utils import lmap
 from zpo.zpo_settings import ZpoSettings
@@ -45,10 +46,19 @@ def _get_loaded_protocols(template_graph: TemplateGraph, _: ParserFileGenerator)
 
 
 def _merge_headers_definitions(template_graph: TemplateGraph, _: ParserFileGenerator) -> str:
-    return "\n".join(map(lambda t: t.read_p4_header(),
+    return "\n".join(map(_read_p4_header,
                          template_graph.protocols_by_priority() + template_graph.events_by_priority()
                          ))
 
 
 def _generate_headers_struct(template_graph: TemplateGraph, _: ParserFileGenerator) -> str:
     return str(HeadersStruct(template_graph))
+
+
+def _read_p4_header(template: Template):
+    return "\n".join([
+        f"// Header for {template.type_str()} template '{template.id}':",
+        "",
+        template.read_p4_header(),
+        ""
+    ])

@@ -18,19 +18,19 @@ class Template:
             raise ValueError("P4 header file (%s) not found for protocol template %s" % (
                 self.header_file_path, self.id))
 
-
         with open(self.header_file_path, 'r') as file:
-            return "\n".join([
-                f"// Header for {self.type_str()} template '{self.id}':",
-                "",
-                file.read().strip(),
-                ""
-            ])
+            return file.read().strip()
 
     def type_str(self) -> str:
         """Returns a readable string of the type of the template.
 
         Returns:
             str: template readable type
+        """
+        pass
+
+    def compute_hash(self) -> bytes:
+        """Computes and returns the hash of this template. If the hash has
+        already been computed once, it will be cached.
         """
         pass

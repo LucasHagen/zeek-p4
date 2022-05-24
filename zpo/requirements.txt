@@ -1,2 +1,4 @@
 argparse
 hjson
+hashlib
+json

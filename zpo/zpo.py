@@ -35,14 +35,13 @@ class Zpo:
         template_graph.build()
         template_graph.print_tree()
 
-        for protocol in template_graph.protocols_by_priority():
-            print("Protocol '%s': %s" % (protocol.id, protocol.compute_hash()))
-
         p4_generator: P4Generator = P4Generator(self.settings)
         p4_generator.generate_all(template_graph)
 
         zeek_generator: ZeekGenerator = ZeekGenerator(self.settings)
         zeek_generator.generate_all(template_graph)
+
+        logging.info("Execution hash: %s" % template_graph.compute_hash_hex())
 
         logging.info("Done!")
 

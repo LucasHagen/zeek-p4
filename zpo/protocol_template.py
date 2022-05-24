@@ -131,7 +131,7 @@ class ProtocolTemplate(Template):
         with open(self.ingress_processor_file_path, 'r') as file:
             return file.read().strip()
 
-    def compute_hash(self):
+    def compute_hash(self) -> bytes:
         if self._hash_cache is None:
             m = hashlib.sha256()
 
@@ -139,7 +139,7 @@ class ProtocolTemplate(Template):
             m.update(self.read_p4_header().encode('utf-8'))
             m.update(self.read_p4_ingress_processor().encode('utf-8'))
 
-            self._hash_cache = m.hexdigest()
+            self._hash_cache = m.digest()
 
         return self._hash_cache
 

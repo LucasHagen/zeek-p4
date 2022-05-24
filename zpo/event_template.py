@@ -1,6 +1,7 @@
 import os
+import hashlib
+import json
 from zpo.template import Template
-from zpo.utils import lmap
 
 
 class EventTemplate(Template):
@@ -51,6 +52,8 @@ class EventTemplate(Template):
         self.uid = None
         self.protocol_priority = None
 
+        self._hash_cache = None
+
     def type_str(self) -> str:
         return "event"
 
@@ -85,6 +88,25 @@ class EventTemplate(Template):
 
         with open(self.constructor_file_path, 'r') as file:
             return file.read().strip()
+
+    def compute_hash(self) -> bytes:
+        if self._hash_cache is None:
+            m = hashlib.sha256()
+
+            m.update(json.dumps(self._data, sort_keys=True).encode())
+            m.update(self.read_p4_header().encode('utf-8'))
+            m.update(self.read_p4_identifier().encode('utf-8'))
+            m.update(self.read_p4_header_constructor().encode('utf-8'))
+
+            for relative_path in self.zeek_files:
+                path = os.path.join(self.path_dir, relative_path)
+
+                with open(path, 'r') as file:
+                    m.update(file.read().strip().encode('utf-8'))
+
+            self._hash_cache = m.digest()
+
+        return self._hash_cache
 
 # Example of an EVENT template:
 #

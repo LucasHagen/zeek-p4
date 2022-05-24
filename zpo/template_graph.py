@@ -1,3 +1,4 @@
+import hashlib
 import logging
 from re import T
 from typing import List, Dict, Set
@@ -33,6 +34,8 @@ class TemplateGraph:
         """
         self.settings = settings
         self.raw_templates = templates
+        self.is_built = False
+        self._hash_cache = None
 
     def build(self):
         """Builds the graph and validates it.
@@ -47,8 +50,8 @@ class TemplateGraph:
         event_list = _filter_list(
             lambda e: e.id in self.settings.events, event_list)
 
-        self.protocols = _make_template_dict(protocol_list)
-        self.events = _make_template_dict(event_list)
+        self.protocols: Dict[str, ProtocolTemplate] = _make_template_dict(protocol_list)
+        self.events: Dict[str, EventTemplate] = _make_template_dict(event_list)
 
         self.root = self._find_root_protocol()
 
@@ -60,6 +63,8 @@ class TemplateGraph:
 
         self._set_protocol_priorities()
         self._set_events_int_ids()
+
+        self.is_built = True
 
     def protocols_by_priority(self) -> List[ProtocolTemplate]:
         """A list of all ProtocolTemplates sorted by priority.
@@ -116,6 +121,32 @@ class TemplateGraph:
 
         print_method("Current Template Tree:")
         print_aux(self.root, 0)
+
+    def compute_hash(self) -> bytes:
+        if not self.is_built:
+            raise ValueError(
+                "Can't compute hash, template tree hasn't been built.")
+
+        if self._hash_cache is None:
+            m = hashlib.sha256()
+
+            m.update(self.settings.compute_hash())
+            # print("Hash [Settings]:", self.settings.compute_hash().hex())
+
+            for protocol in self.protocols_by_priority():
+                # print("Hash [%s]:" % protocol.id, protocol.compute_hash().hex())
+                m.update(protocol.compute_hash())
+
+            for event in self.events_by_priority():
+                # print("Hash [%s]:" % event.id, event.compute_hash().hex())
+                m.update(event.compute_hash())
+
+            self._hash_cache = m.digest()
+
+        return self._hash_cache
+
+    def compute_hash_hex(self) -> str:
+        return self.compute_hash().hex()
 
     def _validate_templates_list(self, templates: List[Template]):
         """Validates the versions of all templates and checks for duplicate ids.
@@ -307,15 +338,14 @@ class TemplateGraph:
                 queue.append((child, depth + 1))
 
         self._protocols_by_priority = list(self.protocols.values())
-        self._protocols_by_priority.sort(key=lambda p: p.id)
-        self._protocols_by_priority.sort(key=lambda p: p.priority)
+        self._protocols_by_priority.sort(key=lambda p: (p.priority, p.id))
 
         self._events_by_priority = []
         for protocol in self._protocols_by_priority:
             events = list(protocol.events.values())
             events.sort(key=lambda e: e.id)
 
-            for e in protocol.events.values():
+            for e in events:
                 self._events_by_priority.append(e)
 
         self._events_by_priority_reversed = list(self._events_by_priority)
