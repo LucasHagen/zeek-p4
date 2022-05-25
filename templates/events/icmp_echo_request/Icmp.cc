@@ -58,22 +58,9 @@ bool ZpoIcmpReqAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* 
 
 // #define ZPO_ICMP_REQUEST_DEBUG
 #ifdef ZPO_ICMP_REQUEST_DEBUG
-
     std::cout << std::endl;
-    std::cout << "[ZPO] START ICMP!!! \\/ \\/ \\/" << std::endl;
-
-    switch (event_hdr->GetEventType()) {
-        case ZPO_ICMP_ECHO_REPLY_EVENT_UID:
-            std::cout << "[ZPO] |- event = ECHO_REPLY" << std::endl;
-            break;
-        case ZPO_ICMP_ECHO_REQUEST_EVENT_UID:
-            std::cout << "[ZPO] |- event = ECHO_REQ" << std::endl;
-            break;
-        default:
-            std::cout << "[ZPO] |- event = NO_EVENT" << std::endl;
-            break;
-    }
-
+    std::cout << "[ZPO] START ICMP REQ!!! \\/ \\/ \\/" << std::endl;
+    std::cout << "[ZPO] |- event = ECHO_REQ" << std::endl;
     std::cout << "[ZPO] |- src_addr = " << packet->ip_hdr->SrcAddr().AsString() << std::endl;
     std::cout << "[ZPO] |- dst_addr = " << packet->ip_hdr->DstAddr().AsString() << std::endl;
     std::cout << "[ZPO] |- src_port = " << event_hdr->GetSrcPort() << std::endl;
@@ -85,24 +72,11 @@ bool ZpoIcmpReqAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* 
     std::cout << "[ZPO] |- icode    = " << ntohll(icmp_hdr->icode) << std::endl;
     std::cout << "[ZPO] |- len      = " << ntohll(icmp_hdr->len) << std::endl;
     std::cout << "[ZPO] |- ttl      = " << ntohll(icmp_hdr->ttl) << std::endl;
-    std::cout << "[ZPO] END ICMP!!!   /\\ /\\ /\\" << std::endl;
+    std::cout << "[ZPO] END ICMP REQ!!!   /\\ /\\ /\\" << std::endl;
     std::cout << std::endl;
-
 #endif
 
-    EventHandlerPtr e;
-    switch (event_hdr->GetEventType()) {
-        case ZPO_ICMP_ECHO_REQUEST_EVENT_UID:
-            e = icmp_echo_request;
-            break;
-        case ZPO_ICMP_ECHO_REPLY_EVENT_UID:
-            e = icmp_echo_reply;
-            break;
-        default:
-            return false;
-    }
-
-    event_mgr.Enqueue(e, conn->GetVal(), BuildInfo(icmp_hdr), val_mgr->Count(ntohll(icmp_hdr->id)),
+    event_mgr.Enqueue(icmp_echo_request, conn->GetVal(), BuildInfo(icmp_hdr), val_mgr->Count(ntohll(icmp_hdr->id)),
                       val_mgr->Count(ntohll(icmp_hdr->seq)), make_intrusive<StringVal>(payloadStr));
 
     return true;

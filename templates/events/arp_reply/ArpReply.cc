@@ -13,7 +13,6 @@ using namespace zeek::packet_analysis::BR_UFRGS_INF_ZPO::ARP;
 
 using ::zeek::AddrVal;
 using ::zeek::AddrValPtr;
-using ::zeek::EventHandlerPtr;
 using ::zeek::IPAddr;
 using ::zeek::Layer3Proto;
 using ::zeek::Packet;
@@ -41,7 +40,7 @@ bool ZpoArpReplyAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet*
 
 // #define ARP_REPLY_DEBUG
 #ifdef ARP_REPLY_DEBUG
-    std::cout << "ARP REQUEST/REPLY:" << std::endl;
+    std::cout << "ARP REPLY:" << std::endl;
     std::cout << " - SrcIp: "
               << IPAddr(IPv4, (const uint32_t*)&arp_hdr->src_proto_addr, IPAddr::ByteOrder::Network)
                      .AsString()
@@ -52,20 +51,7 @@ bool ZpoArpReplyAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet*
               << std::endl;
 #endif
 
-    EventHandlerPtr e;
-
-    switch (event_hdr->GetEventType()) {
-        case ZPO_ARP_REQUEST_EVENT_UID:
-            e = arp_request;
-            break;
-        case ZPO_ARP_REPLY_EVENT_UID:
-            e = arp_reply;
-            break;
-        default:
-            return false;
-    }
-
-    event_mgr.Enqueue(e, ToEthAddrStrRep(arp_hdr->mac_src), ToEthAddrStrRep(arp_hdr->mac_dst),
+    event_mgr.Enqueue(arp_reply, ToEthAddrStrRep(arp_hdr->mac_src), ToEthAddrStrRep(arp_hdr->mac_dst),
                       ToIPv4AddrValReply(arp_hdr->src_proto_addr), ToEthAddrStrRep(arp_hdr->src_hw_addr),
                       ToIPv4AddrValReply(arp_hdr->target_proto_addr),
                       ToEthAddrStrRep(arp_hdr->target_hw_addr));
