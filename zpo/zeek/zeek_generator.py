@@ -35,11 +35,8 @@ class ZeekGenerator:
         self.generate_version_file()
 
     def create_zeek_folders(self):
-        if not os.path.exists(self.settings.output_dir):
-            os.mkdir(self.settings.output_dir)
-
         if not os.path.exists(self.output_zeek):
-            os.mkdir(self.output_zeek)
+            os.makedirs(self.output_zeek)
 
     def copy_noedit_files(self):
         no_edit = os.path.join(

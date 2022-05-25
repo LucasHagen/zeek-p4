@@ -19,6 +19,8 @@ def main():
                         help="output folder.")
     parser.add_argument("event", nargs="+", metavar="EVENT",
                         help="Event(s) of interrest, which will be offloaded.")
+    parser.add_argument("-o", "--override", help="overrides output dir, if it exists",
+                        action="store_true")
 
     args = parser.parse_args()
 
@@ -27,7 +29,8 @@ def main():
                 args.event,
                 args.template,
                 os.getcwd(),
-                args.debug)
+                args.debug,
+                args.override)
 
     logging.basicConfig(
         format='[%(levelname)s] %(message)s',

@@ -14,6 +14,7 @@ class ZpoSettings:
                  template_folders: List[str],
                  pwd: str,
                  debug: bool = False,
+                 override: bool = False,
                  ):
         self.version: str = version
         self.output_dir: str = output_dir
@@ -21,6 +22,7 @@ class ZpoSettings:
         self.template_folders: List[str] = template_folders
         self.pwd: str = pwd
         self.debug: bool = debug
+        self.override: bool = override
         self.master_template: str = os.path.join(
             os.path.dirname(__file__), "master_template")
 
@@ -38,7 +40,8 @@ class ZpoSettings:
         m = hashlib.sha256()
 
         m.update(self.version.encode('utf-8'))
-        m.update(json.dumps(sorted(self.events), sort_keys=True).encode('utf-8'))
+        m.update(json.dumps(sorted(self.events),
+                 sort_keys=True).encode('utf-8'))
 
         return m.digest()
 

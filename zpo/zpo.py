@@ -6,6 +6,7 @@ from zpo.p4.p4_generator import P4Generator
 from zpo.protocol_template import ProtocolTemplate
 from zpo.template_graph import TemplateGraph
 from zpo.templates import load_templates
+from zpo.utils import is_dir_empty
 from zpo.zeek.zeek_generator import ZeekGenerator
 
 from zpo.zpo_settings import ZpoSettings
@@ -19,7 +20,8 @@ class Zpo:
     def run(self):
         logging.debug(f"Settings: {self.settings}\n")
 
-        self.check_output_dir()
+        if not self.check_output_dir():
+            return
 
         logging.info(f"Starting ZPO for '{self.settings.output_dir}'\n")
 
@@ -45,6 +47,16 @@ class Zpo:
 
         logging.info("Done!")
 
-    def check_output_dir(self):
+    def check_output_dir(self) -> bool:
         if os.path.exists(self.settings.output_dir):
-            shutil.rmtree(os.path.join(self.settings.output_dir))
+            if (not self.settings.override) and (not os.path.isdir(self.settings.output_dir) or not is_dir_empty(self.settings.output_dir)):
+                logging.error(
+                    "Output path '%s' already exists. If you want to override ir, use '-o' or '--override'." % self.settings.output_dir)
+                return False
+            else:
+                if os.path.isdir(self.settings.output_dir):
+                    shutil.rmtree(os.path.join(self.settings.output_dir))
+                else:
+                    os.remove(self.settings.output_dir)
+
+        return True

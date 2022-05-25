@@ -27,11 +27,8 @@ class P4Generator:
         self.generate_main_p4(template_graph)
 
     def create_p4_folders(self):
-        if not os.path.exists(self.settings.output_dir):
-            os.mkdir(self.settings.output_dir)
-
         if not os.path.exists(self.output_p4):
-            os.mkdir(self.output_p4)
+            os.makedirs(self.output_p4)
 
     def generate_headers(self, template_graph: TemplateGraph):
         HeadersFileGenerator(self.settings).generate(template_graph)
