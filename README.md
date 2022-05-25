@@ -27,9 +27,13 @@ python3 main.py output -t templates/ arp_reply arp_request icmp_echo_request icm
 ./prepare-output output
 
 # In two different terminals, run the p4app and zeek:
+
+# Terminal 1:
 ./output/run_p4app
 
+# Terminal 2:
 ./output/run_zeek
+./run
 
 ```
 

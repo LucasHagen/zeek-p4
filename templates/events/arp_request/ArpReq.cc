@@ -39,7 +39,7 @@ bool ZpoArpReqAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* p
     auto event_hdr = static_cast<ZpoPacket*>(packet)->event_hdr;
     auto arp_hdr = (const arp_ipv4_request*)data;
 
-#define ARP_REQUEST_DEBUG
+// #define ARP_REQUEST_DEBUG
 #ifdef ARP_REQUEST_DEBUG
     std::cout << "ARP REQUEST/REPLY:" << std::endl;
     std::cout << " - SrcIp: "
