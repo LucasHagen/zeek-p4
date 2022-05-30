@@ -4,7 +4,7 @@ from zpo.event_template import EventTemplate
 class NoEventDefinition:
 
     def __str__(self):
-        return "#define ZPO_NO_EVENT_UID 0"
+        return "#define RNA_NO_EVENT_UID 0"
 
 
 class EventUidDefinition:

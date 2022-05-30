@@ -12,14 +12,12 @@ const bit<32> INSTANCE_TYPE_CLONE = 1;
 
 control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_t standard_metadata) {
 
-    register<bit<32>>(1) pkt_counter;
-
     // Update destination MAC address based on the next-hop IP (akin to an ARP lookup).
     action set_dmac(bit<48> dmac) {
         hdr.ethernet.dst_addr = dmac;
     }
 
-#ifdef ZPO_PROTOCOL_IPV4
+#ifdef RNA_PROTOCOL_IPV4
 
     // IPv4 Routing
 
@@ -58,7 +56,7 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
 
 #endif
 
-#ifdef ZPO_PROTOCOL_IPV6
+#ifdef RNA_PROTOCOL_IPV6
 
     // IPv6 Routing
 
@@ -97,14 +95,10 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
 
 #endif
 
-    // ZPO Data Plane Logic
+    // RNA Data Plane Logic
     apply {
         if (standard_metadata.instance_type == INSTANCE_TYPE_NORMAL) {
-            meta.event_type = ZPO_NO_EVENT_UID;
-
-            pkt_counter.read(meta.pkt_num, 0);
-            meta.pkt_num = meta.pkt_num + 1;
-            pkt_counter.write(0, meta.pkt_num);
+            meta.event_type = RNA_NO_EVENT_UID;
 
             clone3(CloneType.I2E, MIRROR_SESSION, { meta });
 
@@ -136,62 +130,69 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
     }
 
     action construct_eth_event_header() {
-        hdr.ethernet.ethertype = ETH_P_EVENT;
+        hdr.ethernet.ethertype = ETH_P_RNA;
+
+        hdr.rna.setValid();
+        hdr.rna.version  = RNA_VERSION;
+        hdr.rna.rna_type = RNA_P_ETH_EVENT;
 
         hdr.event.eth_event.setValid();
-
-        hdr.event.eth_event.pkt_num = meta.pkt_num;
+        hdr.event.eth_event.next_header = meta.event_type;
         hdr.event.eth_event.protocol_l3 = meta.protocol_l3;
-        hdr.event.eth_event.type = meta.event_type;
     }
 
-    #ifdef ZPO_PROTOCOL_IPV4
+    #ifdef RNA_PROTOCOL_IPV4
     action construct_ipv4_event_header() {
-        hdr.ethernet.ethertype = ETH_P_EVENT_IP;
+        hdr.ethernet.ethertype = ETH_P_RNA;
+
+        hdr.rna.setValid();
+        hdr.rna.version  = RNA_VERSION;
+        hdr.rna.rna_type = RNA_P_IPV4_EVENT;
 
         hdr.event.ipv4_event.setValid();
-
-        hdr.event.ipv4_event.pkt_num = meta.pkt_num;
         hdr.event.ipv4_event.src_port = meta.src_port;
         hdr.event.ipv4_event.dst_port = meta.dst_port;
-        hdr.event.ipv4_event.type = meta.event_type;
+        hdr.event.ipv4_event.next_header = meta.event_type;
 
         // Clone IPv4 header
-        hdr.event.ipv4_event.version =        hdr.ipv4.version;
-        hdr.event.ipv4_event.ihl =            hdr.ipv4.ihl;
-        hdr.event.ipv4_event.diffserv =       hdr.ipv4.diffserv;
-        hdr.event.ipv4_event.total_len =      hdr.ipv4.total_len;
-        hdr.event.ipv4_event.identification = hdr.ipv4.identification;
-        hdr.event.ipv4_event.flags =          hdr.ipv4.flags;
-        hdr.event.ipv4_event.frag_offset =    hdr.ipv4.frag_offset;
-        hdr.event.ipv4_event.ttl =            hdr.ipv4.ttl;
-        hdr.event.ipv4_event.protocol =       hdr.ipv4.protocol;
-        hdr.event.ipv4_event.hdr_checksum =   hdr.ipv4.hdr_checksum;
-        hdr.event.ipv4_event.src_addr =       hdr.ipv4.src_addr;
-        hdr.event.ipv4_event.dst_addr =       hdr.ipv4.dst_addr;
+        hdr.event.ipv4_event.ipv4_hdr.version =        hdr.ipv4.version;
+        hdr.event.ipv4_event.ipv4_hdr.ihl =            hdr.ipv4.ihl;
+        hdr.event.ipv4_event.ipv4_hdr.diffserv =       hdr.ipv4.diffserv;
+        hdr.event.ipv4_event.ipv4_hdr.total_len =      hdr.ipv4.total_len;
+        hdr.event.ipv4_event.ipv4_hdr.identification = hdr.ipv4.identification;
+        hdr.event.ipv4_event.ipv4_hdr.flags =          hdr.ipv4.flags;
+        hdr.event.ipv4_event.ipv4_hdr.frag_offset =    hdr.ipv4.frag_offset;
+        hdr.event.ipv4_event.ipv4_hdr.ttl =            hdr.ipv4.ttl;
+        hdr.event.ipv4_event.ipv4_hdr.protocol =       hdr.ipv4.protocol;
+        hdr.event.ipv4_event.ipv4_hdr.hdr_checksum =   hdr.ipv4.hdr_checksum;
+        hdr.event.ipv4_event.ipv4_hdr.src_addr =       hdr.ipv4.src_addr;
+        hdr.event.ipv4_event.ipv4_hdr.dst_addr =       hdr.ipv4.dst_addr;
     }
     #endif
 
-    #ifdef ZPO_PROTOCOL_IPV6
+    #ifdef RNA_PROTOCOL_IPV6
     action construct_ipv6_event_header() {
-        hdr.ethernet.ethertype = ETH_P_EVENT_IP;
+        hdr.ethernet.ethertype = ETH_P_RNA;
+
+        hdr.rna.setValid();
+        hdr.rna.version  = RNA_VERSION;
+        hdr.rna.rna_type = RNA_P_IPV6_EVENT;
 
         hdr.event.ipv6_event.setValid();
 
-        hdr.event.ipv6_event.pkt_num = meta.pkt_num;
+        hdr.event.ipv6_event.next_header = meta.event_type;
         hdr.event.ipv6_event.src_port = meta.src_port;
         hdr.event.ipv6_event.dst_port = meta.dst_port;
-        hdr.event.ipv6_event.type = meta.event_type;
 
         // Clone IPv6 header
-        hdr.event.ipv6_event.version        = hdr.ipv6.version;
-        hdr.event.ipv6_event.traffic_class  = hdr.ipv6.traffic_class;
-        hdr.event.ipv6_event.flow_label     = hdr.ipv6.flow_label;
-        hdr.event.ipv6_event.payload_length = hdr.ipv6.payload_length;
-        hdr.event.ipv6_event.next_header    = hdr.ipv6.next_header;
-        hdr.event.ipv6_event.hop_limit      = hdr.ipv6.hop_limit;
-        hdr.event.ipv6_event.src_addr       = hdr.ipv6.src_addr;
-        hdr.event.ipv6_event.dst_addr       = hdr.ipv6.dst_addr;
+        hdr.event.ipv6_event.ipv6_hdr.version        = hdr.ipv6.version;
+        hdr.event.ipv6_event.ipv6_hdr.traffic_class  = hdr.ipv6.traffic_class;
+        hdr.event.ipv6_event.ipv6_hdr.flow_label     = hdr.ipv6.flow_label;
+        hdr.event.ipv6_event.ipv6_hdr.payload_length = hdr.ipv6.payload_length;
+        hdr.event.ipv6_event.ipv6_hdr.next_header    = hdr.ipv6.next_header;
+        hdr.event.ipv6_event.ipv6_hdr.hop_limit      = hdr.ipv6.hop_limit;
+        hdr.event.ipv6_event.ipv6_hdr.src_addr       = hdr.ipv6.src_addr;
+        hdr.event.ipv6_event.ipv6_hdr.dst_addr       = hdr.ipv6.dst_addr;
     }
     #endif
 
@@ -204,18 +205,18 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
 
         // EVENT PACKETS
         } else if (standard_metadata.instance_type == INSTANCE_TYPE_CLONE) {
-            if(meta.event_type == ZPO_NO_EVENT_UID) {
+            if(meta.event_type == RNA_NO_EVENT_UID) {
                 mark_to_drop(standard_metadata);
             } else {
                 // IPV4-BASED EVENT HEADER
-                #ifdef ZPO_PROTOCOL_IPV4
+                #ifdef RNA_PROTOCOL_IPV4
                 if(meta.protocol_l3 == ETH_P_IPV4) {
                     construct_ipv4_event_header();
                 } else
                 #endif
 
                 // IPV6-BASED EVENTS
-                #ifdef ZPO_PROTOCOL_IPV6
+                #ifdef RNA_PROTOCOL_IPV6
                 if(meta.protocol_l3 == ETH_P_IPV6) {
                     construct_ipv6_event_header();
                 } else

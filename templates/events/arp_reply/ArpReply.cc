@@ -2,14 +2,14 @@
 
 #include <iostream>
 
-#include "ZpoPacket.h"
+#include "RnaPacket.h"
 #include "constants.h"
 #include "zeek/Conn.h"
 #include "zeek/Event.h"
 #include "zeek/IPAddr.h"
 #include "zeek/packet_analysis/protocol/arp/events.bif.h"
 
-using namespace zeek::packet_analysis::BR_UFRGS_INF_ZPO::ARP;
+using namespace zeek::packet_analysis::BR_UFRGS_INF::RNA::ARP;
 
 using ::zeek::AddrVal;
 using ::zeek::AddrValPtr;
@@ -20,7 +20,7 @@ using ::zeek::StringVal;
 using ::zeek::StringValPtr;
 using ::zeek::packet_analysis::Analyzer;
 
-ZpoArpReplyAnalyzer::ZpoArpReplyAnalyzer() : Analyzer("ZPO_ARP_REP") {}
+RnaArpReplyAnalyzer::RnaArpReplyAnalyzer() : Analyzer("RNA_ARP_REP") {}
 
 AddrValPtr ToIPv4AddrValReply(const struct in_addr& addr) {
     return zeek::make_intrusive<AddrVal>(ntohl(addr.s_addr));
@@ -34,8 +34,7 @@ StringValPtr ToEthAddrStrRep(const struct ether_addr& addr) {
     return zeek::make_intrusive<StringVal>(buf);
 }
 
-bool ZpoArpReplyAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
-    auto event_hdr = static_cast<ZpoPacket*>(packet)->event_hdr;
+bool RnaArpReplyAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
     auto arp_hdr = (const arp_ipv4_reply*)data;
 
 // #define ARP_REPLY_DEBUG

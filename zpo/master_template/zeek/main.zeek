@@ -13,10 +13,12 @@ export {}
 
 event zeek_init() &priority=20
 {
-    print "Initializing ZPO Plugin...";
+    print "Initializing RNA Plugin...";
 
-	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_ETHERNET, 0x6601, PacketAnalyzer::ANALYZER_ZPO_ETH);
-	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_ETHERNET, 0x6602, PacketAnalyzer::ANALYZER_ZPO_IP);
+	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_ETHERNET, 0x6606, PacketAnalyzer::ANALYZER_RNA);
+	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_RNA, 1, PacketAnalyzer::ANALYZER_RNA_EVENT);
+	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_RNA, 2, PacketAnalyzer::ANALYZER_RNA_EVENT);
+	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_RNA, 3, PacketAnalyzer::ANALYZER_RNA_EVENT);
 
     print "Registered Main PacketAnalyzers.";
 
@@ -24,7 +26,7 @@ event zeek_init() &priority=20
 
     print "Registered Event PacketAnalyzers.";
 
-    print "Initialized ZPO Plugin.";
+    print "Initialized RNA Plugin.";
 }
 
 event icmp_echo_request(c: connection, info: icmp_info, id: count, seq: count, payload: string)

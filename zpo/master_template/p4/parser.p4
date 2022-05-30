@@ -1,5 +1,5 @@
-#ifndef ZPO_PARSER
-#define ZPO_PARSER
+#ifndef RNA_PARSER
+#define RNA_PARSER
 
 #include "headers.p4"
 
@@ -39,4 +39,4 @@ control computeChecksum(inout headers hdr, inout metadata meta) {
     }
 }
 
-#endif /* ZPO_PARSER */
+#endif /* RNA_PARSER */

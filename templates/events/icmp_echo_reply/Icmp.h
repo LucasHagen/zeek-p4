@@ -2,7 +2,7 @@
 
 #include "zeek/packet_analysis/Analyzer.h"
 
-namespace zeek::packet_analysis::BR_UFRGS_INF_ZPO::ICMP {
+namespace zeek::packet_analysis::BR_UFRGS_INF::RNA::ICMP {
 
 #pragma pack(1)
 typedef struct icmp_echo_reply_event_struct {
@@ -20,14 +20,14 @@ typedef struct icmp_echo_reply_event_struct {
 using AnalyzerPtr = std::shared_ptr<Analyzer>;
 class IcmpSessionAdapter;
 
-class ZpoIcmpReplyAnalyzer : public Analyzer {
+class RnaIcmpReplyAnalyzer : public Analyzer {
 public:
-    ZpoIcmpReplyAnalyzer();
-    ~ZpoIcmpReplyAnalyzer() override = default;
+    RnaIcmpReplyAnalyzer();
+    ~RnaIcmpReplyAnalyzer() override = default;
 
-    static AnalyzerPtr Instantiate() { return std::make_shared<ZpoIcmpReplyAnalyzer>(); }
+    static AnalyzerPtr Instantiate() { return std::make_shared<RnaIcmpReplyAnalyzer>(); }
 
     bool AnalyzePacket(size_t len, const uint8_t* data, zeek::Packet* packet) override;
 };
 
-}  // namespace zeek::packet_analysis::BR_UFRGS_INF_ZPO::ICMP
+}  // namespace zeek::packet_analysis::BR_UFRGS_INF::RNA::ICMP

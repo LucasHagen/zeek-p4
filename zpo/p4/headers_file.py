@@ -12,9 +12,9 @@ from zpo.utils import lmap
 from zpo.zpo_settings import ZpoSettings
 
 
+LOADED_PROTOCOLS = "@@LOADED_PROTOCOLS@@"
 HEADER_DEFINITIONS = "@@HEADER_DEFINITIONS@@"
 HEADERS_STRUCT = "@@HEADERS_STRUCT@@"
-LOADED_PROTOCOLS = "@@LOADED_PROTOCOLS@@"
 
 
 class HeadersFileGenerator(TemplateBasedFileGenerator):
@@ -24,15 +24,21 @@ class HeadersFileGenerator(TemplateBasedFileGenerator):
             os.path.join(settings.p4_master_template_dir, "headers.p4"),
             os.path.join(settings.p4_output_dir, "headers.p4")
         )
+        self.settings = settings
 
+        self.add_marker(LOADED_PROTOCOLS, _get_loaded_protocols)
         self.add_marker(HEADER_DEFINITIONS, _merge_headers_definitions)
         self.add_marker(HEADERS_STRUCT, _generate_headers_struct)
-        self.add_marker(LOADED_PROTOCOLS, _get_loaded_protocols)
 
 
-def _get_loaded_protocols(template_graph: TemplateGraph, _: ParserFileGenerator) -> str:
+def _get_loaded_protocols(template_graph: TemplateGraph, gen: HeadersFileGenerator) -> str:
     def define_proto(proto: ProtocolTemplate):
-        return "#define ZPO_PROTOCOL_%s" % proto.id.upper()
+        return "#define RNA_PROTOCOL_%s" % proto.id.upper()
+
+    # TODO: add version hash
+    random_definitions = [
+        "#define RNA_VERSION 0",
+    ]
 
     protocols_definitions = list(
         map(define_proto, template_graph.protocols_by_priority()))
@@ -42,16 +48,16 @@ def _get_loaded_protocols(template_graph: TemplateGraph, _: ParserFileGenerator)
         template_graph.events_by_priority())
     )
 
-    return "\n".join(protocols_definitions + events_uids)
+    return "\n".join(random_definitions + protocols_definitions + events_uids)
 
 
-def _merge_headers_definitions(template_graph: TemplateGraph, _: ParserFileGenerator) -> str:
+def _merge_headers_definitions(template_graph: TemplateGraph, _: HeadersFileGenerator) -> str:
     return "\n".join(map(_read_p4_header,
                          template_graph.protocols_by_priority() + template_graph.events_by_priority()
                          ))
 
 
-def _generate_headers_struct(template_graph: TemplateGraph, _: ParserFileGenerator) -> str:
+def _generate_headers_struct(template_graph: TemplateGraph, _: HeadersFileGenerator) -> str:
     return str(HeadersStruct(template_graph))
 
 

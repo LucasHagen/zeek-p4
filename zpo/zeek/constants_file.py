@@ -39,8 +39,8 @@ def _get_version_constants(_: TemplateGraph, generator: ConstantsFile) -> str:
         raise ValueError(f"Version in invalid format (X.X.X): '{version}'")
 
     return """
-#define ZPO_VERSION "%s"
-#define ZPO_VERSION_1 %d
-#define ZPO_VERSION_2 %d
-#define ZPO_VERSION_3 %d
+#define RNA_VERSION "%s"
+#define RNA_VERSION_1 %d
+#define RNA_VERSION_2 %d
+#define RNA_VERSION_3 %d
 """.strip() % (version, int(version_array[0]), int(version_array[1]), int(version_array[2]))

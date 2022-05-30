@@ -11,9 +11,9 @@
         "identifier": "identifier.p4"
     },
     "zeek": {
-        "analyzer_namespace": "zeek::packet_analysis::BR_UFRGS_INF_ZPO::ICMP",
-        "analyzer_class": "ZpoIcmpReplyAnalyzer",
-        "analyzer_id": "ZPO_ICMP_REP",
+        "analyzer_namespace": "zeek::packet_analysis::BR_UFRGS_INF::RNA::ICMP",
+        "analyzer_class": "RnaIcmpReplyAnalyzer",
+        "analyzer_id": "RNA_ICMP_REP",
         "header_files": [
             "Icmp.h"
         ],

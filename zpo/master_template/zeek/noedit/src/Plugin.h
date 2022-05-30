@@ -2,7 +2,7 @@
 
 #include <zeek/plugin/Plugin.h>
 
-namespace plugin::BR_UFRGS_INF_ZPO {
+namespace plugin::BR_UFRGS_INF::RNA {
 
 class Plugin : public zeek::plugin::Plugin {
 protected:
@@ -12,4 +12,4 @@ protected:
 
 extern Plugin plugin;
 
-}  // namespace plugin::BR_UFRGS_INF_ZPO
+}  // namespace plugin::BR_UFRGS_INF::RNA

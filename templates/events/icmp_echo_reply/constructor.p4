@@ -19,7 +19,7 @@ hdr.icmp_echo_reply_event.icode = (z_count) hdr.icmp.code;
 // hdr.icmp_echo_reply_event.ttl = (z_count) hdr.ipv4.ttl;
 
 
-#ifdef ZPO_PROTOCOL_IPV4
+#ifdef RNA_PROTOCOL_IPV4
 
 if(hdr.ipv4.isValid()) {
     hdr.icmp_echo_reply_event.v6 = (z_bool) 8w0x00;
@@ -29,12 +29,12 @@ if(hdr.ipv4.isValid()) {
     hdr.ipv4.setInvalid();
 }
 
-#ifdef ZPO_PROTOCOL_IPV6
+#ifdef RNA_PROTOCOL_IPV6
 else
 #endif
 #endif
 
-#ifdef ZPO_PROTOCOL_IPV6
+#ifdef RNA_PROTOCOL_IPV6
 
 if(hdr.ipv6.isValid()) {
     hdr.icmp_echo_reply_event.v6 = (z_bool) 8w0xFF;

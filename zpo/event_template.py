@@ -37,7 +37,7 @@ class EventTemplate(Template):
             self.path_dir, self._data["event_header"]["identifier"])
         self.constructor_file_path = os.path.join(
             self.path_dir, self._data["event_header"]["constructor"])
-        self.uid_constant = "ZPO_%s_EVENT_UID" % self.id.upper()
+        self.uid_constant = "RNA_%s_EVENT_UID" % self.id.upper()
         self.is_ip_based = bool(
             self._data["is_ip_based"]) if "is_ip_based" in self._data else False
 
@@ -123,9 +123,9 @@ class EventTemplate(Template):
 #         "identifier": "identifier.p4"
 #     },
 #     "zeek": {
-#         "analyzer_namespace": "zeek::packet_analysis::BR_INF_UFRGS_ZPO::ARP",
-#         "analyzer_class": "ZpoArpReplyAnalyzer",
-#         "analyzer_id": "ZPO_ARP_REP",
+#         "analyzer_namespace": "zeek::packet_analysis::BR_UFRGS_INF::RNA::ARP",
+#         "analyzer_class": "RnaArpReplyAnalyzer",
+#         "analyzer_id": "RNA_ARP_REP",
 #         "header_files": [
 #             "ArpReply.h"
 #         ],

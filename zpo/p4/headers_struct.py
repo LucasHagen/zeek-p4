@@ -47,6 +47,9 @@ class HeadersStruct:
 
     def _add_event_protocol_hdr(self):
         self.declarations.append(
+            HeaderStructEntry("rna_h", "rna")
+        )
+        self.declarations.append(
             HeaderStructEntry("event_h", "event")
         )
 

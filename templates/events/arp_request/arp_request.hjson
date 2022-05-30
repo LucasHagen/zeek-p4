@@ -10,9 +10,9 @@
         "identifier": "identifier.p4"
     },
     "zeek": {
-        "analyzer_namespace": "zeek::packet_analysis::BR_UFRGS_INF_ZPO::ARP",
-        "analyzer_class": "ZpoArpReqAnalyzer",
-        "analyzer_id": "ZPO_ARP_REQ",
+        "analyzer_namespace": "zeek::packet_analysis::BR_UFRGS_INF::RNA::ARP",
+        "analyzer_class": "RnaArpReqAnalyzer",
+        "analyzer_id": "RNA_ARP_REQ",
         "header_files": [
             "ArpReq.h"
         ],

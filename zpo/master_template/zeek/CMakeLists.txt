@@ -1,18 +1,18 @@
 
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-project(ZeekPluginZPO)
+project(ZeekPluginRNA)
 
 include(ZeekPlugin)
 
-zeek_plugin_begin(BR_UFRGS_INF ZPO)
+zeek_plugin_begin(BR_UFRGS_INF RNA)
 zeek_plugin_cc(
-    src/ZpoEventHdr.cc
-    src/ZpoPacket.cc
-    src/ZpoEth.cc
-    src/ZpoIp.cc
+    src/RnaHdr.cc
+    src/RnaEventHdr.cc
+    src/RnaPacket.cc
+    src/RnaAnalyzer.cc
+    src/RnaEventAnalyzer.cc
     src/Plugin.cc
-    src/zpo.bif
 @@CC_FILES@@
 )
 zeek_plugin_dist_files(README CHANGES COPYING VERSION)
@@ -20,7 +20,8 @@ zeek_plugin_scripts(
     scripts/__load__.zeek
     scripts/__preload__.zeek
     scripts/types.zeek
-    scripts/BR_UFRGS_INF/ZPO/__load__.zeek
+    scripts/BR_UFRGS_INF/RNA/main.zeek
+    scripts/BR_UFRGS_INF/RNA/__load__.zeek
 )
 zeek_plugin_end()
 

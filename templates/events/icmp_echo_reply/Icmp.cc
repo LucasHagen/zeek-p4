@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#include "ZpoPacket.h"
+#include "RnaPacket.h"
 #include "constants.h"
 #include "zeek/Conn.h"
 #include "zeek/Desc.h"
@@ -22,7 +22,7 @@ enum ICMP_EndpointState {
     ICMP_ACTIVE,    // packets seen
 };
 
-using namespace zeek::packet_analysis::BR_UFRGS_INF_ZPO::ICMP;
+using namespace zeek::packet_analysis::BR_UFRGS_INF::RNA::ICMP;
 using namespace zeek::packet_analysis::IP;
 using ::zeek::make_intrusive;
 using ::zeek::ntohll;
@@ -32,7 +32,7 @@ using ::zeek::RecordValPtr;
 using ::zeek::val_mgr;
 using ::zeek::packet_analysis::IP::SessionAdapter;
 
-ZpoIcmpReplyAnalyzer::ZpoIcmpReplyAnalyzer() : Analyzer("ZPO_ICMP_REP") {}
+RnaIcmpReplyAnalyzer::RnaIcmpReplyAnalyzer() : Analyzer("RNA_ICMP_REP") {}
 
 RecordValPtr BuildInfo(const icmp_echo_reply_event_h* icmp) {
     static auto icmp_info = zeek::id::find_type<RecordType>("icmp_info");
@@ -45,9 +45,9 @@ RecordValPtr BuildInfo(const icmp_echo_reply_event_h* icmp) {
     return rval;
 }
 
-bool ZpoIcmpReplyAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
-    auto zpo_packet = static_cast<ZpoPacket*>(packet);
-    auto event_hdr = zpo_packet->event_hdr;
+bool RnaIcmpReplyAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
+    auto rna_packet = static_cast<RnaPacket*>(packet);
+    auto event_hdr = rna_packet->GetEventHdr();
     auto icmp_hdr = (const icmp_echo_reply_event_h*)event_hdr->GetPayload();
 
     auto payload = event_hdr->GetPayload() + sizeof(icmp_echo_reply_event_h);
@@ -56,23 +56,23 @@ bool ZpoIcmpReplyAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet
 
     auto conn = event_hdr->GetOrCreateConnection(packet);
 
-// #define ZPO_ICMP_REPLY_DEBUG
-#ifdef ZPO_ICMP_REPLY_DEBUG
+// #define RNA_ICMP_REPLY_DEBUG
+#ifdef RNA_ICMP_REPLY_DEBUG
     std::cout << std::endl;
-    std::cout << "[ZPO] START ICMP REPLY!!! \\/ \\/ \\/" << std::endl;
-    std::cout << "[ZPO] |- event = ECHO_REPLY" << std::endl;
-    std::cout << "[ZPO] |- src_addr = " << packet->ip_hdr->SrcAddr().AsString() << std::endl;
-    std::cout << "[ZPO] |- dst_addr = " << packet->ip_hdr->DstAddr().AsString() << std::endl;
-    std::cout << "[ZPO] |- src_port = " << event_hdr->GetSrcPort() << std::endl;
-    std::cout << "[ZPO] |- dst_port = " << event_hdr->GetDstPort() << std::endl;
-    std::cout << "[ZPO] |- id       = " << ntohll(icmp_hdr->id) << std::endl;
-    std::cout << "[ZPO] |- seq      = " << ntohll(icmp_hdr->seq) << std::endl;
-    std::cout << "[ZPO] |- v6       = " << ntohs(icmp_hdr->v6) << std::endl;
-    std::cout << "[ZPO] |- itype    = " << ntohll(icmp_hdr->itype) << std::endl;
-    std::cout << "[ZPO] |- icode    = " << ntohll(icmp_hdr->icode) << std::endl;
-    std::cout << "[ZPO] |- len      = " << ntohll(icmp_hdr->len) << std::endl;
-    std::cout << "[ZPO] |- ttl      = " << ntohll(icmp_hdr->ttl) << std::endl;
-    std::cout << "[ZPO] END ICMP REPLY!!!   /\\ /\\ /\\" << std::endl;
+    std::cout << "[RNA] START ICMP REPLY!!! \\/ \\/ \\/" << std::endl;
+    std::cout << "[RNA] |- event = ECHO_REPLY" << std::endl;
+    std::cout << "[RNA] |- src_addr = " << packet->ip_hdr->SrcAddr().AsString() << std::endl;
+    std::cout << "[RNA] |- dst_addr = " << packet->ip_hdr->DstAddr().AsString() << std::endl;
+    std::cout << "[RNA] |- src_port = " << event_hdr->GetSrcPort() << std::endl;
+    std::cout << "[RNA] |- dst_port = " << event_hdr->GetDstPort() << std::endl;
+    std::cout << "[RNA] |- id       = " << ntohll(icmp_hdr->id) << std::endl;
+    std::cout << "[RNA] |- seq      = " << ntohll(icmp_hdr->seq) << std::endl;
+    std::cout << "[RNA] |- v6       = " << ntohs(icmp_hdr->v6) << std::endl;
+    std::cout << "[RNA] |- itype    = " << ntohll(icmp_hdr->itype) << std::endl;
+    std::cout << "[RNA] |- icode    = " << ntohll(icmp_hdr->icode) << std::endl;
+    std::cout << "[RNA] |- len      = " << ntohll(icmp_hdr->len) << std::endl;
+    std::cout << "[RNA] |- ttl      = " << ntohll(icmp_hdr->ttl) << std::endl;
+    std::cout << "[RNA] END ICMP REPLY!!!   /\\ /\\ /\\" << std::endl;
     std::cout << std::endl;
 #endif
 

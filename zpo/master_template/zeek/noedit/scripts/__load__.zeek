@@ -8,5 +8,5 @@
 # only on explicit `@load <plugin-namespace>/<plugin-name>`.
 #
 
-@load-plugin BR_UFRGS_INF::ZPO
-@load BR_UFRGS_INF/ZPO
+@load-plugin BR_UFRGS_INF::RNA
+@load BR_UFRGS_INF/RNA

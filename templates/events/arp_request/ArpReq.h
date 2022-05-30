@@ -3,10 +3,10 @@
 #include <netinet/ether.h>
 #include <netinet/ip.h>
 
-#include "ZpoEventHdr.h"
+#include "RnaEventHdr.h"
 #include "zeek/packet_analysis/Analyzer.h"
 
-namespace zeek::packet_analysis::BR_UFRGS_INF_ZPO::ARP {
+namespace zeek::packet_analysis::BR_UFRGS_INF::RNA::ARP {
 
 using namespace zeek::packet_analysis;
 
@@ -20,16 +20,16 @@ typedef struct arp_ipv4_request_struct {
     struct in_addr target_proto_addr;
 } arp_ipv4_request;
 
-class ZpoArpReqAnalyzer : public Analyzer {
+class RnaArpReqAnalyzer : public Analyzer {
 public:
-    ZpoArpReqAnalyzer();
-    ~ZpoArpReqAnalyzer() override = default;
+    RnaArpReqAnalyzer();
+    ~RnaArpReqAnalyzer() override = default;
 
     static zeek::packet_analysis::AnalyzerPtr Instantiate() {
-        return std::make_shared<ZpoArpReqAnalyzer>();
+        return std::make_shared<RnaArpReqAnalyzer>();
     }
 
     bool AnalyzePacket(size_t len, const uint8_t* data, zeek::Packet* packet) override;
 };
 
-}  // namespace zeek::packet_analysis::BR_UFRGS_INF_ZPO::ARP
+}  // namespace zeek::packet_analysis::BR_UFRGS_INF::RNA::ARP

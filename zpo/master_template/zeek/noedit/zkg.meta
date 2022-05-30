@@ -1,4 +1,4 @@
 [package]
-script_dir = scripts/BR_UFRGS_INF/ZPO
+script_dir = scripts/BR_UFRGS_INF/RNA
 build_command = ./configure && make
 test_command = cd tests && btest

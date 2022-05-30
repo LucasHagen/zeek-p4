@@ -18,7 +18,7 @@ class MainZeekFile(TemplateBasedFileGenerator):
                 settings.zeek_output_dir,
                 "scripts",
                 "BR_UFRGS_INF",
-                "ZPO",
+                "RNA",
                 "main.zeek")
         )
 
@@ -27,11 +27,9 @@ class MainZeekFile(TemplateBasedFileGenerator):
 
 
 def _register_event(event: EventTemplate):
-    parent_analyzer = "ZPO_IP" if event.is_ip_based else "ZPO_ETH"
-
     return """
-PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_%s, %d, PacketAnalyzer::ANALYZER_%s);
-""".strip() % (parent_analyzer, event.uid, event.zeek_analyzer_id)
+PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_RNA_EVENT, %d, PacketAnalyzer::ANALYZER_%s);
+""".strip() % (event.uid, event.zeek_analyzer_id)
 
 
 def _get_register_events(template_graph: TemplateGraph, _: MainZeekFile) -> str:

@@ -8,64 +8,70 @@
 #include "zeek/IP.h"
 #include "zeek/IPAddr.h"
 
-#define ETH_P_EVENT 0x6601
-#define ETH_P_EVENT_IP 0x6602
+#define RNA_P_ETH_EVENT  1
+#define RNA_P_IPV4_EVENT 2
+#define RNA_P_IPV6_EVENT 3
 
-namespace zeek::packet_analysis::BR_UFRGS_INF_ZPO {
+namespace zeek::packet_analysis::BR_UFRGS_INF::RNA {
 
 #pragma pack(1)
 typedef struct eth_event_h_struct {
-    uint32_t pkt_num;
+    uint16_t next_header;
     uint16_t protocol_l3;
-    uint16_t event_type;
 } eth_event_h;
 
 #pragma pack(1)
 typedef struct ipv4_event_h_struct {
-    uint32_t pkt_num;
+    uint16_t next_header;
     uint16_t src_port;
     uint16_t dst_port;
-    uint16_t event_type;
     struct ip ip_hdr;
 } ipv4_event_h;
 
 #pragma pack(1)
 typedef struct ipv6_event_h_struct {
-    uint32_t pkt_num;
+    uint16_t next_header;
     uint16_t src_port;
     uint16_t dst_port;
-    uint16_t event_type;
     struct ip6_hdr ipv6_hdr;
 } ipv6_event_h;
 
 /**
- * @brief Representation of the ZPO Event Header.
+ * @brief Representation of the RNA Event Header.
  *
  * All data available in this object is already in Host ByteOrder, unless otherwise specified.
  */
-class ZpoEventHdr {
+class RnaEventHdr {
 public:
     const static int ETH_EVENT_HEADER_SIZE = sizeof(eth_event_h);
     const static int IPV4_EVENT_HEADER_SIZE = sizeof(ipv4_event_h);
     const static int IPV6_EVENT_HEADER_SIZE = sizeof(ipv6_event_h);
 
     /**
-     * @brief Creates an instance of a ethernet-based ZpoEventHdr.
+     * @brief Creates an instance of a ethernet-based RnaEventHdr.
      *
      * @param data Pointer to the beginning of the event header.
-     * @return std::shared_ptr<ZpoEventHdr> A new instance.
+     * @return std::shared_ptr<RnaEventHdr> A new instance.
      */
-    static std::shared_ptr<ZpoEventHdr> InitEthEventHdr(const uint8_t* data);
+    static std::shared_ptr<RnaEventHdr> InitEthEventHdr(const uint8_t* data);
 
     /**
-     * @brief Creates an instance of a ip-based ZpoEventHdr (v4 or v6 is decided automatically).
+     * @brief Creates an instance of a ipv4-based RnaEventHdr.
      *
      * @param data Pointer to the beginning of the event header.
-     * @return std::shared_ptr<ZpoEventHdr> A new instance.
+     * @return std::shared_ptr<RnaEventHdr> A new instance.
      */
-    static std::shared_ptr<ZpoEventHdr> InitIpEventHdr(const uint8_t* data);
+    static std::shared_ptr<RnaEventHdr> InitIpv4EventHdr(const uint8_t* data);
 
-    ~ZpoEventHdr() = default;
+    /**
+     * @brief Creates an instance of a ipv6-based RnaEventHdr.
+     *
+     * @param data Pointer to the beginning of the event header.
+     * @return std::shared_ptr<RnaEventHdr> A new instance.
+     */
+    static std::shared_ptr<RnaEventHdr> InitIpv6EventHdr(const uint8_t* data);
+
+    ~RnaEventHdr() = default;
 
     uint16_t GetLayer3Protocol() const;
     uint8_t GetLayer4Protocol() const;
@@ -96,16 +102,16 @@ public:
     const uint8_t* GetPayload() const;
 
     /**
-     * @brief Construct a new ZpoEventHdr for a **NOT**-ip based event.
+     * @brief Construct a new RnaEventHdr for a **NOT**-ip based event.
      *
      * This
      *
      * @param data
      * @param hdr
      */
-    ZpoEventHdr(const uint8_t* data, const eth_event_h* hdr);
-    ZpoEventHdr(const uint8_t* data, const ipv4_event_h* hdr);
-    ZpoEventHdr(const uint8_t* data, const ipv6_event_h* hdr);
+    RnaEventHdr(const uint8_t* data, const eth_event_h* hdr);
+    RnaEventHdr(const uint8_t* data, const ipv4_event_h* hdr);
+    RnaEventHdr(const uint8_t* data, const ipv6_event_h* hdr);
 
     zeek::Connection* GetOrCreateConnection(const Packet* packet);
     zeek::Connection* GetOrCreateConnection(const Packet* packet, const zeek::ConnTuple& tuple);
@@ -119,11 +125,10 @@ protected:
     const uint32_t hdr_size = 0;
     const uint8_t* payload = nullptr;
 
-    uint32_t packet_number = 0;
+    uint16_t event_type = 0;
     uint16_t l3_protocol = 0;
     uint16_t src_port = 0;
     uint16_t dst_port = 0;
-    uint16_t event_type = 0;
 
     std::shared_ptr<zeek::IP_Hdr> ip_hdr = nullptr;
 
@@ -131,4 +136,4 @@ protected:
                         const Packet* packet);
 };
 
-}  // namespace zeek::packet_analysis::BR_UFRGS_INF_ZPO
+}  // namespace zeek::packet_analysis::BR_UFRGS_INF::RNA
