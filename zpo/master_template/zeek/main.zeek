@@ -36,7 +36,7 @@ event icmp_echo_request(c: connection, info: icmp_info, id: count, seq: count, p
 
 event icmp_echo_reply(c: connection, info: icmp_info, id: count, seq: count, payload: string)
 {
-	print "ICMP Echo Reply", c$id$orig_h, c$id$resp_h, id, seq;
+    print "ICMP Echo Reply", c$id$orig_h, c$id$resp_h, id, seq;
 }
 
 event arp_request(mac_src: string, mac_dst: string, SPA: addr, SHA: string, TPA: addr,

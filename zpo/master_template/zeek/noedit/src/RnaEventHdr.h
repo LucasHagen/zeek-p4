@@ -113,8 +113,8 @@ public:
     RnaEventHdr(const uint8_t* data, const ipv4_event_h* hdr);
     RnaEventHdr(const uint8_t* data, const ipv6_event_h* hdr);
 
-    zeek::Connection* GetOrCreateConnection(const Packet* packet);
-    zeek::Connection* GetOrCreateConnection(const Packet* packet, const zeek::ConnTuple& tuple);
+    zeek::Connection* GetOrCreateConnection(Packet* packet, bool is_one_way = false);
+    zeek::Connection* GetOrCreateConnection(Packet* packet, const zeek::ConnTuple& tuple);
 
 protected:
     const uint8_t* data = nullptr;

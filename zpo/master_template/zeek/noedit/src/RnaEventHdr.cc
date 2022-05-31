@@ -105,14 +105,19 @@ TransportProto RnaEventHdr::GetTransportProto() const {
 
 const uint8_t* RnaEventHdr::GetPayload() const { return payload; }
 
-Connection* RnaEventHdr::GetOrCreateConnection(const Packet* packet) {
-    ConnTuple tuple = {
-        GetSrcAddress(),    GetDstAddress(), htons(GetSrcPort()), htons(GetDstPort()), true,
-        GetTransportProto()};
+Connection* RnaEventHdr::GetOrCreateConnection(Packet* packet, bool is_one_way /* = false */) {
+    ConnTuple tuple;
+    tuple.src_addr = GetSrcAddress();
+    tuple.dst_addr = GetDstAddress();
+    tuple.src_port = htons(GetSrcPort());
+    tuple.dst_port = htons(GetDstPort());
+    tuple.is_one_way = is_one_way;
+    tuple.proto = GetTransportProto();
+
     return GetOrCreateConnection(packet, tuple);
 }
 
-Connection* RnaEventHdr::GetOrCreateConnection(const Packet* packet, const ConnTuple& tuple) {
+Connection* RnaEventHdr::GetOrCreateConnection(Packet* packet, const ConnTuple& tuple) {
     detail::ConnKey key(tuple);
 
     Connection* conn = session_mgr->FindConnection(key);
@@ -140,6 +145,11 @@ Connection* RnaEventHdr::GetOrCreateConnection(const Packet* packet, const ConnT
         //     }
         // }
     }
+
+    bool is_orig = (tuple.src_addr == conn->OrigAddr()) && (tuple.src_port == conn->OrigPort());
+    packet->is_orig = is_orig;
+
+    conn->CheckFlowLabel(is_orig, ip_hdr->FlowLabel());
 
     return conn;
 }
