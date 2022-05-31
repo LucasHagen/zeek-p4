@@ -50,6 +50,8 @@ bool RnaArpReplyAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet*
               << std::endl;
 #endif
 
+    packet->processed = true;
+
     event_mgr.Enqueue(arp_reply, ToEthAddrStrRep(arp_hdr->mac_src), ToEthAddrStrRep(arp_hdr->mac_dst),
                       ToIPv4AddrValReply(arp_hdr->src_proto_addr), ToEthAddrStrRep(arp_hdr->src_hw_addr),
                       ToIPv4AddrValReply(arp_hdr->target_proto_addr),

@@ -76,6 +76,8 @@ bool RnaIcmpReplyAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet
     std::cout << std::endl;
 #endif
 
+    packet->processed = true;
+
     event_mgr.Enqueue(icmp_echo_reply, conn->GetVal(), BuildInfo(icmp_hdr), val_mgr->Count(ntohll(icmp_hdr->id)),
                       val_mgr->Count(ntohll(icmp_hdr->seq)), make_intrusive<StringVal>(payloadStr));
 

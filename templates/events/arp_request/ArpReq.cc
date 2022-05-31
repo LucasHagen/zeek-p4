@@ -50,6 +50,8 @@ bool RnaArpReqAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* p
               << std::endl;
 #endif
 
+    packet->processed = true;
+
     event_mgr.Enqueue(arp_request, ToEthAddrStrReq(arp_hdr->mac_src), ToEthAddrStrReq(arp_hdr->mac_dst),
                       ToIPv4AddrValReq(arp_hdr->src_proto_addr), ToEthAddrStrReq(arp_hdr->src_hw_addr),
                       ToIPv4AddrValReq(arp_hdr->target_proto_addr),
