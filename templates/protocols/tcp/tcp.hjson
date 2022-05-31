@@ -1,0 +1,17 @@
+{
+    "zpo_type": "PROTOCOL",
+    "zpo_version": "0.0.1",
+    "id": "tcp",
+    "parent_protocols": [
+        {
+            "id": "ipv4",
+            "id_for_parent_protocol": 6 // DECIMAL id to identify this protocol in the parent protocol
+        }
+    ],
+    "header": {
+        "header_file": "tcp_header.p4",
+        "header_struct": "tcp_h"
+    },
+    "next_protocol_selector": null, // A field of the header template provided
+    "ingress_processor": "ingress_processor.p4" // Optional
+}
