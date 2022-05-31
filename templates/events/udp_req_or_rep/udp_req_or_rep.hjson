@@ -1,0 +1,24 @@
+{
+    "zpo_type": "EVENT",
+    "zpo_version": "0.0.1",
+    "id": "udp_req_or_rep",
+    "protocol": "udp",
+    "is_ip_based": true,
+    "event_header": {
+        "header_file": "udp_req_or_rep_header.p4",
+        "header_struct": "udp_req_or_rep_event_h",
+        "constructor": "constructor.p4",
+        "identifier": "identifier.p4"
+    },
+    "zeek": {
+        "analyzer_namespace": "zeek::packet_analysis::BR_UFRGS_INF::RNA::UDP",
+        "analyzer_class": "UdpRequestOrReplyAnalyzer",
+        "analyzer_id": "REP_UDP_REP_REQ",
+        "header_files": [
+            "UdpReqOrRep.h"
+        ],
+        "cc_files": [
+            "UdpReqOrRep.cc"
+        ]
+    }
+}
