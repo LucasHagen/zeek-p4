@@ -52,10 +52,10 @@ event arp_reply(mac_src: string, mac_dst: string, SPA: addr, SHA: string, TPA: a
 
 event udp_request(c: connection)
 {
-    print "UDP Request",  c$id$orig_h, ":", c$id$orig_p, " -> ", c$id$resp_h, ":", c$id$orig_p;
+    print "UDP Request",  c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p, c$history;
 }
 
 event udp_reply(c: connection)
 {
-    print "UDP Reply",  c$id$orig_h, ":", c$id$orig_p, " -> ", c$id$resp_h, ":", c$id$orig_p;
+    print "UDP Reply",  c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p, c$history;
 }

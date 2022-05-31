@@ -3,6 +3,7 @@
 #include <netinet/ether.h>
 #include <netinet/ip.h>
 
+#include "zeek/Conn.h"
 #include "zeek/packet_analysis/Analyzer.h"
 
 namespace zeek::packet_analysis::BR_UFRGS_INF::RNA::UDP {
