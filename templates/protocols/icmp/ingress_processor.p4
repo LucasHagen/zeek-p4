@@ -1,7 +1,6 @@
 meta.src_port = (bit<16>) hdr.icmp.type_;
 
 // ICMP COUNTERPART START
-#ifdef RNA_PROTOCOL_IPV4
 if(hdr.ipv4.isValid()) {
     if (hdr.icmp.type_ == ICMP_ECHO) {
         meta.dst_port = (bit<16>) ICMP_ECHOREPLY;
@@ -27,12 +26,5 @@ if(hdr.ipv4.isValid()) {
         meta.dst_port = (bit<16>) hdr.icmp.code;
     }
 }
-#endif
-
-#ifdef RNA_PROTOCOL_IPV6
-if(hdr.ipv6.isValid()) {
-    // TODO: set ipv6 counterpart
-}
-#endif
 
 // ICMP COUNTERPART END
