@@ -32,7 +32,15 @@ bool UdpRequestOrReplyAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, P
 
     auto conn = event_hdr->GetOrCreateConnection(packet);
 
-    std::cout << "UDP REQUEST OR REPLY" << std::endl;
+// #define RNA_UDP_DEBUG
+#ifdef RNA_UDP_DEBUG
+    std::cout << "[RNA] UDP Message:" << std::endl;
+    std::cout << " |_ src_addr = " << packet->ip_hdr->SrcAddr().AsString() << std::endl;
+    std::cout << " |_ dst_addr = " << packet->ip_hdr->DstAddr().AsString() << std::endl;
+    std::cout << " |_ src_port = " << event_hdr->GetSrcPort() << std::endl;
+    std::cout << " |_ dst_port = " << event_hdr->GetDstPort() << std::endl;
+    std::cout << " |_ type     = " << (packet->is_orig ? "request" : "reply") << std::endl;
+#endif
 
     if (packet->is_orig) {
         conn->CheckHistory(RNA_HIST_ORIG_DATA_PKT, 'D');
