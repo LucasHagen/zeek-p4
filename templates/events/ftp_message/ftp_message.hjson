@@ -1,0 +1,24 @@
+{
+    "zpo_type": "EVENT",
+    "zpo_version": "0.0.1",
+    "id": "ftp_message",
+    "protocol": "tcp",
+    "is_ip_based": true,
+    "event_header": {
+        "header_file": "ftp_message_header.p4",
+        "header_struct": "ftp_message_event_h",
+        "constructor": "constructor.p4",
+        "identifier": "identifier.p4"
+    },
+    "zeek": {
+        "analyzer_namespace": "zeek::packet_analysis::BR_UFRGS_INF::RNA::FTP",
+        "analyzer_class": "FtpMsgAnalyzer",
+        "analyzer_id": "FTP_MSG",
+        "header_files": [
+            "FtpMsgAnalyzer.h"
+        ],
+        "cc_files": [
+            "FtpMsgAnalyzer.cc"
+        ]
+    }
+}
