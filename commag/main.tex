@@ -1,0 +1,66 @@
+% Project based on template.tex.
+
+\documentclass[journal,comsoc]{IEEEtran} % For internal use
+% \documentclass[journal,comsoc,pagebackref=false,bookmarks=false]{IEEEtran} % For submission
+
+\input{ieee.tex}
+\input{config.tex}
+
+\begin{document}
+
+% Titles are generally capitalized except for words such as a, an, and, as,
+% at, but, by, for, in, nor, of, on, or, the, to and up, which are usually
+% not capitalized unless they are the first or last word of the title.
+% Linebreaks \\ can be used within to get better formatting as desired.
+% Do not put math or special symbols in the title.
+\title{Enabling Network Intrusion Detection\\at Data Plane Speeds}
+
+% Author names and IEEE memberships.
+% note positions of commas and nonbreaking spaces ( ~ ) LaTeX will not break
+% a structure at a ~ so this keeps an author's name from being broken across
+% two lines.
+% use \thanks{} to gain access to the first footnote area
+% a separate \thanks must be used for each paragraph as LaTeX2e's \thanks
+% was not built to handle multiple paragraphs
+\author{
+  \IEEEauthorblockN{
+    Lucas~Sonntag~Hagen,
+    Alexandre~da~Silveira~Ilha,
+    Jonatas~Adilson~Marques,\\
+    and Luciano~Paschoal~Gaspary,~\IEEEmembership{Senior~Member,~IEEE}\\
+  }
+  \IEEEauthorblockA{
+    Institute of Informatics,
+    Federal University of Rio Grande do Sul - Brazil\\
+    \{lucas.hagen, asilha, jamarques, paschoal\}@inf.ufrgs.br
+  }
+  \thanks{Manuscript submitted X NN, 2022.}
+}
+
+\markboth{IEEE Communications Magazine}{}
+
+\maketitle
+
+\input{content/00-abstract.tex}
+
+\begin{IEEEkeywords}
+software-defined networks, security, prototype implementation, testbed experimentation.
+\end{IEEEkeywords}
+
+\input{content/01-introduction}
+\input{content/02-background}
+\input{content/03-architecture}
+\input{content/04-code-generation}
+\input{content/80-evaluation}
+\input{content/90-conclusion}
+\input{content/99-ack}
+
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,references}
+
+\vfill
+\newpage      
+
+\input{content/99-bio}
+
+\end{document}

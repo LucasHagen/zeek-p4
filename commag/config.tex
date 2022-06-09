@@ -1,0 +1,102 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% \BEGIN{PACKAGES FOR ALGORITHM} %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{mathtools}
+\usepackage{xspace}
+\usepackage{setspace}
+\usepackage{algorithm}                  % For the floating environment.
+\usepackage[noend]{algpseudocode}       % For the pseudocode.
+% ASI: algpseudocode imports algorithmicx, which conflicts with algorithmic (imported by packages_ieee.tex).
+
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\algrenewcommand\algorithmicindent{0.8em}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% \END{PACKAGES FOR ALGORITHM} %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[pdftex]{graphicx}
+\graphicspath{{./graphics/}}
+\DeclareGraphicsExtensions{.pdf,.jpg,.png}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+% \usepackage{amssymb}
+\usepackage[cmintegrals]{newtxmath}
+\interdisplaylinepenalty=2500
+
+\usepackage{balance}
+\usepackage{cite}
+\usepackage{csquotes}
+\usepackage{listings}
+\usepackage[author={Ilha}]{pdfcomment}
+\usepackage{placeins}
+
+\usepackage{siunitx}
+\sisetup{detect-weight=true, detect-family=true}
+
+\usepackage{soul}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{xfrac}
+
+\usepackage{blindtext}
+
+\MakeOuterQuote{"}
+
+% Correct bad hyphenation here
+\hyphenation{soft-ware de-fin-ed net-works A-non-y-mized}
+
+% Lowercase Roman in italics between parentheses.
+\newcommand{\pit}[1] {(\textit{\romannumeral #1})} 
+
+% Style for inline code.
+\newcommand{\code}[1] {\texttt{#1}}
+
+% Style for code.
+\lstdefinestyle{mystyle}{
+    breaklines, 
+    basicstyle=\ttfamily\scriptsize, 
+    captionpos=b,
+    floatplacement=htb,
+    frame=single,
+    keywordstyle=\bfseries,
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny
+}
+
+\lstset{style=mystyle}
+
+% https://tex.stackexchange.com/q/34155
+
+\usepackage[english]{babel}  
+\addto\extrasenglish{  
+  \def\sectionautorefname{Section}
+  \def\subsectionautorefname{Section}
+  \def\subsubsectionautorefname{§}
+  \def\figureautorefname{Figure}
+}
+
+% https://tex.stackexchange.com/a/354690/
+
+% add these two lines to your long preamble    
+\DeclareMathAlphabet{\mathcal}{OMS}{cmsy}{m}{n}
+\SetMathAlphabet{\mathcal}{bold}{OMS}{cmsy}{b}{n}
+
+% useful macros
+\newcommand{\bigO}{\mathcal{O}}
+\newcommand{\Euclid}{\textsc{Euclid}}
+\newcommand{\PFour}{$\mathrm{P4_{16}}$} % P4_16
+
+% Uncomment for submission 
+% \hypersetup{draft}
+
+% Inspired by http://mirrors.ctan.org/macros/latex/contrib/acmart/acmart.dtx
+\definecolor[named]{Purple}{cmyk}{0.55,1,0,0.15}
+\definecolor[named]{DarkBlue}{cmyk}{1,0.58,0,0.21}
+\hypersetup{colorlinks,
+    linkcolor=Purple,
+    citecolor=Purple,
+    urlcolor=DarkBlue}
