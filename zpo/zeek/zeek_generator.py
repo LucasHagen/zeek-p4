@@ -7,7 +7,7 @@ from zpo.utils import copy_file, copy_tree
 from zpo.zeek.changes_file import ChangesFile
 from zpo.zeek.cmakelists_file import CMakeListsFile
 from zpo.zeek.constants_file import ConstantsFile
-from zpo.zeek.events_classes import EventsFilesCopier
+from zpo.zeek.offloaders_classes import OffloadersFilesCopier
 from zpo.zeek.main_zeek_script import MainZeekFile
 from zpo.zeek.plugin_cc_file import PluginCcFile
 from zpo.zeek.readme_file import ReadmeFile
@@ -28,7 +28,7 @@ class ZeekGenerator:
         self.generate_constants_file(template_graph)
         self.generate_readme_file(template_graph)
         self.generate_changes_file(template_graph)
-        self.copy_events_classes(template_graph)
+        self.copy_offloaders_classes(template_graph)
         self.generate_main_zeek_file(template_graph)
         self.generate_plugin_cc_file(template_graph)
         self.generate_cmakelists_file(template_graph)
@@ -55,8 +55,8 @@ class ZeekGenerator:
     def generate_changes_file(self, template_graph: ExecGraph):
         ChangesFile(self.settings).generate(template_graph)
 
-    def copy_events_classes(self, template_graph: ExecGraph):
-        EventsFilesCopier(self.settings).copy_files(template_graph)
+    def copy_offloaders_classes(self, template_graph: ExecGraph):
+        OffloadersFilesCopier(self.settings).copy_files(template_graph)
 
     def generate_main_zeek_file(self, template_graph: ExecGraph):
         MainZeekFile(self.settings).generate(template_graph)

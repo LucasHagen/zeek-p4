@@ -1,4 +1,4 @@
-from zpo.model.parser import ProtocolComponent
+from zpo.model.protocol import ProtocolComponent
 from zpo.p4.transition import Transition, TransitionAccept, TransitionSelector
 from zpo.utils import indent
 

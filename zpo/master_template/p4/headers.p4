@@ -1,7 +1,14 @@
 #ifndef RNA_HEADERS
 #define RNA_HEADERS
 
+
+@@EXTRA_DEFINITIONS@@
+
+// LOADED PROTOCOL DEFINITIONS
 @@LOADED_PROTOCOLS@@
+
+// OFFLOADER IDS
+@@OFFLOADER_UIDS@@
 
 // ZEEK TYPES
 typedef bit<8> z_bool;      // boolean      (1 byte)
@@ -17,9 +24,9 @@ typedef bit<64> z_count;    // unsigned int (8 bytes)
 #define ETH_P_RNA 0x6606
 
 #define RNA_P_DEBUG      0
-#define RNA_P_ETH_EVENT  1
-#define RNA_P_IPV4_EVENT 2
-#define RNA_P_IPV6_EVENT 3
+#define RNA_P_ETH_OFFLOADER  1
+#define RNA_P_IPV4_OFFLOADER 2
+#define RNA_P_IPV6_OFFLOADER 3
 
 // Ethertype (ETH_P_RNA) 0x6606
 header rna_h {          // Bytes
@@ -27,8 +34,8 @@ header rna_h {          // Bytes
     bit<16>  rna_type;   // 1 -> debug (0), eth (1), ip (2), ipv6 (3)
 }
 
-// Event Header for non-ip based events, for ex: ARP
-header eth_event_h {
+// OFFLOADER Header for non-ip based offloaders, for ex: ARP
+header eth_offloader_h {
     bit<16> next_header;        // 2
     bit<16> protocol_l3;        // 2
 }
@@ -48,9 +55,9 @@ struct ipv4_header_t {
     bit<32> dst_addr;
 }
 
-// Event Header for IPv4 based events, for ex: ICMP, TCP, NTP...
-header ipv4_event_h {
-    bit<16>       next_header; // Or next event
+// OFFLOADER Header for IPv4 based offloaders, for ex: ICMP, TCP, NTP...
+header ipv4_offloader_h {
+    bit<16>       next_header; // Or next offloader
     bit<16>       src_port;
     bit<16>       dst_port;
     ipv4_header_t ipv4_hdr;
@@ -67,18 +74,18 @@ struct ipv6_header_t {
     bit<128> dst_addr;
 }
 
-// Event Header for IPv6 based events, for ex: ICMP, TCP, NTP...
-header ipv6_event_h {
-    bit<16>       next_header; // Or next event
+// OFFLOADER Header for IPv6 based offloader, for ex: ICMP, TCP, NTP...
+header ipv6_offloader_h {
+    bit<16>       next_header; // Or next offloader
     bit<16>       src_port;
     bit<16>       dst_port;
     ipv6_header_t ipv6_hdr;
 }
 
-header_union event_h {
-    eth_event_h eth_event;
-    ipv4_event_h ipv4_event;
-    ipv6_event_h ipv6_event;
+header_union offloader_h {
+    eth_offloader_h eth;
+    ipv4_offloader_h ipv4;
+    ipv6_offloader_h ipv6;
 }
 
 struct metadata {
@@ -89,7 +96,7 @@ struct metadata {
     bit<8>   protocol_l4;
     bit<16>  src_port;
     bit<16>  dst_port;
-    bit<16>  event_type;
+    bit<16>  offloader_type;
 }
 
 // AUTOMATICALLY GENERATED HEADER STRUCT     \/ \/ \/

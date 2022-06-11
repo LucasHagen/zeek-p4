@@ -24,11 +24,11 @@ class ProtocolHeaderStructEntry(HeaderStructEntry):
         )
 
 
-class EventHeaderStructEntry(HeaderStructEntry):
+class OffloaderHeaderStructEntry(HeaderStructEntry):
 
-    def __init__(self, event: OffloaderComponent):
+    def __init__(self, offloader: OffloaderComponent):
         super().__init__(
-            event.header_struct, "%s_event" % event.id
+            offloader.header_struct, offloader.id
         )
 
 
@@ -39,18 +39,18 @@ class HeadersStruct:
             lambda p: ProtocolHeaderStructEntry(p),
             template_graph.protocols_by_depth())
 
-        self._add_event_protocol_hdr()
+        self._add_offloader_protocol_hdr()
 
         self.declarations = self.declarations + \
-            lmap(lambda e: EventHeaderStructEntry(
+            lmap(lambda e: OffloaderHeaderStructEntry(
                 e), template_graph.offloaders.values())
 
-    def _add_event_protocol_hdr(self):
+    def _add_offloader_protocol_hdr(self):
         self.declarations.append(
             HeaderStructEntry("rna_h", "rna")
         )
         self.declarations.append(
-            HeaderStructEntry("event_h", "event")
+            HeaderStructEntry("offloader_h", "offloader")
         )
 
     def __str__(self):

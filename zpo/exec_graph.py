@@ -359,7 +359,7 @@ class ExecGraph:
 
         self._offloaders_by_priority: List[OffloaderComponent] = list(
             self.offloaders.values())
-        self._offloaders_by_priority.sort(key=lambda o: (o.id))
+        self._offloaders_by_priority.sort(key=lambda o: (o.protocol_depth, o.id))
         self._offloaders_by_priority.sort(
             key=lambda o: (o.priority), reverse=True)
 

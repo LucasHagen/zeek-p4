@@ -1,7 +1,7 @@
 import os
 from zpo.file_generator_template import TemplateBasedFileGenerator
-from zpo.p4.event_constructor import EventConstructor
-from zpo.p4.event_identificators import EventIdentificators
+from zpo.p4.offloader_splicer import OffloaderSplicer
+from zpo.p4.offloader_triggers import OffloaderTriggers
 from zpo.p4.ingress_processor import IngressProcessor
 from zpo.p4.parser_state import ParserState
 from zpo.exec_graph import ExecGraph
@@ -9,8 +9,8 @@ from zpo.utils import indent, lmap
 from zpo.zpo_settings import ZpoSettings
 
 PROTOCOL_INGRESS_PROCESSORS = "@@PROTOCOL_INGRESS_PROCESSORS@@"
-EVENT_IDENTIFICATION = "@@EVENT_IDENTIFICATION@@"
-EVENT_CONSTRUCTORS = "@@EVENT_CONSTRUCTORS@@"
+OFFLOADER_TRIGGERS = "@@OFFLOADER_TRIGGERS@@"
+OFFLOADER_SPLICERS = "@@OFFLOADER_SPLICERS@@"
 
 
 class MainP4FileGenerator(TemplateBasedFileGenerator):
@@ -23,8 +23,8 @@ class MainP4FileGenerator(TemplateBasedFileGenerator):
 
         self.add_marker(PROTOCOL_INGRESS_PROCESSORS,
                         _get_protocol_ingress_processors)
-        self.add_marker(EVENT_IDENTIFICATION, _get_event_identification)
-        self.add_marker(EVENT_CONSTRUCTORS, _get_event_constructors)
+        self.add_marker(OFFLOADER_TRIGGERS, _get_offloader_triggers)
+        self.add_marker(OFFLOADER_SPLICERS, _get_offloader_splicers)
 
 
 def _get_protocol_ingress_processors(template_graph: ExecGraph, _: MainP4FileGenerator) -> str:
@@ -33,12 +33,12 @@ def _get_protocol_ingress_processors(template_graph: ExecGraph, _: MainP4FileGen
     return "\n".join(map(str, processors))
 
 
-def _get_event_identification(template_graph: ExecGraph, _: MainP4FileGenerator) -> str:
-    return str(EventIdentificators(template_graph.protocols_by_depth()))
+def _get_offloader_triggers(template_graph: ExecGraph, _: MainP4FileGenerator) -> str:
+    return str(OffloaderTriggers(template_graph.protocols_by_depth()))
 
 
-def _get_event_constructors(template_graph: ExecGraph, _: MainP4FileGenerator) -> str:
-    event_constructors = map(
-        EventConstructor, template_graph.offloaders_by_priority())
+def _get_offloader_splicers(template_graph: ExecGraph, _: MainP4FileGenerator) -> str:
+    offloaders_splicers = map(
+        OffloaderSplicer, template_graph.offloaders_by_priority())
 
-    return indent(" else ".join(map(str, event_constructors)), spaces=16)
+    return indent(" else ".join(map(str, offloaders_splicers)), spaces=16)

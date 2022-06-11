@@ -1,10 +1,11 @@
 import os
+from zpo.exceptions import ZpoException
 from zpo.file_generator_template import TemplateBasedFileGenerator
-from zpo.p4.event_uid_definition import EventUidDefinition, NoEventDefinition
+from zpo.p4.offloader_uid_definition import OffloaderUidDefinition, NoOffloaderDefinition
 from zpo.exec_graph import ExecGraph
 from zpo.zpo_settings import ZpoSettings
 
-EVENT_IDS = "@@EVENT_IDS@@"
+OFFLODER_IDS = "@@OFFLOADER_IDS@@"
 VERSION_CONSTANTS = "@@VERSION_CONSTANTS@@"
 
 
@@ -17,18 +18,18 @@ class ConstantsFile(TemplateBasedFileGenerator):
         )
 
         self.settings: ZpoSettings = settings
-        self.add_marker(EVENT_IDS, _get_event_ids)
+        self.add_marker(OFFLODER_IDS, _get_offloader_ids)
         self.add_marker(VERSION_CONSTANTS, _get_version_constants)
 
 
-def _get_event_ids(template_graph: ExecGraph, _: ConstantsFile) -> str:
-    events_uids = [str(NoEventDefinition())]
-    events_uids = events_uids + list(map(
-        lambda e: str(EventUidDefinition(e)),
+def _get_offloader_ids(template_graph: ExecGraph, _: ConstantsFile) -> str:
+    offloader_uids = [str(NoOffloaderDefinition())]
+    offloader_uids = offloader_uids + list(map(
+        lambda e: str(OffloaderUidDefinition(e)),
         template_graph.offloaders_by_priority())
     )
 
-    return "\n".join(events_uids).strip()
+    return "\n".join(offloader_uids).strip()
 
 
 def _get_version_constants(_: ExecGraph, generator: ConstantsFile) -> str:

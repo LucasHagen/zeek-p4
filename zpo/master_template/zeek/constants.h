@@ -2,6 +2,6 @@
 
 #include <string>
 
-@@EVENT_IDS@@
+@@OFFLOADER_IDS@@
 
 @@VERSION_CONSTANTS@@

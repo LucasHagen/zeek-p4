@@ -35,7 +35,7 @@ def load_template(path: str) -> Component:
         path (str): the path to the .hjson file
 
     Returns:
-        Template: a template (event or protocol)
+        Component: a component (offloader or protocol)
     """
     with open(path, "r") as file:
         raw_contents = file.read()

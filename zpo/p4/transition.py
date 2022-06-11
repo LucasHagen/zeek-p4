@@ -1,7 +1,8 @@
 from typing import List
 
+from zpo.exceptions import ZpoException
 from zpo.p4.transition_case import TransitionCase, DefaultTransitionCase, ProtocolTransitionCase
-from zpo.model.parser import ProtocolComponent
+from zpo.model.protocol import ProtocolComponent
 from zpo.utils import indent, lmap
 
 

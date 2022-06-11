@@ -2,12 +2,12 @@ import logging
 import shutil
 import os
 from zpo.model.offloader import OffloaderComponent
-# from zpo.p4.p4_generator import P4Generator
 from zpo.model.protocol import ProtocolComponent
 from zpo.exec_graph import ExecGraph
 from zpo.templates import load_templates
 from zpo.utils import is_dir_empty
-# from zpo.zeek.zeek_generator import ZeekGenerator
+from zpo.p4.p4_generator import P4Generator
+from zpo.zeek.zeek_generator import ZeekGenerator
 
 from zpo.zpo_settings import ZpoSettings
 
@@ -37,12 +37,10 @@ class Zpo:
         graph.build()
         graph.print_tree()
 
-        return
-
-        p4_generator: P4Generator = P4Generator(self.settings)
+        p4_generator = P4Generator(self.settings)
         p4_generator.generate_all(graph)
 
-        zeek_generator: ZeekGenerator = ZeekGenerator(self.settings)
+        zeek_generator = ZeekGenerator(self.settings)
         zeek_generator.generate_all(graph)
 
         logging.info("Execution hash: %s" % graph.compute_hash_hex())

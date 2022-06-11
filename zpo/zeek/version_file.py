@@ -1,6 +1,6 @@
 import os
 from typing import List
-from zpo.event_template import OffloaderComponent
+from zpo.model.offloader import OffloaderComponent
 from zpo.file_generator import FileGenerator
 from zpo.file_generator_template import TemplateBasedFileGenerator
 from zpo.exec_graph import ExecGraph

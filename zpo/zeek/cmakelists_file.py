@@ -1,6 +1,6 @@
 import os
 from typing import List
-from zpo.event_template import OffloaderComponent
+from zpo.model.offloader import OffloaderComponent
 from zpo.file_generator_template import TemplateBasedFileGenerator
 from zpo.exec_graph import ExecGraph
 from zpo.utils import indent
@@ -22,13 +22,13 @@ class CMakeListsFile(TemplateBasedFileGenerator):
 
 
 def _include_ccs(template_graph: ExecGraph, _: CMakeListsFile) -> str:
-    events: List[OffloaderComponent] = template_graph.offloaders_by_priority()
+    offloaders: List[OffloaderComponent] = template_graph.offloaders_by_priority()
     files = []
 
-    for event in events:
-        event_output_dir = "src/%s" % event.id
+    for offloader in offloaders:
+        offloader_output_dir = "src/%s" % offloader.id
 
-        for file in event.zeek_cc_files:
-            files.append("%s/%s" % (event_output_dir, file))
+        for file in offloader.zeek_cc_files:
+            files.append("%s/%s" % (offloader_output_dir, file))
 
     return indent("\n".join(files))

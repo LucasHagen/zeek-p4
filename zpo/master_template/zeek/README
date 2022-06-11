@@ -2,8 +2,12 @@ BR_UFRGS_INF::RNA
 
 =================================
 
-A Zeek P4 Otimizer (ZPO) generated plugin to offload Zeek event detection to the
+A Zeek P4 Offloader (ZPO) generated plugin to offload Zeek event detection to the
 dataplane.
 
-The following events have been offloaded:
-@@EVENTS_LIST@@
+The following offloaders have been loaded:
+@@OFFLOADERS_LIST@@
+
+
+Which offload the following zeek events:
+@@OFFLOADED_EVENTS_LIST@@

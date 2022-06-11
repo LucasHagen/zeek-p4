@@ -98,13 +98,13 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
     // RNA Data Plane Logic
     apply {
         if (standard_metadata.instance_type == INSTANCE_TYPE_NORMAL) {
-            meta.event_type = RNA_NO_EVENT_UID;
+            meta.offloader_type = RNA_NO_OFFLOADER_UID;
 
             clone3(CloneType.I2E, MIRROR_SESSION, { meta });
 
 @@PROTOCOL_INGRESS_PROCESSORS@@
 
-@@EVENT_IDENTIFICATION@@
+@@OFFLOADER_TRIGGERS@@
         }
     }
 
@@ -129,70 +129,70 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
         default_action = NoAction();
     }
 
-    action construct_eth_event_header() {
+    action construct_eth_offloader_header() {
         hdr.ethernet.ethertype = ETH_P_RNA;
 
         hdr.rna.setValid();
         hdr.rna.version  = RNA_VERSION;
-        hdr.rna.rna_type = RNA_P_ETH_EVENT;
+        hdr.rna.rna_type = RNA_P_ETH_OFFLOADER;
 
-        hdr.event.eth_event.setValid();
-        hdr.event.eth_event.next_header = meta.event_type;
-        hdr.event.eth_event.protocol_l3 = meta.protocol_l3;
+        hdr.offloader.eth.setValid();
+        hdr.offloader.eth.next_header = meta.offloader_type;
+        hdr.offloader.eth.protocol_l3 = meta.protocol_l3;
     }
 
     #ifdef RNA_PROTOCOL_IPV4
-    action construct_ipv4_event_header() {
+    action construct_ipv4_offloader_header() {
         hdr.ethernet.ethertype = ETH_P_RNA;
 
         hdr.rna.setValid();
         hdr.rna.version  = RNA_VERSION;
-        hdr.rna.rna_type = RNA_P_IPV4_EVENT;
+        hdr.rna.rna_type = RNA_P_IPV4_OFFLOADER;
 
-        hdr.event.ipv4_event.setValid();
-        hdr.event.ipv4_event.src_port = meta.src_port;
-        hdr.event.ipv4_event.dst_port = meta.dst_port;
-        hdr.event.ipv4_event.next_header = meta.event_type;
+        hdr.offloader.ipv4.setValid();
+        hdr.offloader.ipv4.src_port = meta.src_port;
+        hdr.offloader.ipv4.dst_port = meta.dst_port;
+        hdr.offloader.ipv4.next_header = meta.offloader_type;
 
         // Clone IPv4 header
-        hdr.event.ipv4_event.ipv4_hdr.version =        hdr.ipv4.version;
-        hdr.event.ipv4_event.ipv4_hdr.ihl =            hdr.ipv4.ihl;
-        hdr.event.ipv4_event.ipv4_hdr.diffserv =       hdr.ipv4.diffserv;
-        hdr.event.ipv4_event.ipv4_hdr.total_len =      hdr.ipv4.total_len;
-        hdr.event.ipv4_event.ipv4_hdr.identification = hdr.ipv4.identification;
-        hdr.event.ipv4_event.ipv4_hdr.flags =          hdr.ipv4.flags;
-        hdr.event.ipv4_event.ipv4_hdr.frag_offset =    hdr.ipv4.frag_offset;
-        hdr.event.ipv4_event.ipv4_hdr.ttl =            hdr.ipv4.ttl;
-        hdr.event.ipv4_event.ipv4_hdr.protocol =       hdr.ipv4.protocol;
-        hdr.event.ipv4_event.ipv4_hdr.hdr_checksum =   hdr.ipv4.hdr_checksum;
-        hdr.event.ipv4_event.ipv4_hdr.src_addr =       hdr.ipv4.src_addr;
-        hdr.event.ipv4_event.ipv4_hdr.dst_addr =       hdr.ipv4.dst_addr;
+        hdr.offloader.ipv4.ipv4_hdr.version =        hdr.ipv4.version;
+        hdr.offloader.ipv4.ipv4_hdr.ihl =            hdr.ipv4.ihl;
+        hdr.offloader.ipv4.ipv4_hdr.diffserv =       hdr.ipv4.diffserv;
+        hdr.offloader.ipv4.ipv4_hdr.total_len =      hdr.ipv4.total_len;
+        hdr.offloader.ipv4.ipv4_hdr.identification = hdr.ipv4.identification;
+        hdr.offloader.ipv4.ipv4_hdr.flags =          hdr.ipv4.flags;
+        hdr.offloader.ipv4.ipv4_hdr.frag_offset =    hdr.ipv4.frag_offset;
+        hdr.offloader.ipv4.ipv4_hdr.ttl =            hdr.ipv4.ttl;
+        hdr.offloader.ipv4.ipv4_hdr.protocol =       hdr.ipv4.protocol;
+        hdr.offloader.ipv4.ipv4_hdr.hdr_checksum =   hdr.ipv4.hdr_checksum;
+        hdr.offloader.ipv4.ipv4_hdr.src_addr =       hdr.ipv4.src_addr;
+        hdr.offloader.ipv4.ipv4_hdr.dst_addr =       hdr.ipv4.dst_addr;
     }
     #endif
 
     #ifdef RNA_PROTOCOL_IPV6
-    action construct_ipv6_event_header() {
+    action construct_ipv6_offloader_header() {
         hdr.ethernet.ethertype = ETH_P_RNA;
 
         hdr.rna.setValid();
         hdr.rna.version  = RNA_VERSION;
-        hdr.rna.rna_type = RNA_P_IPV6_EVENT;
+        hdr.rna.rna_type = RNA_P_IPV6_OFFLOADER;
 
-        hdr.event.ipv6_event.setValid();
+        hdr.offloader.ipv6.setValid();
 
-        hdr.event.ipv6_event.next_header = meta.event_type;
-        hdr.event.ipv6_event.src_port = meta.src_port;
-        hdr.event.ipv6_event.dst_port = meta.dst_port;
+        hdr.offloader.ipv6.next_header = meta.offloader_type;
+        hdr.offloader.ipv6.src_port = meta.src_port;
+        hdr.offloader.ipv6.dst_port = meta.dst_port;
 
         // Clone IPv6 header
-        hdr.event.ipv6_event.ipv6_hdr.version        = hdr.ipv6.version;
-        hdr.event.ipv6_event.ipv6_hdr.traffic_class  = hdr.ipv6.traffic_class;
-        hdr.event.ipv6_event.ipv6_hdr.flow_label     = hdr.ipv6.flow_label;
-        hdr.event.ipv6_event.ipv6_hdr.payload_length = hdr.ipv6.payload_length;
-        hdr.event.ipv6_event.ipv6_hdr.next_header    = hdr.ipv6.next_header;
-        hdr.event.ipv6_event.ipv6_hdr.hop_limit      = hdr.ipv6.hop_limit;
-        hdr.event.ipv6_event.ipv6_hdr.src_addr       = hdr.ipv6.src_addr;
-        hdr.event.ipv6_event.ipv6_hdr.dst_addr       = hdr.ipv6.dst_addr;
+        hdr.offloader.ipv6.ipv6_hdr.version        = hdr.ipv6.version;
+        hdr.offloader.ipv6.ipv6_hdr.traffic_class  = hdr.ipv6.traffic_class;
+        hdr.offloader.ipv6.ipv6_hdr.flow_label     = hdr.ipv6.flow_label;
+        hdr.offloader.ipv6.ipv6_hdr.payload_length = hdr.ipv6.payload_length;
+        hdr.offloader.ipv6.ipv6_hdr.next_header    = hdr.ipv6.next_header;
+        hdr.offloader.ipv6.ipv6_hdr.hop_limit      = hdr.ipv6.hop_limit;
+        hdr.offloader.ipv6.ipv6_hdr.src_addr       = hdr.ipv6.src_addr;
+        hdr.offloader.ipv6.ipv6_hdr.dst_addr       = hdr.ipv6.dst_addr;
     }
     #endif
 
@@ -203,32 +203,32 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
                 send_frame.apply();
             }
 
-        // EVENT PACKETS
+        // OFFLOADER PACKETS
         } else if (standard_metadata.instance_type == INSTANCE_TYPE_CLONE) {
-            if(meta.event_type == RNA_NO_EVENT_UID) {
+            if(meta.offloader_type == RNA_NO_OFFLOADER_UID) {
                 mark_to_drop(standard_metadata);
             } else {
-                // IPV4-BASED EVENT HEADER
+                // IPV4-BASED OFFLOADER HEADER
                 #ifdef RNA_PROTOCOL_IPV4
                 if(meta.protocol_l3 == ETH_P_IPV4) {
-                    construct_ipv4_event_header();
+                    construct_ipv4_offloader_header();
                 } else
                 #endif
 
-                // IPV6-BASED EVENTS
+                // IPV6-BASED OFFLOADER
                 #ifdef RNA_PROTOCOL_IPV6
                 if(meta.protocol_l3 == ETH_P_IPV6) {
-                    construct_ipv6_event_header();
+                    construct_ipv6_offloader_header();
                 } else
                 #endif
 
-                // ETHERNET-BASED EVENTS
+                // ETHERNET-BASED OFFLOADER
                 {
-                    construct_eth_event_header();
+                    construct_eth_offloader_header();
                 }
 
-                // CONSTRUCT EVENT SPECIFIC HEADER
-@@EVENT_CONSTRUCTORS@@
+                // CONSTRUCT OFFLOADER SPECIFIC HEADERS
+@@OFFLOADER_SPLICERS@@
 
             }
         }

@@ -16,13 +16,13 @@ event zeek_init() &priority=20
     print "Initializing RNA Plugin...";
 
 	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_ETHERNET, 0x6606, PacketAnalyzer::ANALYZER_RNA);
-	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_RNA, 1, PacketAnalyzer::ANALYZER_RNA_EVENT);
-	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_RNA, 2, PacketAnalyzer::ANALYZER_RNA_EVENT);
-	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_RNA, 3, PacketAnalyzer::ANALYZER_RNA_EVENT);
+	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_RNA, 1, PacketAnalyzer::ANALYZER_RNA_OFFLOADER);
+	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_RNA, 2, PacketAnalyzer::ANALYZER_RNA_OFFLOADER);
+	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_RNA, 3, PacketAnalyzer::ANALYZER_RNA_OFFLOADER);
 
     print "Registered Main PacketAnalyzers.";
 
-@@REGISTER_EVENTS@@
+@@REGISTER_OFFLOADERS@@
 
     print "Registered Event PacketAnalyzers.";
 

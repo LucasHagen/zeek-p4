@@ -1,13 +1,8 @@
-import logging
 import os
-from typing import Iterable, List
 from zpo.p4.headers_file import HeadersFileGenerator
-from zpo.p4.headers_struct import HeadersStruct
 from zpo.p4.main_p4_file import MainP4FileGenerator
 from zpo.p4.parser_file import ParserFileGenerator
 
-from zpo.p4.parser_state import ParserState
-from zpo.model.component import Component
 from zpo.exec_graph import ExecGraph
 from zpo.utils import lmap
 from zpo.zpo_settings import ZpoSettings

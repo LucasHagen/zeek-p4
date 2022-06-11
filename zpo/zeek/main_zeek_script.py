@@ -1,12 +1,11 @@
 import os
-from zpo.event_template import OffloaderComponent
+from zpo.model.offloader import OffloaderComponent
 from zpo.file_generator_template import TemplateBasedFileGenerator
-from zpo.p4.event_uid_definition import EventUidDefinition, NoEventDefinition
 from zpo.exec_graph import ExecGraph
 from zpo.utils import indent
 from zpo.zpo_settings import ZpoSettings
 
-REGISTER_EVENTS = "@@REGISTER_EVENTS@@"
+REGISTER_OFFLOADERS = "@@REGISTER_OFFLOADERS@@"
 
 
 class MainZeekFile(TemplateBasedFileGenerator):
@@ -23,17 +22,17 @@ class MainZeekFile(TemplateBasedFileGenerator):
         )
 
         self.settings: ZpoSettings = settings
-        self.add_marker(REGISTER_EVENTS, _get_register_events)
+        self.add_marker(REGISTER_OFFLOADERS, _get_register_offloaders)
 
 
-def _register_event(event: OffloaderComponent):
+def _register_offloader(offloader: OffloaderComponent):
     return """
-PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_RNA_EVENT, %d, PacketAnalyzer::ANALYZER_%s);
-""".strip() % (event.uid, event.zeek_analyzer_id)
+PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_RNA_OFFLOADER, %d, PacketAnalyzer::ANALYZER_%s);
+""".strip() % (offloader.uid, offloader.zeek_analyzer_id)
 
 
-def _get_register_events(template_graph: ExecGraph, _: MainZeekFile) -> str:
+def _get_register_offloaders(template_graph: ExecGraph, _: MainZeekFile) -> str:
     return indent("\n".join(map(
-        _register_event,
+        _register_offloader,
         template_graph.offloaders_by_priority()
     )))

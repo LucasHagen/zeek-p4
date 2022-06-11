@@ -1,4 +1,4 @@
-from zpo.model.parser import ProtocolComponent
+from zpo.model.protocol import ProtocolComponent
 from zpo.utils import indent
 
 INDENTATION = 4 * " "

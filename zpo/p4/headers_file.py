@@ -2,7 +2,7 @@
 
 import os
 from zpo.file_generator_template import TemplateBasedFileGenerator
-from zpo.p4.event_uid_definition import EventUidDefinition, NoEventDefinition
+from zpo.p4.offloader_uid_definition import OffloaderUidDefinition, NoOffloaderDefinition
 from zpo.p4.headers_struct import HeadersStruct
 from zpo.p4.parser_file import ParserFileGenerator
 from zpo.model.protocol import ProtocolComponent
@@ -12,7 +12,9 @@ from zpo.utils import lmap
 from zpo.zpo_settings import ZpoSettings
 
 
+EXTRA_DEFINITIONS = "@@EXTRA_DEFINITIONS@@"
 LOADED_PROTOCOLS = "@@LOADED_PROTOCOLS@@"
+OFFLOADER_UIDS = "@@OFFLOADER_UIDS@@"
 HEADER_DEFINITIONS = "@@HEADER_DEFINITIONS@@"
 HEADERS_STRUCT = "@@HEADERS_STRUCT@@"
 
@@ -26,30 +28,39 @@ class HeadersFileGenerator(TemplateBasedFileGenerator):
         )
         self.settings = settings
 
+        self.add_marker(EXTRA_DEFINITIONS, _get_extra_definitions)
         self.add_marker(LOADED_PROTOCOLS, _get_loaded_protocols)
+        self.add_marker(OFFLOADER_UIDS, _get_offloader_uids)
         self.add_marker(HEADER_DEFINITIONS, _merge_headers_definitions)
         self.add_marker(HEADERS_STRUCT, _generate_headers_struct)
+
+
+def _get_extra_definitions(template_graph: ExecGraph, gen: HeadersFileGenerator) -> str:
+    # TODO: add version hash
+    random_definitions = [
+        "#define RNA_HASH_VERSION 0",
+    ]
+    return "\n".join(random_definitions)
+
 
 
 def _get_loaded_protocols(template_graph: ExecGraph, gen: HeadersFileGenerator) -> str:
     def define_proto(proto: ProtocolComponent):
         return "#define RNA_PROTOCOL_%s" % proto.id.upper()
 
-    # TODO: add version hash
-    random_definitions = [
-        "#define RNA_VERSION 0",
-    ]
-
     protocols_definitions = list(
         map(define_proto, template_graph.protocols_by_depth()))
-    events_uids = [str(NoEventDefinition())]
-    events_uids = events_uids + list(map(
-        lambda e: str(EventUidDefinition(e)),
+
+    return "\n".join(protocols_definitions)
+
+
+
+def _get_offloader_uids(template_graph: ExecGraph, gen: HeadersFileGenerator) -> str:
+    uids = lmap(
+        lambda e: str(OffloaderUidDefinition(e)),
         template_graph.offloaders_by_priority())
-    )
 
-    return "\n".join(random_definitions + protocols_definitions + events_uids)
-
+    return "\n".join([str(NoOffloaderDefinition())] + uids)
 
 def _merge_headers_definitions(template_graph: ExecGraph, _: HeadersFileGenerator) -> str:
     return "\n".join(map(_read_p4_header,
