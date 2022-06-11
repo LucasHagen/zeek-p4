@@ -5,7 +5,7 @@
     "protocol": "tcp",
     "is_ip_based": true,
     "p4": {
-        "header_struct_name": "ftp_message_event_h",
+        "header_struct_name": "ftp_message_h",
         "header_file": "ftp_message_header.p4",
         "splicer_file": "constructor.p4",
         "trigger_file": "identifier.p4"

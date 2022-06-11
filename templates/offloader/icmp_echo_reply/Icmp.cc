@@ -47,14 +47,14 @@ RecordValPtr BuildInfo(const icmp_echo_reply_event_h* icmp) {
 
 bool RnaIcmpReplyAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
     auto rna_packet = static_cast<RnaPacket*>(packet);
-    auto event_hdr = rna_packet->GetEventHdr();
-    auto icmp_hdr = (const icmp_echo_reply_event_h*)event_hdr->GetPayload();
+    auto offloader_hdr = rna_packet->GetOffloaderHdr();
+    auto icmp_hdr = (const icmp_echo_reply_event_h*)offloader_hdr->GetPayload();
 
-    auto payload = event_hdr->GetPayload() + sizeof(icmp_echo_reply_event_h);
+    auto payload = offloader_hdr->GetPayload() + sizeof(icmp_echo_reply_event_h);
     auto payload_len = ntohll(icmp_hdr->len);
     String* payloadStr = new String(payload, payload_len, false);
 
-    auto conn = event_hdr->GetOrCreateConnection(packet);
+    auto conn = offloader_hdr->GetOrCreateConnection(packet);
 
 // #define RNA_ICMP_REPLY_DEBUG
 #ifdef RNA_ICMP_REPLY_DEBUG
@@ -63,8 +63,8 @@ bool RnaIcmpReplyAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet
     std::cout << "[RNA] |- event = ECHO_REPLY" << std::endl;
     std::cout << "[RNA] |- src_addr = " << packet->ip_hdr->SrcAddr().AsString() << std::endl;
     std::cout << "[RNA] |- dst_addr = " << packet->ip_hdr->DstAddr().AsString() << std::endl;
-    std::cout << "[RNA] |- src_port = " << event_hdr->GetSrcPort() << std::endl;
-    std::cout << "[RNA] |- dst_port = " << event_hdr->GetDstPort() << std::endl;
+    std::cout << "[RNA] |- src_port = " << offloader_hdr->GetSrcPort() << std::endl;
+    std::cout << "[RNA] |- dst_port = " << offloader_hdr->GetDstPort() << std::endl;
     std::cout << "[RNA] |- id       = " << ntohll(icmp_hdr->id) << std::endl;
     std::cout << "[RNA] |- seq      = " << ntohll(icmp_hdr->seq) << std::endl;
     std::cout << "[RNA] |- v6       = " << ntohs(icmp_hdr->v6) << std::endl;

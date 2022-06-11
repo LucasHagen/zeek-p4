@@ -15,9 +15,9 @@ using namespace zeek::packet_analysis;
 #define RNA_FTP_MESSAGE_CONN  2 // both use port 21 - decide based on connection origin
 
 #pragma pack(1)
-typedef struct ftp_message_event_struct {
+typedef struct ftp_message_struct {
     uint8_t type;
-} ftp_message_event_h;
+} ftp_message_h;
 
 class FtpMsgAnalyzer : public Analyzer {
 public:
