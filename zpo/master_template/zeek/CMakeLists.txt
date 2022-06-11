@@ -8,10 +8,10 @@ include(ZeekPlugin)
 zeek_plugin_begin(BR_UFRGS_INF RNA)
 zeek_plugin_cc(
     src/RnaHdr.cc
-    src/RnaEventHdr.cc
+    src/RnaOffloaderHdr.cc
     src/RnaPacket.cc
     src/RnaAnalyzer.cc
-    src/RnaEventAnalyzer.cc
+    src/RnaOffloaderAnalyzer.cc
     src/Plugin.cc
 @@CC_FILES@@
 )

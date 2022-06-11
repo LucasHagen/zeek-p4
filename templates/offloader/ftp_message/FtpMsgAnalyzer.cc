@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "RnaEventHdr.h"
+#include "RnaOffloaderHdr.h"
 #include "RnaPacket.h"
 #include "constants.h"
 #include "zeek/Conn.h"
@@ -25,7 +25,7 @@ FtpMsgAnalyzer::FtpMsgAnalyzer() : Analyzer("FTP_MSG") {}
 
 bool FtpMsgAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
     auto rna_packet = static_cast<RnaPacket*>(packet);
-    auto event_hdr = rna_packet->GetEventHdr();
+    auto event_hdr = rna_packet->GetOffloaderHdr();
     auto ftp_message_hdr = (const ftp_message_event_h*)data;
     auto payload = data + sizeof(ftp_message_event_h);
     auto payload_len = len - sizeof(ftp_message_event_h);

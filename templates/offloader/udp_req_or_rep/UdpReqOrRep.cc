@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "RnaEventHdr.h"
+#include "RnaOffloaderHdr.h"
 #include "RnaPacket.h"
 #include "constants.h"
 #include "zeek/Conn.h"

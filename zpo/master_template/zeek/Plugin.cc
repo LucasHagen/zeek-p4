@@ -2,7 +2,7 @@
 
 #include "constants.h"
 #include "RnaAnalyzer.h"
-#include "RnaEventAnalyzer.h"
+#include "RnaOffloaderAnalyzer.h"
 #include "zeek/packet_analysis/Component.h"
 
 @@INCLUDE_ANALYZERS@@
@@ -19,13 +19,13 @@ zeek::plugin::Configuration Plugin::Configure() {
     AddComponent(new zeek::packet_analysis::Component(
         "RNA", zeek::packet_analysis::BR_UFRGS_INF::RNA::RnaAnalyzer::Instantiate));
     AddComponent(new zeek::packet_analysis::Component(
-        "RNA_EVENT", zeek::packet_analysis::BR_UFRGS_INF::RNA::RnaEventAnalyzer::Instantiate));
+        "RNA_OFFLOADER", zeek::packet_analysis::BR_UFRGS_INF::RNA::RnaOffloaderAnalyzer::Instantiate));
 
 @@REGISTER_ANALYZERS@@
 
     zeek::plugin::Configuration config;
     config.name = "BR_UFRGS_INF::RNA";
-    config.description = "Zeek-P4 Optimizer Plugin";
+    config.description = "Zeek-P4 Offloader Plugin";
     config.version.major = RNA_VERSION_1;
     config.version.minor = RNA_VERSION_2;
     config.version.patch = RNA_VERSION_3;

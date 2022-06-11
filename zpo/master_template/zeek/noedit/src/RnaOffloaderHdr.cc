@@ -1,4 +1,4 @@
-#include "RnaEventHdr.h"
+#include "RnaOffloaderHdr.h"
 
 #include <netinet/ether.h>
 #include <netinet/in.h>
@@ -17,65 +17,65 @@ using ::zeek::IPAddr;
 using ::zeek::Layer3Proto;
 using ::zeek::detail::ConnKey;
 
-std::shared_ptr<RnaEventHdr> RnaEventHdr::InitEthEventHdr(const uint8_t* data) {
-    return std::make_shared<RnaEventHdr>(data, (const eth_event_h*)data);
+std::shared_ptr<RnaOffloaderHdr> RnaOffloaderHdr::InitEthOffloaderHdr(const uint8_t* data) {
+    return std::make_shared<RnaOffloaderHdr>(data, (const eth_offloader_h*)data);
 }
 
-std::shared_ptr<RnaEventHdr> RnaEventHdr::InitIpv4EventHdr(const uint8_t* data) {
-    return std::make_shared<RnaEventHdr>(data, (const ipv4_event_h*)data);
+std::shared_ptr<RnaOffloaderHdr> RnaOffloaderHdr::InitIpv4OffloaderHdr(const uint8_t* data) {
+    return std::make_shared<RnaOffloaderHdr>(data, (const ipv4_offloader_h*)data);
 }
 
-std::shared_ptr<RnaEventHdr> RnaEventHdr::InitIpv6EventHdr(const uint8_t* data) {
-    return std::make_shared<RnaEventHdr>(data, (const ipv6_event_h*)data);
+std::shared_ptr<RnaOffloaderHdr> RnaOffloaderHdr::InitIpv6OffloaderHdr(const uint8_t* data) {
+    return std::make_shared<RnaOffloaderHdr>(data, (const ipv6_offloader_h*)data);
 }
 
-RnaEventHdr::RnaEventHdr(const uint8_t* data, const eth_event_h* hdr)
-    : data(data), eth_event_hdr(hdr), hdr_size(ETH_EVENT_HEADER_SIZE), payload(data + hdr_size) {
-    event_type = ntohs(hdr->next_header);
+RnaOffloaderHdr::RnaOffloaderHdr(const uint8_t* data, const eth_offloader_h* hdr)
+    : data(data), eth_offloader_hdr(hdr), hdr_size(ETH_OFFLOADER_HEADER_SIZE), payload(data + hdr_size) {
+    offloader_type = ntohs(hdr->next_header);
     l3_protocol = ntohs(hdr->protocol_l3);
 }
 
-RnaEventHdr::RnaEventHdr(const uint8_t* data, const ipv4_event_h* hdr)
-    : data(data), ipv4_event_hdr(hdr), hdr_size(IPV4_EVENT_HEADER_SIZE), payload(data + hdr_size) {
+RnaOffloaderHdr::RnaOffloaderHdr(const uint8_t* data, const ipv4_offloader_h* hdr)
+    : data(data), ipv4_offloader_hdr(hdr), hdr_size(IPV4_OFFLOADER_HEADER_SIZE), payload(data + hdr_size) {
     l3_protocol = ETH_P_IP;
-    event_type = ntohs(hdr->next_header);
+    offloader_type = ntohs(hdr->next_header);
     src_port = ntohs(hdr->src_port);
     dst_port = ntohs(hdr->dst_port);
     ip_hdr = std::make_shared<IP_Hdr>(&hdr->ip_hdr, false, false);
 }
 
-RnaEventHdr::RnaEventHdr(const uint8_t* data, const ipv6_event_h* hdr)
-    : data(data), ipv6_event_hdr(hdr), hdr_size(IPV6_EVENT_HEADER_SIZE), payload(data + hdr_size) {
+RnaOffloaderHdr::RnaOffloaderHdr(const uint8_t* data, const ipv6_offloader_h* hdr)
+    : data(data), ipv6_offloader_hdr(hdr), hdr_size(IPV6_OFFLOADER_HEADER_SIZE), payload(data + hdr_size) {
     l3_protocol = ETH_P_IPV6;
-    event_type = ntohs(hdr->next_header);
+    offloader_type = ntohs(hdr->next_header);
     src_port = ntohs(hdr->src_port);
     dst_port = ntohs(hdr->dst_port);
     ip_hdr = std::make_shared<IP_Hdr>(&hdr->ipv6_hdr, false, false);
 }
 
-IPAddr RnaEventHdr::GetSrcAddress() const { return ip_hdr->SrcAddr(); }
+IPAddr RnaOffloaderHdr::GetSrcAddress() const { return ip_hdr->SrcAddr(); }
 
-IPAddr RnaEventHdr::GetDstAddress() const { return ip_hdr->DstAddr(); }
+IPAddr RnaOffloaderHdr::GetDstAddress() const { return ip_hdr->DstAddr(); }
 
-uint16_t RnaEventHdr::GetLayer3Protocol() const { return l3_protocol; }
+uint16_t RnaOffloaderHdr::GetLayer3Protocol() const { return l3_protocol; }
 
-uint8_t RnaEventHdr::GetLayer4Protocol() const { return (uint8_t)ip_hdr->NextProto(); }
+uint8_t RnaOffloaderHdr::GetLayer4Protocol() const { return (uint8_t)ip_hdr->NextProto(); }
 
-uint16_t RnaEventHdr::GetSrcPort() const { return src_port; }
+uint16_t RnaOffloaderHdr::GetSrcPort() const { return src_port; }
 
-uint16_t RnaEventHdr::GetDstPort() const { return dst_port; }
+uint16_t RnaOffloaderHdr::GetDstPort() const { return dst_port; }
 
-uint16_t RnaEventHdr::GetEventType() const { return event_type; }
+uint16_t RnaOffloaderHdr::GetOffloaderType() const { return offloader_type; }
 
-std::shared_ptr<IP_Hdr> RnaEventHdr::GetIPHdr() const { return ip_hdr; }
+std::shared_ptr<IP_Hdr> RnaOffloaderHdr::GetIPHdr() const { return ip_hdr; }
 
-uint32_t RnaEventHdr::GetHdrSize() const { return hdr_size; }
+uint32_t RnaOffloaderHdr::GetHdrSize() const { return hdr_size; }
 
-bool RnaEventHdr::IsIPv4() const { return l3_protocol == ETH_P_IP; }
+bool RnaOffloaderHdr::IsIPv4() const { return l3_protocol == ETH_P_IP; }
 
-bool RnaEventHdr::IsIPv6() const { return l3_protocol == ETH_P_IPV6; }
+bool RnaOffloaderHdr::IsIPv6() const { return l3_protocol == ETH_P_IPV6; }
 
-Layer3Proto RnaEventHdr::GetLayer3Proto() const {
+Layer3Proto RnaOffloaderHdr::GetLayer3Proto() const {
     switch (l3_protocol) {
         case ETH_P_IP:
             return L3_IPV4;
@@ -88,7 +88,7 @@ Layer3Proto RnaEventHdr::GetLayer3Proto() const {
     }
 }
 
-TransportProto RnaEventHdr::GetTransportProto() const {
+TransportProto RnaOffloaderHdr::GetTransportProto() const {
     switch (GetLayer4Protocol()) {
         case IPPROTO_TCP:
             return TRANSPORT_TCP;
@@ -103,9 +103,9 @@ TransportProto RnaEventHdr::GetTransportProto() const {
     }
 }
 
-const uint8_t* RnaEventHdr::GetPayload() const { return payload; }
+const uint8_t* RnaOffloaderHdr::GetPayload() const { return payload; }
 
-Connection* RnaEventHdr::GetOrCreateConnection(Packet* packet, bool is_one_way /* = false */) {
+Connection* RnaOffloaderHdr::GetOrCreateConnection(Packet* packet, bool is_one_way /* = false */) {
     ConnTuple tuple;
     tuple.src_addr = GetSrcAddress();
     tuple.dst_addr = GetDstAddress();
@@ -117,7 +117,7 @@ Connection* RnaEventHdr::GetOrCreateConnection(Packet* packet, bool is_one_way /
     return GetOrCreateConnection(packet, tuple);
 }
 
-Connection* RnaEventHdr::GetOrCreateConnection(Packet* packet, const ConnTuple& tuple) {
+Connection* RnaOffloaderHdr::GetOrCreateConnection(Packet* packet, const ConnTuple& tuple) {
     detail::ConnKey key(tuple);
 
     Connection* conn = session_mgr->FindConnection(key);
@@ -154,7 +154,7 @@ Connection* RnaEventHdr::GetOrCreateConnection(Packet* packet, const ConnTuple& 
     return conn;
 }
 
-Connection* RnaEventHdr::NewConn(const ConnTuple* id, const ConnKey& key, const Packet* packet) {
+Connection* RnaOffloaderHdr::NewConn(const ConnTuple* id, const ConnKey& key, const Packet* packet) {
     // TODO: add timeout and memory deallocation.
     Connection* conn = new Connection(key, run_state::processing_start_time, id, 0, packet);
     conn->SetTransport(id->proto);
