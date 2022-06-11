@@ -1,9 +1,9 @@
 import os
 from typing import List
-from zpo.event_template import EventTemplate
+from zpo.event_template import OffloaderComponent
 from zpo.file_generator import FileGenerator
 from zpo.file_generator_template import TemplateBasedFileGenerator
-from zpo.template_graph import TemplateGraph
+from zpo.exec_graph import ExecGraph
 from zpo.utils import indent
 from zpo.zpo_settings import ZpoSettings
 

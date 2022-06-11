@@ -1,7 +1,6 @@
 import hashlib
 import json
 import os
-from tabnanny import verbose
 from typing import List
 
 
@@ -10,7 +9,7 @@ class ZpoSettings:
     def __init__(self,
                  version: str,
                  output_dir: str,
-                 events: List[str],
+                 offloaders: List[str],
                  template_folders: List[str],
                  pwd: str,
                  debug: bool = False,
@@ -18,7 +17,7 @@ class ZpoSettings:
                  ):
         self.version: str = version
         self.output_dir: str = output_dir
-        self.events: List[str] = events
+        self.offloaders: List[str] = offloaders
         self.template_folders: List[str] = template_folders
         self.pwd: str = pwd
         self.debug: bool = debug
@@ -40,7 +39,7 @@ class ZpoSettings:
         m = hashlib.sha256()
 
         m.update(self.version.encode('utf-8'))
-        m.update(json.dumps(sorted(self.events),
+        m.update(json.dumps(sorted(self.offloaders),
                  sort_keys=True).encode('utf-8'))
 
         return m.digest()

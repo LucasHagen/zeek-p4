@@ -1,7 +1,7 @@
 import os
 from zpo.file_generator_template import TemplateBasedFileGenerator
 from zpo.p4.event_uid_definition import EventUidDefinition, NoEventDefinition
-from zpo.template_graph import TemplateGraph
+from zpo.exec_graph import ExecGraph
 from zpo.zpo_settings import ZpoSettings
 
 EVENT_IDS = "@@EVENT_IDS@@"
@@ -21,22 +21,22 @@ class ConstantsFile(TemplateBasedFileGenerator):
         self.add_marker(VERSION_CONSTANTS, _get_version_constants)
 
 
-def _get_event_ids(template_graph: TemplateGraph, _: ConstantsFile) -> str:
+def _get_event_ids(template_graph: ExecGraph, _: ConstantsFile) -> str:
     events_uids = [str(NoEventDefinition())]
     events_uids = events_uids + list(map(
         lambda e: str(EventUidDefinition(e)),
-        template_graph.events_by_priority())
+        template_graph.offloaders_by_priority())
     )
 
     return "\n".join(events_uids).strip()
 
 
-def _get_version_constants(_: TemplateGraph, generator: ConstantsFile) -> str:
+def _get_version_constants(_: ExecGraph, generator: ConstantsFile) -> str:
     version = generator.settings.version
     version_array = version.split(".")
 
     if len(version_array) != 3:
-        raise ValueError(f"Version in invalid format (X.X.X): '{version}'")
+        raise ZpoException(f"Version in invalid format (X.X.X): '{version}'")
 
     return """
 #define RNA_VERSION "%s"

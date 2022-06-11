@@ -1,10 +1,10 @@
-from zpo.event_template import EventTemplate
+from zpo.model.offloader import OffloaderComponent
 from zpo.utils import indent
 
 
 class EventConstructor:
 
-    def __init__(self, event: EventTemplate):
+    def __init__(self, event: OffloaderComponent):
         self.event_uid = event.uid_constant
         self.constructor = event.read_p4_header_constructor()
 

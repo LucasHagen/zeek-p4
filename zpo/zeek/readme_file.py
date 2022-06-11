@@ -1,7 +1,7 @@
 import os
 from zpo.file_generator_template import TemplateBasedFileGenerator
 from zpo.p4.event_uid_definition import EventUidDefinition, NoEventDefinition
-from zpo.template_graph import TemplateGraph
+from zpo.exec_graph import ExecGraph
 from zpo.zpo_settings import ZpoSettings
 
 EVENTS_LIST = "@@EVENTS_LIST@@"
@@ -18,8 +18,8 @@ class ReadmeFile(TemplateBasedFileGenerator):
         self.add_marker(EVENTS_LIST, _get_events_list)
 
 
-def _get_events_list(template_graph: TemplateGraph, _: TemplateBasedFileGenerator) -> str:
+def _get_events_list(template_graph: ExecGraph, _: TemplateBasedFileGenerator) -> str:
     def event_list(event):
         return "- %s" % event.id
 
-    return "\n".join(map(event_list, template_graph.events_by_priority())).strip()
+    return "\n".join(map(event_list, template_graph.offloaders_by_priority())).strip()

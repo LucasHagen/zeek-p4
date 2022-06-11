@@ -2,8 +2,8 @@
 import logging
 import os
 from typing import List
-from zpo.event_template import EventTemplate
-from zpo.template_graph import TemplateGraph
+from zpo.model.offloader import OffloaderComponent
+from zpo.exec_graph import ExecGraph
 from zpo.utils import copy_file
 from zpo.zpo_settings import ZpoSettings
 
@@ -13,8 +13,8 @@ class EventsFilesCopier:
     def __init__(self, settings: ZpoSettings):
         self.settings = settings
 
-    def copy_files(self, template_graph: TemplateGraph):
-        events: List[EventTemplate] = template_graph.events_by_priority()
+    def copy_files(self, template_graph: ExecGraph):
+        events: List[OffloaderComponent] = template_graph.offloaders_by_priority()
 
         for event in events:
             event_template_dir = event.path_dir

@@ -1,10 +1,10 @@
-
 import logging
 import os
 from typing import Callable, Dict
+from zpo.exceptions import ZpoException
 
 from zpo.file_generator import FileGenerator
-from zpo.template_graph import TemplateGraph
+from zpo.exec_graph import ExecGraph
 
 
 class TemplateBasedFileGenerator(FileGenerator):
@@ -23,7 +23,7 @@ class TemplateBasedFileGenerator(FileGenerator):
         self.output_path: str = output_path
         self.markers: Dict = {}
 
-    def add_marker(self, marker_id: str, content_or_func: str or Callable[[TemplateGraph, FileGenerator], str]):
+    def add_marker(self, marker_id: str, content_or_func: str or Callable[[ExecGraph, FileGenerator], str]):
         """Adds a marker to the generator. The `content_or_func` can be either a string, or a
         function that returns a string (lazy loaded). The function is stored in this generator
         and is only called when the file is actually generated.
@@ -36,14 +36,14 @@ class TemplateBasedFileGenerator(FileGenerator):
                 function that receives [TemplateGraph, FileGenerator] and return a [str].
 
         Raises:
-            ValueError: marker already defined
+            ZpoException: marker already defined
         """
         if marker_id in self.markers:
-            raise ValueError(f"Marker '{marker_id}' already defined")
+            raise ZpoException(f"Marker '{marker_id}' already defined")
 
         self.markers[marker_id] = content_or_func
 
-    def _get_marker_content(self, marker, template_graph: TemplateGraph):
+    def _get_marker_content(self, marker, template_graph: ExecGraph):
         """Returns the content (if marker is set to string) or evaluates the function set to the
         marker and returns its content.
         """
@@ -56,11 +56,11 @@ class TemplateBasedFileGenerator(FileGenerator):
 
     def _check_markers_exist(self, content):
         """Checks if all markers exists in `content`. If one or more markers don't exist,
-        `ValueError` is raised.
+        `ZpoException` is raised.
         """
         for marker in self.markers:
             if marker not in content:
-                raise ValueError("Marker '%s' not found in template file: %s" % (
+                raise ZpoException("Marker '%s' not found in template file: %s" % (
                     marker, self.template_path))
 
     def _replace_markers(self, template_graph, content):
@@ -76,7 +76,7 @@ class TemplateBasedFileGenerator(FileGenerator):
 
         return result
 
-    def generate(self, template_graph: TemplateGraph):
+    def generate(self, template_graph: ExecGraph):
         """Generates the file.
             1. Reads the template.
             2. Replaces all defined markers.

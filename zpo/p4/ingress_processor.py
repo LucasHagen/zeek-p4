@@ -1,10 +1,10 @@
-from zpo.protocol_template import ProtocolTemplate
+from zpo.model.protocol import ProtocolComponent
 from zpo.utils import indent
 
 
 class IngressProcessor:
 
-    def __init__(self, protocol: ProtocolTemplate):
+    def __init__(self, protocol: ProtocolComponent):
         self.struct_accessor = protocol.struct_accessor
         self.processor_path = protocol.ingress_processor_file_path
 

@@ -1,7 +1,7 @@
 import os
 from zpo.file_generator_template import TemplateBasedFileGenerator
 from zpo.p4.parser_state import ParserState
-from zpo.template_graph import TemplateGraph
+from zpo.exec_graph import ExecGraph
 from zpo.utils import lmap
 from zpo.zpo_settings import ZpoSettings
 
@@ -20,6 +20,6 @@ class ParserFileGenerator(TemplateBasedFileGenerator):
         self.add_marker(PARSING_STATE_MARKER, _get_parsing_states)
 
 
-def _get_parsing_states(template_graph: TemplateGraph, _: ParserFileGenerator) -> str:
-    parser_states = map(ParserState, template_graph.protocols_by_priority())
+def _get_parsing_states(template_graph: ExecGraph, _: ParserFileGenerator) -> str:
+    parser_states = map(ParserState, template_graph.protocols_by_depth())
     return "\n\n".join(map(str, parser_states))

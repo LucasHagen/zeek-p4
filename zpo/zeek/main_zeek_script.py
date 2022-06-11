@@ -1,8 +1,8 @@
 import os
-from zpo.event_template import EventTemplate
+from zpo.event_template import OffloaderComponent
 from zpo.file_generator_template import TemplateBasedFileGenerator
 from zpo.p4.event_uid_definition import EventUidDefinition, NoEventDefinition
-from zpo.template_graph import TemplateGraph
+from zpo.exec_graph import ExecGraph
 from zpo.utils import indent
 from zpo.zpo_settings import ZpoSettings
 
@@ -26,14 +26,14 @@ class MainZeekFile(TemplateBasedFileGenerator):
         self.add_marker(REGISTER_EVENTS, _get_register_events)
 
 
-def _register_event(event: EventTemplate):
+def _register_event(event: OffloaderComponent):
     return """
 PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_RNA_EVENT, %d, PacketAnalyzer::ANALYZER_%s);
 """.strip() % (event.uid, event.zeek_analyzer_id)
 
 
-def _get_register_events(template_graph: TemplateGraph, _: MainZeekFile) -> str:
+def _get_register_events(template_graph: ExecGraph, _: MainZeekFile) -> str:
     return indent("\n".join(map(
         _register_event,
-        template_graph.events_by_priority()
+        template_graph.offloaders_by_priority()
     )))

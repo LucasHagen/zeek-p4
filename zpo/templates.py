@@ -3,13 +3,14 @@ import glob
 import hjson
 
 from typing import List
+from zpo.exceptions import ZpoException
 
-from zpo.template import Template
-from zpo.protocol_template import ProtocolTemplate
-from zpo.event_template import EventTemplate
+from zpo.model.component import Component
+from zpo.model.protocol import PROTOCOL_TYPE_STR, ProtocolComponent
+from zpo.model.offloader import OFFLOADER_TYPE_STR, OffloaderComponent
 
 
-def load_templates(paths: List[str]) -> List[Template]:
+def load_templates(paths: List[str]) -> List[Component]:
     """Loads the templates from all
 
     Args:
@@ -27,7 +28,7 @@ def load_templates(paths: List[str]) -> List[Template]:
     return [load_template(path) for path in candidates]
 
 
-def load_template(path: str) -> Template:
+def load_template(path: str) -> Component:
     """Loads a template from a .hjson file path
 
     Args:
@@ -43,10 +44,10 @@ def load_template(path: str) -> Template:
         if("zpo_type" not in data):
             return None
 
-        if(data["zpo_type"] == "PROTOCOL"):
-            return ProtocolTemplate(path, data)
-        elif(data["zpo_type"] == "EVENT"):
-            return EventTemplate(path, data)
+        if(data["zpo_type"] == PROTOCOL_TYPE_STR):
+            return ProtocolComponent(path, data)
+        elif(data["zpo_type"] == OFFLOADER_TYPE_STR):
+            return OffloaderComponent(path, data)
         else:
-            raise ValueError(
+            raise ZpoException(
                 f"File ({path}) has wrong 'zpo_type': '{data['zpo_type']}'")

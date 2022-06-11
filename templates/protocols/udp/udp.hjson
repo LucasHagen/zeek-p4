@@ -6,6 +6,10 @@
         {
             "id": "ipv4",
             "id_for_parent_protocol": 17 // DECIMAL id to identify this protocol in the parent protocol
+        },
+        {
+            "id": "ipv6",
+            "id_for_parent_protocol": 17 // DECIMAL id to identify this protocol in the parent protocol
         }
     ],
     "header": {

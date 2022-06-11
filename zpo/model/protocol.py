@@ -2,9 +2,12 @@ import json
 import os
 import hashlib
 from typing import Dict
+from zpo.exceptions import ZpoException
 
-from zpo.template import Template
-from zpo.event_template import EventTemplate
+from zpo.model.component import Component
+from zpo.model.offloader import OffloaderComponent
+
+PROTOCOL_TYPE_STR = "PROTOCOL"
 
 
 class ParentProtocol:
@@ -19,7 +22,7 @@ class ParentProtocol:
         self.id_for_parent_protocol = id_for_parent_protocol
 
 
-class ProtocolTemplate(Template):
+class ProtocolComponent(Component):
     """A template for a protocol
     """
 
@@ -31,39 +34,35 @@ class ProtocolTemplate(Template):
             hjson_data (str): hjson parsed data
 
         Raises:
-            ValueError: if the template is invalid
+            ZpoException: if the template is invalid
         """
-        if (hjson_data["zpo_type"] != "PROTOCOL"):
-            raise ValueError(
+        super().__init__(path, hjson_data)
+
+        if (hjson_data["zpo_type"] != PROTOCOL_TYPE_STR):
+            raise ZpoException(
                 "Wrong file format, 'zpo_type' doesn't match PROTOCOL")
 
-        self.path = path
-        self._data = hjson_data
         self.children = {}
-        self.events = {}
+        self.offloaders = {}
 
-        self.id = self._data["id"]
-        self.version = self._data["zpo_version"]
-        self.is_root = self._check_if_is_root()
+        self.is_root = self.read_opt_data("is_root_protocol", convert=bool)
         self.parent_protocols = self._parse_parent_protocols()
         self.struct_accessor = f"hdr.{self.id}"
-        self.next_protocol_selector = self._data["next_protocol_selector"]
+        self.next_protocol_selector = self.read_data("next_protocol_selector")
         self.parsing_state = f"parse_{self.id}"
-        self.header_struct = self._data["header"]["header_struct"]
-        self.priority = None
-        self.header_file_path = os.path.join(
-            os.path.dirname(path), self._data["header"]["header_file"])
-        self._hash_cache = None
+        self.header_struct = self.read_data("header", "header_struct")
+        self.header_file_path = self.read_rel_path_data(
+            "header", "header_file")
 
-        if "ingress_processor" in self._data:
-            self.ingress_processor_file_path = os.path.join(
-                os.path.dirname(path), self._data["ingress_processor"])
-        else:
-            self.ingress_processor_file_path = None
+        self.ingress_processor_file_path = self.read_opt_rel_path_data(
+            "ingress_processor")
 
         if (self.is_root and len(self.parent_protocols) > 0):
-            raise ValueError(
+            raise ZpoException(
                 f"Root protocol ({self.id}) can't have parent protocols")
+
+        self.depth = None
+        self._hash_cache = None
 
     def _parse_parent_protocols(self) -> Dict[str, ParentProtocol]:
         """Parses the parent protocols in the hjson data and returns a Dict with the
@@ -74,18 +73,13 @@ class ProtocolTemplate(Template):
         if("parent_protocols" not in self._data):
             return protocols
 
-        for p in self._data["parent_protocols"]:
+        for p in self.read_data("parent_protocols"):
             parent = ParentProtocol(p["id"], p["id_for_parent_protocol"])
             protocols[parent.parent_id] = parent
 
         return protocols
 
-    def _check_if_is_root(self) -> bool:
-        """Internal use. For public usage, use the `is_root` variable
-        """
-        return self._data["is_root_protocol"] if "is_root_protocol" in self._data else False
-
-    def add_child(self, child: Template):
+    def add_child(self, child: Component):
         """Adds a child to the children list.
 
         Args:
@@ -93,7 +87,7 @@ class ProtocolTemplate(Template):
         """
         self.children[child.id] = child
 
-    def rem_child(self, child: Template):
+    def rem_child(self, child: Component):
         """Removes a child protocol.
 
         Args:
@@ -101,14 +95,14 @@ class ProtocolTemplate(Template):
         """
         self.children.pop(child.id)
 
-    def add_event(self, event: EventTemplate):
-        """Adds an event to this protocol. The event should be added only to the last protocol of
+    def add_offloader(self, offloader: OffloaderComponent):
+        """Adds an offloader to this protocol. The offloader should be added only to the last protocol of
         it's stack.
 
         Args:
-            event (EventTemplate): the event template
+            offloader (OffloaderComponent): the offloader
         """
-        self.events[event.id] = event
+        self.offloaders[offloader.id] = offloader
 
     def type_str(self) -> str:
         return "protocol"
@@ -127,7 +121,6 @@ class ProtocolTemplate(Template):
         if not self.has_ingress_processor():
             return ""
 
-
         with open(self.ingress_processor_file_path, 'r') as file:
             return file.read().strip()
 
@@ -142,8 +135,6 @@ class ProtocolTemplate(Template):
             self._hash_cache = m.digest()
 
         return self._hash_cache
-
-
 
 
 # Example of a PROTOCOL template:

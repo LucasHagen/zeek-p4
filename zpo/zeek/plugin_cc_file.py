@@ -1,9 +1,9 @@
 import os
 from typing import List
-from zpo.event_template import EventTemplate
+from zpo.event_template import OffloaderComponent
 from zpo.file_generator_template import TemplateBasedFileGenerator
 from zpo.p4.event_uid_definition import EventUidDefinition, NoEventDefinition
-from zpo.template_graph import TemplateGraph
+from zpo.exec_graph import ExecGraph
 from zpo.utils import indent
 from zpo.zpo_settings import ZpoSettings
 
@@ -27,8 +27,8 @@ class PluginCcFile(TemplateBasedFileGenerator):
         self.add_marker(REGISTER_ANALYZERS, _register_analyzers)
 
 
-def _include_analyzers(template_graph: TemplateGraph, _: PluginCcFile) -> str:
-    events: List[EventTemplate] = template_graph.events_by_priority()
+def _include_analyzers(template_graph: ExecGraph, _: PluginCcFile) -> str:
+    events: List[OffloaderComponent] = template_graph.offloaders_by_priority()
     files = []
 
     for event in events:
@@ -38,11 +38,11 @@ def _include_analyzers(template_graph: TemplateGraph, _: PluginCcFile) -> str:
     return "\n".join(files)
 
 
-def _register_analyzers(template_graph: TemplateGraph, _: PluginCcFile) -> str:
-    def _register_analyzer(event: EventTemplate):
+def _register_analyzers(template_graph: ExecGraph, _: PluginCcFile) -> str:
+    def _register_analyzer(event: OffloaderComponent):
         return """
 AddComponent(new zeek::packet_analysis::Component(
     "%s", %s::%s::Instantiate));
 """.strip() % (event.zeek_analyzer_id, event.zeek_analyzer_namespace, event.zeek_analyzer_class)
 
-    return indent("\n".join(map(_register_analyzer, template_graph.events_by_priority())))
+    return indent("\n".join(map(_register_analyzer, template_graph.offloaders_by_priority())))

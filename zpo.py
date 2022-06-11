@@ -17,8 +17,8 @@ def main():
                         help="template folders", default=[])
     parser.add_argument("output", nargs=1, metavar="OUTPUT", type=str,
                         help="output folder.")
-    parser.add_argument("event", nargs="+", metavar="EVENT",
-                        help="Event(s) of interrest, which will be offloaded.")
+    parser.add_argument("offloader", nargs="+", metavar="OFFLOADER",
+                        help="Offloaders that will be active.")
     parser.add_argument("-o", "--override", help="overrides output dir, if it exists",
                         action="store_true")
 
@@ -26,7 +26,7 @@ def main():
 
     settings = ZpoSettings(CURRENT_VERSION,
                 args.output[0],
-                args.event,
+                args.offloader,
                 args.template,
                 os.getcwd(),
                 args.debug,

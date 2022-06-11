@@ -1,8 +1,8 @@
 import os
 from typing import List
-from zpo.event_template import EventTemplate
+from zpo.event_template import OffloaderComponent
 from zpo.file_generator_template import TemplateBasedFileGenerator
-from zpo.template_graph import TemplateGraph
+from zpo.exec_graph import ExecGraph
 from zpo.utils import indent
 from zpo.zpo_settings import ZpoSettings
 
@@ -21,8 +21,8 @@ class CMakeListsFile(TemplateBasedFileGenerator):
         self.add_marker(CC_FILES, _include_ccs)
 
 
-def _include_ccs(template_graph: TemplateGraph, _: CMakeListsFile) -> str:
-    events: List[EventTemplate] = template_graph.events_by_priority()
+def _include_ccs(template_graph: ExecGraph, _: CMakeListsFile) -> str:
+    events: List[OffloaderComponent] = template_graph.offloaders_by_priority()
     files = []
 
     for event in events:

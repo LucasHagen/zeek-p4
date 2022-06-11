@@ -1,13 +1,15 @@
 {
-    "zpo_type": "EVENT",
+    "zpo_type": "OFFLOADER",
     "zpo_version": "0.0.1",
     "id": "arp_request",
     "protocol": "arp_ipv4",
-    "event_header": {
+    "priority": 0,
+    "is_ip_based": false,
+    "p4": {
+        "header_struct_name": "arp_request_event_h",
         "header_file": "arp_request_header.p4",
-        "header_struct": "arp_request_event_h",
-        "constructor": "constructor.p4",
-        "identifier": "identifier.p4"
+        "splicer_file": "constructor.p4",
+        "trigger_file": "identifier.p4"
     },
     "zeek": {
         "analyzer_namespace": "zeek::packet_analysis::BR_UFRGS_INF::RNA::ARP",
@@ -18,6 +20,9 @@
         ],
         "cc_files": [
             "ArpReq.cc"
+        ],
+        "offloaded_event_ids": [
+            "arp_request"
         ]
     }
 }

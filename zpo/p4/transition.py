@@ -1,18 +1,18 @@
 from typing import List
 
 from zpo.p4.transition_case import TransitionCase, DefaultTransitionCase, ProtocolTransitionCase
-from zpo.protocol_template import ProtocolTemplate
+from zpo.model.parser import ProtocolComponent
 from zpo.utils import indent, lmap
 
 
-def _make_protocol_transition(parent: ProtocolTemplate, child: ProtocolTemplate) -> ProtocolTransitionCase:
+def _make_protocol_transition(parent: ProtocolComponent, child: ProtocolComponent) -> ProtocolTransitionCase:
     return ProtocolTransitionCase(parent, child)
 
 
 class Transition:
 
     def __str__(self):
-        raise ValueError("Unspecified Transition")
+        raise ZpoException("Unspecified Transition")
 
 
 class TransitionAccept(Transition):
@@ -23,7 +23,7 @@ class TransitionAccept(Transition):
 
 class TransitionSelector(Transition):
 
-    def __init__(self, protocol: ProtocolTemplate):
+    def __init__(self, protocol: ProtocolComponent):
         self.selector_field = "%s.%s" % (
             protocol.struct_accessor, protocol.next_protocol_selector)
         self.selector_cases: List[TransitionCase] = [

@@ -1,8 +1,8 @@
 from typing import List
-from zpo.event_template import EventTemplate
-from zpo.protocol_template import ProtocolTemplate
+from zpo.model.offloader import OffloaderComponent
+from zpo.model.protocol import ProtocolComponent
 from zpo.p4.transition import Transition, TransitionAccept, TransitionSelector
-from zpo.template_graph import TemplateGraph
+from zpo.exec_graph import ExecGraph
 from zpo.utils import indent, lmap
 
 
@@ -18,7 +18,7 @@ class HeaderStructEntry:
 
 class ProtocolHeaderStructEntry(HeaderStructEntry):
 
-    def __init__(self, protocol: ProtocolTemplate):
+    def __init__(self, protocol: ProtocolComponent):
         super().__init__(
             protocol.header_struct, protocol.id
         )
@@ -26,7 +26,7 @@ class ProtocolHeaderStructEntry(HeaderStructEntry):
 
 class EventHeaderStructEntry(HeaderStructEntry):
 
-    def __init__(self, event: EventTemplate):
+    def __init__(self, event: OffloaderComponent):
         super().__init__(
             event.header_struct, "%s_event" % event.id
         )
@@ -34,16 +34,16 @@ class EventHeaderStructEntry(HeaderStructEntry):
 
 class HeadersStruct:
 
-    def __init__(self, template_graph: TemplateGraph):
+    def __init__(self, template_graph: ExecGraph):
         self.declarations = lmap(
             lambda p: ProtocolHeaderStructEntry(p),
-            template_graph.protocols_by_priority())
+            template_graph.protocols_by_depth())
 
         self._add_event_protocol_hdr()
 
         self.declarations = self.declarations + \
             lmap(lambda e: EventHeaderStructEntry(
-                e), template_graph.events.values())
+                e), template_graph.offloaders.values())
 
     def _add_event_protocol_hdr(self):
         self.declarations.append(
