@@ -133,7 +133,7 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
         hdr.ethernet.ethertype = ETH_P_RNA;
 
         hdr.rna.setValid();
-        hdr.rna.version  = RNA_VERSION;
+        hdr.rna.version  = RNA_HASH_VERSION;
         hdr.rna.rna_type = RNA_P_ETH_OFFLOADER;
 
         hdr.offloader.eth.setValid();
@@ -146,7 +146,7 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
         hdr.ethernet.ethertype = ETH_P_RNA;
 
         hdr.rna.setValid();
-        hdr.rna.version  = RNA_VERSION;
+        hdr.rna.version  = RNA_HASH_VERSION;
         hdr.rna.rna_type = RNA_P_IPV4_OFFLOADER;
 
         hdr.offloader.ipv4.setValid();
@@ -175,7 +175,7 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
         hdr.ethernet.ethertype = ETH_P_RNA;
 
         hdr.rna.setValid();
-        hdr.rna.version  = RNA_VERSION;
+        hdr.rna.version  = RNA_HASH_VERSION;
         hdr.rna.rna_type = RNA_P_IPV6_OFFLOADER;
 
         hdr.offloader.ipv6.setValid();
