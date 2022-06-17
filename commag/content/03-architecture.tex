@@ -1,4 +1,4 @@
-\section{WXYZ} 
+\section{\TheArchitecture{}} 
 \label{sec:architecture}
 
 % 4 columns
@@ -6,12 +6,69 @@
 % * Figure.
 % * Brief description of architecture components and interactions.
 
-\begin{itemize}
-    \item Introductory text to the general architecture.
-    \item Figure and explanation.
-    \item Brief description of architectural components and interactions.
-\end{itemize}
+% \begin{itemize}
+%     \item Introductory text to the general architecture.
+%     \item Figure and explanation.
+%     \item Brief description of architectural components and interactions.
+% \end{itemize}
 
-\blindtext[8]
+In this section we specify \TheArchitecture{}, an architecture that enables the Zeek Intrusion Detection System to operate in data plane speeds. This architecture is a specification and further development of the Reconfigurable Network Analytics (RNA) \cite{RNA2022}. This specifies what and how intrusion detection operations should be executed in P4-compatible data planes, and how to transfer their processed data to the Zeek intrusion detection system, which is running in general purpose CPUs.
+
+The main advantage of using data planes for IDS operation offloading is their ability to parse protocols very fast. This allows us to identify certain protocols, characteristics and even protocol constraints violations that would take much more time to be processed in a general purpose CPU. After using the data plane's full potential, we enter the data one step closer one step closer to Zeek's Policy Script Interpreter \todo{ADD REF}, skipping some CPU demanding tasks. Since a data plane has it's restrictions, we call this offloading: we are only executing a portion of the IDS tasks, and in most cases, not directly identifying a violation or attack.
+
+P4-compatible data planes operate by having three main stages: parsing, ingress, and egress processor. In the ingress processing stage, we extract use-full information for constructing our offloaded information structure and Zeek structures, as well as clone the packet if any offloader is triggered. Since only cloned packets are forwarded to our IDS infrastructure, this architecture already adds an advantage of a filtering some packet that may not be interesting and wouldn't be analyzed, already freeing some CPU resource.
+
+
+\subsection{Parser}
+
+Our parsing stage occurs in the same way any packet is parsed in a data plane: defining it's headers structures and using a state-machine to extract each header from the packet. It's the core and best advantage of data planes: packet parsing. Every protocol we would like to monitor needs to have a parser.
+
+\subsection{Transcriber}
+
+In the transcriber role we have two modules that extract metadata from the packet so it can be translated later on Zeek's side. Both of them are considered transcribers since they only extract and set metadata for our packet, and don't yet modify it's output.
+
+\subsubsection{Protocol Preprocessor}
+
+The protocol preprocessor has the responsibility of setting protocol-specific metadata that Zeek needs to construct it's core and essential data structures. Each protocol may have one ingress preprocessor, and they are executed in order of protocol layer, so a TCP packet (transmitted on IPv4) will run all ingress processors in this order: Ethernet, IPv4 and TCP.
+
+So in our example: the Ethernet preprocessor will set the layer 3 protocol by using the \textit{ethertype} field. The IPv4 preprocessor will define the layer 4 protocol using it's \textit{next protocol} field. And finally the TCP processor sets the \textit{source} and \textit{destination ports}, which are the last metadata required for us to build the \zeekconn{} object on Zeek's Event Engine.
+
+\subsubsection{Offloader Trigger}
+
+In the next component of our ingress pipeline, or our transcriber, we identify which offloader will be triggered. Each offloader is associated with a final protocol, which will be checked if is valid before checking for the offloader's trigger condition. The offloaders triggering order is according to their priorities, and at this time, triggering multiple offloaders, which would required multiple output packets for one input packet is not supported. This is still future work. When the protocol for an offloader is considered valid and the triggering condition is met, the last metadata is set for our incoming packet, which defines which offloader this packet will be directed to.
+
+\subsection{Splicer}
+
+Splicers construct the final packet that will be sent to Zeek, the so called mRNA \cite{RNA2022}. This process happens in the egress pipeline of the data plane. For the construction of our RNA message, the program needs to check if the packet is a cloned one, or if it's the original packet. Only cloned packets, the ones that are forwarded to the intrusion detection system, are modified and used to construct our offloaders packets.
+
+Since we have multiple protocol layers, which are explained in greater detail bellow, we split splicers into two parts: base RNA splicer, which add general information that most offloaders need; and Offloader-specific splicers, which add specific information to the headers.
+
+\subsubsection{RNA Splicer}
+
+The base RNA headers are constructed by adding a general RNA header, which specifies which type of offloader the packet is transmitting. They are: 
+
+a. Ethernet offloaders, which are meant for offloading packets which don't use the IP protocol, for example ARP. One particularity is that those packets are not supposed to be session or connection oriented packets.
+
+b. IPv4 offloaders, which are usually means they will be offloading a procedure for Zeek, that requires a \zeekconn{} object. For this purpose, we decided to also send the whole original IPv4 header. This ensures Zeek's functionalities are not compromised, maximizing the number of scripts compatible with our solution.
+
+c. IPv6 offloaders, which work like IPv4, but contain an IPv6 header built in, instead of an IPv4 header.
+
+\subsubsection{Offloader-specific Splicer}
+
+Each Offloader Splicer is triggered according to the trigger condition, executed in the ingress pipeline, during the transcribe phase. The splicer to-be-triggered is saved in the metadata, and on the egress pipeline, we construct that header. Every offloader may execute custom P4 code, to then construct its header. This allows the offloader to do more than just translate a protocol, but also to detect violations, malformed messages and other checks. The offloader-specific splicers are also responsible for invalidating all other protocol headers from the original packet (except for Ethernet), so they are not transmitted with the mRNA packet.
+
+After the Splice phase is finished, the packet is reconstructed using the RNA headers and sent to the mirroring port defined in the data plane device and is received by Zeek's monitoring infrastructure.
+
+\subsection{Translator}
+
+
+
+\subsection{Protocol}
+
+\subsubsection{RNA Header}
+
+\subsubsection{RNA Offloader Header}
+
+\subsubsection{Offloader Specific Headers}
 
 \newpage
