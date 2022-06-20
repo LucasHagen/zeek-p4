@@ -13,8 +13,11 @@ class ParserState:
         self.next_transition: Transition = TransitionAccept() if len(
             protocol.children) == 0 else TransitionSelector(protocol)
 
-        self.packet_extractor = indent(
-            "packet.extract(%s);" % self.header_accessor)
+        if protocol.has_custom_parser():
+            self.parser = indent(protocol.read_p4_custom_parser())
+        else:
+            self.parser = indent(
+                "packet.extract(%s);" % self.header_accessor)
 
     def __str__(self):
         return indent("""
@@ -22,4 +25,4 @@ state %s {
 %s
 %s
 }
-        """.strip() % (self.state_name, self.packet_extractor, str(self.next_transition)))
+        """.strip() % (self.state_name, self.parser, str(self.next_transition)))

@@ -30,13 +30,19 @@ std::shared_ptr<RnaOffloaderHdr> RnaOffloaderHdr::InitIpv6OffloaderHdr(const uin
 }
 
 RnaOffloaderHdr::RnaOffloaderHdr(const uint8_t* data, const eth_offloader_h* hdr)
-    : data(data), eth_offloader_hdr(hdr), hdr_size(ETH_OFFLOADER_HEADER_SIZE), payload(data + hdr_size) {
+    : data(data),
+      eth_offloader_hdr(hdr),
+      hdr_size(ETH_OFFLOADER_HEADER_SIZE),
+      payload(data + hdr_size) {
     offloader_type = ntohs(hdr->next_header);
     l3_protocol = ntohs(hdr->protocol_l3);
 }
 
 RnaOffloaderHdr::RnaOffloaderHdr(const uint8_t* data, const ipv4_offloader_h* hdr)
-    : data(data), ipv4_offloader_hdr(hdr), hdr_size(IPV4_OFFLOADER_HEADER_SIZE), payload(data + hdr_size) {
+    : data(data),
+      ipv4_offloader_hdr(hdr),
+      hdr_size(IPV4_OFFLOADER_HEADER_SIZE),
+      payload(data + hdr_size) {
     l3_protocol = ETH_P_IP;
     offloader_type = ntohs(hdr->next_header);
     src_port = ntohs(hdr->src_port);
@@ -45,7 +51,10 @@ RnaOffloaderHdr::RnaOffloaderHdr(const uint8_t* data, const ipv4_offloader_h* hd
 }
 
 RnaOffloaderHdr::RnaOffloaderHdr(const uint8_t* data, const ipv6_offloader_h* hdr)
-    : data(data), ipv6_offloader_hdr(hdr), hdr_size(IPV6_OFFLOADER_HEADER_SIZE), payload(data + hdr_size) {
+    : data(data),
+      ipv6_offloader_hdr(hdr),
+      hdr_size(IPV6_OFFLOADER_HEADER_SIZE),
+      payload(data + hdr_size) {
     l3_protocol = ETH_P_IPV6;
     offloader_type = ntohs(hdr->next_header);
     src_port = ntohs(hdr->src_port);
@@ -105,7 +114,12 @@ TransportProto RnaOffloaderHdr::GetTransportProto() const {
 
 const uint8_t* RnaOffloaderHdr::GetPayload() const { return payload; }
 
-Connection* RnaOffloaderHdr::GetOrCreateConnection(Packet* packet, bool is_one_way /* = false */) {
+Connection* RnaOffloaderHdr::GetOrCreateConnection(Packet* packet) {
+    return GetOrCreateConnection(packet, false, false);
+}
+
+Connection* RnaOffloaderHdr::GetOrCreateConnection(Packet* packet, bool is_one_way,
+                                                   bool flip_roles) {
     ConnTuple tuple;
     tuple.src_addr = GetSrcAddress();
     tuple.dst_addr = GetDstAddress();
@@ -114,16 +128,17 @@ Connection* RnaOffloaderHdr::GetOrCreateConnection(Packet* packet, bool is_one_w
     tuple.is_one_way = is_one_way;
     tuple.proto = GetTransportProto();
 
-    return GetOrCreateConnection(packet, tuple);
+    return GetOrCreateConnection(packet, tuple, flip_roles);
 }
 
-Connection* RnaOffloaderHdr::GetOrCreateConnection(Packet* packet, const ConnTuple& tuple) {
+Connection* RnaOffloaderHdr::GetOrCreateConnection(Packet* packet, const ConnTuple& tuple,
+                                                   bool flip_roles) {
     detail::ConnKey key(tuple);
 
     Connection* conn = session_mgr->FindConnection(key);
 
     if (!conn) {
-        conn = NewConn(&tuple, key, packet);
+        conn = NewConn(&tuple, key, packet, flip_roles);
 
         if (conn) {
             session_mgr->Insert(conn, false);
@@ -154,10 +169,15 @@ Connection* RnaOffloaderHdr::GetOrCreateConnection(Packet* packet, const ConnTup
     return conn;
 }
 
-Connection* RnaOffloaderHdr::NewConn(const ConnTuple* id, const ConnKey& key, const Packet* packet) {
+Connection* RnaOffloaderHdr::NewConn(const ConnTuple* id, const ConnKey& key, const Packet* packet,
+                                     bool flip_roles) {
     // TODO: add timeout and memory deallocation.
     Connection* conn = new Connection(key, run_state::processing_start_time, id, 0, packet);
     conn->SetTransport(id->proto);
+
+    if (flip_roles) {
+        conn->FlipRoles();
+    }
 
     if (new_connection) {
         conn->Event(new_connection, nullptr);

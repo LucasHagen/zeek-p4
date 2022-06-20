@@ -57,6 +57,9 @@ class ProtocolComponent(Component):
         self.ingress_processor_file_path = self.read_opt_rel_path_data(
             "ingress_processor")
 
+        self.custom_parser_file_path = self.read_opt_rel_path_data(
+            "custom_parser")
+
         if (self.is_root and len(self.parent_protocols) > 0):
             raise ZpoException(
                 f"Root protocol ({self.id}) can't have parent protocols")
@@ -112,6 +115,11 @@ class ProtocolComponent(Component):
         """
         return self.ingress_processor_file_path != None and len(self.ingress_processor_file_path) > 0
 
+    def has_custom_parser(self) -> bool:
+        """Return whether this template has a custom parser (file).
+        """
+        return self.custom_parser_file_path != None and len(self.custom_parser_file_path) > 0
+
     def read_p4_ingress_processor(self) -> str:
         """Reads the P4 ingress processor file for the template.
 
@@ -122,6 +130,18 @@ class ProtocolComponent(Component):
             return ""
 
         with open(self.ingress_processor_file_path, 'r') as file:
+            return file.read().strip()
+
+    def read_p4_custom_parser(self) -> str:
+        """Reads the P4 custom parser file for the template.
+
+        Returns:
+            str: file content
+        """
+        if not self.has_custom_parser():
+            return ""
+
+        with open(self.custom_parser_file_path, 'r') as file:
             return file.read().strip()
 
     def compute_hash(self) -> bytes:

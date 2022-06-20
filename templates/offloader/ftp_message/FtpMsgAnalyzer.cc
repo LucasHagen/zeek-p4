@@ -8,9 +8,9 @@
 #include "zeek/Conn.h"
 #include "zeek/Event.h"
 #include "zeek/IPAddr.h"
-#include "zeek/analyzer/protocol/ftp/events.bif"
+#include "zeek/analyzer/protocol/ftp/events.bif.h"
 
-using namespace zeek::packet_analysis::BR_UFRGS_INF::RNA::UDP;
+using namespace zeek::packet_analysis::BR_UFRGS_INF::RNA::FTP;
 
 using ::zeek::AddrVal;
 using ::zeek::AddrValPtr;
@@ -26,14 +26,16 @@ FtpMsgAnalyzer::FtpMsgAnalyzer() : Analyzer("FTP_MSG") {}
 bool FtpMsgAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
     auto rna_packet = static_cast<RnaPacket*>(packet);
     auto event_hdr = rna_packet->GetOffloaderHdr();
-    auto ftp_message_hdr = (const ftp_message_event_h*)data;
-    auto payload = data + sizeof(ftp_message_event_h);
-    auto payload_len = len - sizeof(ftp_message_event_h);
+    auto ftp_message_hdr = (const ftp_message_h*)data;
+    auto payload = data + sizeof(ftp_message_h);
+    auto payload_len = len - sizeof(ftp_message_h);
 
-    auto conn = event_hdr->GetOrCreateConnection(packet);
+    auto conn = event_hdr->GetOrCreateConnection(packet,
+                                                 /* is_one_way = */ false,
+                                                 /* flip_roles = */ true);
 
     bool is_request;
-    switch (ftp_message_hdr.type) {
+    switch (ftp_message_hdr->type) {
         case RNA_FTP_MESSAGE_REQUEST:
             is_request = true;
             break;
@@ -45,17 +47,18 @@ bool FtpMsgAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* pack
             break;
     }
 
-// #define RNA_UDP_DEBUG
+#define RNA_UDP_DEBUG
 #ifdef RNA_UDP_DEBUG
     std::cout << "[RNA] FTP Message:" << std::endl;
-    std::cout << " |_ type     = " << (packet->is_orig ? "request" : "reply") << std::endl;
+    std::cout << " |_ type     = " << (is_request ? "request" : "reply") << std::endl;
     std::cout << " |_ src_addr = " << packet->ip_hdr->SrcAddr().AsString() << std::endl;
     std::cout << " |_ dst_addr = " << packet->ip_hdr->DstAddr().AsString() << std::endl;
     std::cout << " |_ src_port = " << event_hdr->GetSrcPort() << std::endl;
     std::cout << " |_ dst_port = " << event_hdr->GetDstPort() << std::endl;
+    std::cout << " |_ packet->is_orig = " << packet->is_orig << std::endl;
 #endif
 
-    TriggerEvents(is_request, payload, payload_len);
+    TriggerEvents(conn, is_request, payload, payload_len);
 
     packet->processed = true;
 
@@ -71,7 +74,8 @@ static uint32_t get_reply_code(const int& len, const char* line) {
     }
 }
 
-bool FtpMsgAnalyzer::TriggerEvents(bool is_request, const uint8_t* payload, uint length) {
+bool FtpMsgAnalyzer::TriggerEvents(Connection* conn, bool is_request, const uint8_t* payload,
+                                   uint length) {
     // Code from `deps/zeek/src/analyzer/protocol/ftp/FTP.cc`
     const char* line = (const char*)payload;
     const char* end_of_line = line + length;
@@ -79,7 +83,7 @@ bool FtpMsgAnalyzer::TriggerEvents(bool is_request, const uint8_t* payload, uint
     EventHandlerPtr f;
     Args vl;
 
-    if (length == 0) return;
+    if (length == 0) return false;
 
     if (is_request) {
         int cmd_len;
@@ -98,7 +102,7 @@ bool FtpMsgAnalyzer::TriggerEvents(bool is_request, const uint8_t* payload, uint
         }
 
         vl = {
-            ConnVal(),
+            conn->GetVal(),
             IntrusivePtr{AdoptRef{}, cmd_str},
             make_intrusive<StringVal>(end_of_line - line, line),
         };
@@ -111,7 +115,7 @@ bool FtpMsgAnalyzer::TriggerEvents(bool is_request, const uint8_t* payload, uint
         if (reply_code > 0) {
             line += 3;
         } else {
-            return;
+            return false;
         }
 
         if (line < end_of_line) {
@@ -121,16 +125,17 @@ bool FtpMsgAnalyzer::TriggerEvents(bool is_request, const uint8_t* payload, uint
         }
         cont_resp = 0;
 
-        if (reply_code == 334 && auth_requested.size() > 0) {
+        if (reply_code == 334) {
             // SSL not supported
-            return;
+            return false;
         }
 
-        vl = {ConnVal(), val_mgr->Count(reply_code),
+        vl = {conn->GetVal(), val_mgr->Count(reply_code),
               make_intrusive<StringVal>(end_of_line - line, line), val_mgr->Bool(cont_resp)};
 
         f = ftp_reply;
     }
 
     event_mgr.Enqueue(f, std::move(vl));
+    return true;
 }

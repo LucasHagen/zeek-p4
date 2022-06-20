@@ -1,5 +1,6 @@
 import socket
 import os
+import signal
 import sys
 from time import sleep
 
@@ -21,16 +22,32 @@ HOST = sys.argv[2]
 PORT = int(sys.argv[3])
 IS_SERVER = sys.argv[1].lower().startswith("s")
 
+socket_global = None
+
+
+def handler(signum, frame):
+    global socket_global
+    socket_global.close()
+    socket_global = None
+    print("")
+    print("Closed socket")
+    print("Done!")
+    exit(0)
+
+
+signal.signal(signal.SIGINT, handler)
+
 if IS_SERVER:
     print("Started server on %s:%s" % (HOST, PORT))
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        socket_global = s
         s.bind((HOST, PORT))
         s.listen()
 
         conn, addr = s.accept()
         with conn:
-            print(f"Connected by {addr}")
+            print("Connected by %s" % str(addr))
             conn.sendall("220 (fake_ftp 0.0.1)".encode('ascii'))
 
             while True:
@@ -53,6 +70,7 @@ else:
     print("Connecting to %s:%s" % (HOST, PORT))
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        socket_global = s
         s.connect((HOST, PORT))
 
         while True:
@@ -61,7 +79,7 @@ else:
             if not data:
                 break
 
-            print(f"Received: '{data.decode('ascii')}'")
+            print("Received: '%s'" % data.decode('ascii'))
 
             cmd = input()
             s.sendall(cmd.encode('ascii'))

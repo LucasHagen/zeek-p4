@@ -35,7 +35,7 @@
 
 #define RNA_FTP_MESSAGE_REQUEST 0
 #define RNA_FTP_MESSAGE_REPLY   1
-#define RNA_FTP_MESSAGE_CONN  2 // both use port 21 - decide based on connection origin
+#define RNA_FTP_MESSAGE_CONN    2 // both use port 21 - decide based on connection origin
 
 header ftp_message_h {
     bit<8> type;

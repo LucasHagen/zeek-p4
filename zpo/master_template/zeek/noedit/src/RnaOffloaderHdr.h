@@ -8,7 +8,7 @@
 #include "zeek/IP.h"
 #include "zeek/IPAddr.h"
 
-#define RNA_P_ETH_OFFLOADER  1
+#define RNA_P_ETH_OFFLOADER 1
 #define RNA_P_IPV4_OFFLOADER 2
 #define RNA_P_IPV6_OFFLOADER 3
 
@@ -106,20 +106,20 @@ public:
      */
     RnaOffloaderHdr(const uint8_t* data, const eth_offloader_h* hdr);
 
-
     /**
      * @brief Construct a new RnaOffloaderHdr for a ipv4-based offloader.
      */
     RnaOffloaderHdr(const uint8_t* data, const ipv4_offloader_h* hdr);
-
 
     /**
      * @brief Construct a new RnaOffloaderHdr for a ipv6-based offloader.
      */
     RnaOffloaderHdr(const uint8_t* data, const ipv6_offloader_h* hdr);
 
-    zeek::Connection* GetOrCreateConnection(Packet* packet, bool is_one_way = false);
-    zeek::Connection* GetOrCreateConnection(Packet* packet, const zeek::ConnTuple& tuple);
+    zeek::Connection* GetOrCreateConnection(Packet* packet);
+    zeek::Connection* GetOrCreateConnection(Packet* packet, bool is_one_way, bool flip_roles);
+    zeek::Connection* GetOrCreateConnection(Packet* packet, const zeek::ConnTuple& tuple,
+                                            bool flip_roles);
 
 protected:
     const uint8_t* data = nullptr;
@@ -138,7 +138,7 @@ protected:
     std::shared_ptr<zeek::IP_Hdr> ip_hdr = nullptr;
 
     Connection* NewConn(const zeek::ConnTuple* id, const zeek::detail::ConnKey& key,
-                        const Packet* packet);
+                        const Packet* packet, bool flip_roles);
 };
 
 }  // namespace zeek::packet_analysis::BR_UFRGS_INF::RNA
