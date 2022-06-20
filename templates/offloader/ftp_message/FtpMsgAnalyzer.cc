@@ -47,7 +47,7 @@ bool FtpMsgAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* pack
             break;
     }
 
-#define RNA_UDP_DEBUG
+// #define RNA_UDP_DEBUG
 #ifdef RNA_UDP_DEBUG
     std::cout << "[RNA] FTP Message:" << std::endl;
     std::cout << " |_ type     = " << (is_request ? "request" : "reply") << std::endl;
