@@ -21,7 +21,7 @@ Oriented by:
 sudo pip3 install -r ./zpo/requirements.txt
 
 # Run ZPO, here is an example with the built-in templates/events:
-python3 main.py output -t templates/ arp_reply arp_request icmp_echo_request icmp_echo_reply
+python3 zpo.py output -t templates/ arp_reply arp_request icmp_echo_request icmp_echo_reply
 
 # Prepare the previously created output to be run:
 ./prepare-output output
