@@ -30,6 +30,8 @@ bool FtpMsgAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* pack
     auto payload = data + sizeof(ftp_message_h);
     auto payload_len = len - sizeof(ftp_message_h);
 
+    bool should_flip = ftp_message_hdr->type != RNA_FTP_MESSAGE_REQUEST;
+
     auto conn = event_hdr->GetOrCreateConnection(packet,
                                                  /* is_one_way = */ false,
                                                  /* flip_roles = */ true);
