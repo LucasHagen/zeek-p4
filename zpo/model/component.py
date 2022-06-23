@@ -7,13 +7,13 @@ class Component:
     """A class to represent a ZPO component. Either a parser or an offloader.
     """
 
-    def __init__(self, path, hjson_data):
-        self.path = path
-        self.path_dir = os.path.dirname(self.path)
+    def __init__(self, path: str, hjson_data):
+        self.path: str = path
+        self.path_dir: str = os.path.dirname(self.path)
         self._data = hjson_data
 
-        self.id = self.read_data("id")
-        self.version = self.read_data("zpo_version")
+        self.id: str = self.read_data("id")
+        self.version: str = self.read_data("zpo_version")
 
     def read_data(self, *ids: str, convert=lambda x: x):
         """Reads the variable at [ids] from the hjson data.

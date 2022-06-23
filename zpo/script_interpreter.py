@@ -1,5 +1,3 @@
-from operator import ne
-import os
 from typing import Any, List
 from zeekscript.script import Script
 from zeekscript.node import Node
@@ -30,7 +28,18 @@ def _get_id(script: Script, node: Node or Any, nesting):
     return _get_content(script, id_node)
 
 
-def read_events_from_file(file_path: str):
+def read_events_from_script(file_path: str, ignored_events: List[str] = IGNORED_ZEEK_EVENTS):
+    """Reads what events a script is listening for.
+
+    Args:
+        file_path (str): path to the .zeek script
+
+    Raises:
+        ZpoException: if script is not valid
+
+    Returns:
+        _type_: _description_
+    """
     script = Script(file_path or '-')
 
     if not script.parse():
@@ -45,7 +54,7 @@ def read_events_from_file(file_path: str):
         if node.type == "event":
             id = _get_id(script, node, nesting)
 
-            if id not in IGNORED_ZEEK_EVENTS:
+            if id not in ignored_events:
                 events.append(id)
 
     return events

@@ -1,6 +1,7 @@
 import os
 import hashlib
 import json
+from typing import List
 from zpo.exceptions import BadConfigException, ZpoException
 from zpo.model.component import Component
 
@@ -28,7 +29,8 @@ class OffloaderComponent(Component):
                 f"Wrong file format, 'zpo_type' doesn't match {OFFLOADER_TYPE_STR}")
 
         self.protocol_id = self.read_data("protocol")
-        self.priority = self.read_opt_data("priority", convert=lambda p: 0 if p is None else int(p))
+        self.priority = self.read_opt_data(
+            "priority", convert=lambda p: 0 if p is None else int(p))
         self.is_ip_based = self.read_opt_data("is_ip_based", convert=bool)
 
         # P4
@@ -44,8 +46,8 @@ class OffloaderComponent(Component):
             "zeek", "analyzer_namespace")
         self.zeek_header_files = self.read_data("zeek", "header_files")
         self.zeek_cc_files = self.read_data("zeek", "cc_files")
-        self.zeek_offloaded_events = self.read_data(
-            "zeek", "offloaded_event_ids")
+        self.zeek_offloaded_events: List[str] = sorted(self.read_data(
+            "zeek", "offloaded_event_ids"))
 
         self.zeek_files = self.zeek_header_files + self.zeek_cc_files
         self.uid_constant = "RNA_%s_UID" % self.id.upper()

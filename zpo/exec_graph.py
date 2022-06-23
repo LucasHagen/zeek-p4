@@ -1,7 +1,6 @@
 import hashlib
 import logging
-from re import T
-from typing import List, Dict, Protocol, Set
+from typing import List, Dict, Set
 from zpo.exceptions import ZpoException
 
 from zpo.model.protocol import ProtocolComponent
@@ -48,9 +47,14 @@ class ExecGraph:
         offloader_list = _filter_list_by_type(
             self.raw_components, OffloaderComponent)
 
-        # Remove offloaders not requested by the user
+        self.required_offloaders = self._get_required_offloaders(offloader_list)
+
+        if len(self.required_offloaders) == 0:
+            raise ZpoException("No Offloader or Zeek Event specified for offloading. Aborting.")
+
+        # Remove not required offloaders
         offloader_list = _filter_list(
-            lambda offloader: offloader.id in self.settings.offloaders, offloader_list)
+            lambda offloader: offloader.id in self.required_offloaders, offloader_list)
 
         self.protocols: Dict[str, ProtocolComponent] = _make_template_dict(
             protocol_list)
@@ -168,6 +172,59 @@ class ExecGraph:
             raise ZpoException(
                 "Found duplicated ids in templates: %s" % duplicates)
 
+    def _get_required_offloaders(self, available_offloaders: List[OffloaderComponent]) -> List[str]:
+        required_offloaders: Set[str] = set(self.settings.offloaders)
+
+        supported_events: Set[str] = set()
+        event_to_offloader: Dict[str, OffloaderComponent] = dict()
+
+        # Save already supported events and create event->Offloader index
+        for offloader in sorted(available_offloaders, key=lambda o: o.id):
+            if offloader.id in required_offloaders:
+                # Offloader already marked as required, mark events as supported
+                supported_events |= set(offloader.zeek_offloaded_events)
+
+            # Create event->offloader index
+            for event_id in offloader.zeek_offloaded_events:
+                if event_id not in event_to_offloader:
+                    event_to_offloader[event_id] = offloader
+                else:
+                    # event already offloaded by other offloader, may cause problems, ignoring
+                    logging.warning(
+                        "Zeek event '%s' is marked as offloaded by more than one offloader!" % event_id)
+
+        unsupported_events: Set[str] = set()
+
+        for event_id in set(self.settings.required_events):
+            if event_id in supported_events:
+                logging.debug("Event '%s' supported by offloader '%s'" %
+                              (event_id, event_to_offloader[event_id]))
+                continue  # already supported
+
+            if event_id in event_to_offloader:
+                offloader = event_to_offloader[event_id]
+
+                required_offloaders.add(offloader.id)
+                # may already support more than this required event, so we add all
+                for child_event in offloader.zeek_offloaded_events:
+                    supported_events.add(child_event)
+
+                logging.debug("Event '%s' need offloader '%s', marking it as required." % (
+                    event_id, offloader))
+                continue
+
+            # Not supported by any of the cases above
+            unsupported_events.add(event_id)
+
+        if len(unsupported_events) > 0:
+            raise ZpoException(
+                "One or more Zeek events don't match any loaded offloaders. Unsupported events: %s" % list(
+                    unsupported_events
+                )
+            )
+
+        return list(required_offloaders)
+
     def _find_root_protocol(self) -> ProtocolComponent:
         """Finds the root protocol.
 
@@ -207,7 +264,7 @@ class ExecGraph:
         Raises:
             ZpoException: if protocol not found
         """
-        for offloader_id in self.settings.offloaders:
+        for offloader_id in self.required_offloaders:
             if offloader_id not in self.offloaders:
                 raise ZpoException(
                     f"Offloader template for '{offloader_id}' not found'")
@@ -298,6 +355,7 @@ class ExecGraph:
         unreachable_protocols = set(self.protocols.keys())
 
         def aux_reachable(protocol):
+            protocol: ProtocolComponent
             if protocol.id not in unreachable_protocols:
                 return
 
@@ -359,7 +417,8 @@ class ExecGraph:
 
         self._offloaders_by_priority: List[OffloaderComponent] = list(
             self.offloaders.values())
-        self._offloaders_by_priority.sort(key=lambda o: (o.protocol_depth, o.id))
+        self._offloaders_by_priority.sort(
+            key=lambda o: (o.protocol_depth, o.id))
         self._offloaders_by_priority.sort(
             key=lambda o: (o.priority), reverse=True)
 
