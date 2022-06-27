@@ -18,6 +18,3 @@
 \providecommand{\nominataPRAPG}{\nominataPRAG}
 \providecommand{\nominataPRAPGname}{\nominataPRAGname}
 \course{\cgec}
-
-\def\@cipspecificinfo{Trabalho de conclusão de curso (Graduação)}
-

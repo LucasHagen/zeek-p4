@@ -1,0 +1,96 @@
+\usepackage[utf8]{inputenc}     % pacote para acentuação
+
+\usepackage{graphicx}           % pacote para importar figuras
+\usepackage{svg}
+
+\usepackage{times}              % pacote para usar fonte Adobe Times
+\usepackage{verbatim}
+
+\usepackage{csquotes}
+\usepackage{hyperref}
+\usepackage[alf]{abntex2cite}
+
+\usepackage{subcaption} % for subfigures
+
+% ----------------------------------------------------------------
+% Code Listings
+% 
+% Provided by Alexandre Ilha (MSc Thesis)
+% 
+% Refs:
+% https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
+% https://ctan.org/pkg/listings
+% https://mirrors.ctan.org/macros/latex/contrib/listings/listings.pdf
+
+\usepackage{listings}
+
+\lstdefinelanguage{P4}[]{C++}{
+    morekeywords={accept, action, actions, apply, bit, const, control, default, default_action, header, in, inout, key, out, packet_in, parser, select, size, start, state, struct, table, transition}
+}
+
+\lstdefinelanguage{Zeek}[]{C++}{
+    morekeywords={addr, const, count, event, export, global, local, module, port, print, priority, redef, timeout, when},
+    morecomment=[l]{\#}
+}
+
+\lstdefinestyle{code}{
+    breaklines,
+    basicstyle=\ttfamily\scriptsize,
+    captionpos=t,
+    floatplacement=htb,
+    frame=tb,
+    keywordstyle=\bfseries,
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\ttfamily\tiny,
+    showspaces=false,
+    showstringspaces=false,
+    tabsize=2
+}
+
+\lstdefinestyle{p4}{
+    style=code,
+    language=P4
+}
+
+\lstdefinestyle{zeek}{
+    style=code,
+    language=Zeek
+}
+
+\lstdefinestyle{inline}{
+    breaklines,
+    basicstyle=\ttfamily\normalsize
+}
+
+\lstset{style=code}
+
+\newcommand{\code}[1]{\texttt{#1}}
+% TODO figure out why this messes up line breaks.
+% \renewcommand{\code}[1]{\lstinline[style=inline]{#1}}
+
+
+% \NewCommandCopy{\oldtitle}{\title}
+% \renewcommand{\title}[1]{%
+%     \oldtitle{#1}%
+%     \edef\thetitle{#1}%
+% }
+
+% \NewCommandCopy{\oldauthor}{\author}
+% \renewcommand{\author}[2]{%
+%     \oldauthor{#1}{#2}%
+%     \edef\theauthor{#2~#1}%
+% }
+
+% \NewCommandCopy{\olddate}{\date}
+% \renewcommand{\date}[2]{%
+%     \olddate{#1}{#2}%
+%     \edef\themonth{#1}%
+%     \edef\theyear{#2}%
+% }
+
+% \NewCommandCopy{\oldlocation}{\location}
+% \renewcommand{\location}[2]{%
+%     \oldlocation{#1}{#2}%
+%     \edef\thelocation{#1}%
+% }

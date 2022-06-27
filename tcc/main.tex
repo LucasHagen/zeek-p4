@@ -1,25 +1,11 @@
-\documentclass[cic,tc,english]{inputs/iiufrgs}
+\documentclass[cic,tc,english]{iiufrgs}
 
-\usepackage[utf8]{inputenc}   % pacote para acentuação
+\input{config}
 
-\usepackage{graphicx}           % pacote para importar figuras
-\usepackage{svg}
-
-\usepackage{times}              % pacote para usar fonte Adobe Times
-\usepackage{verbatim}
-
-\usepackage{csquotes}
-\usepackage{hyperref}
-\usepackage[alf, abnt-emphazise=bf]{abntex2cite}
-
-
-
-\usepackage{subcaption} % for subfigures
-
-\title{ZPO - TITLE HERE}
+\title{A Code Generation Tool and Architecture for enabling Intrusion Detection Systems at Data Planes Speeds}
 \author{Sonntag Hagen}{Lucas}
 \advisor[Prof.~Dr.]{Paschoal Gaspary}{Luciano}
-\date{}{2022}
+\date{July}{2022}
 \location{Porto Alegre}{RS}
 
 \makeatletter
@@ -33,20 +19,17 @@
 
 \begin{document}
 
-\input{capa}
-
 \keyword{Zeek}
-
 
 \maketitle
 
 \input{pre-textual}
-
-\input{chapters/introduction}
-\input{chapters/background/index}
-\input{chapters/proposal/index}
-% \input{chapters/useCases/index}
-\input{chapters/conclusion}
+\input{chapters/10-introduction}
+\input{chapters/20-background}
+\input{chapters/30-architecture}
+\input{chapters/40-implementation}
+\input{chapters/50-evaluation}
+\input{chapters/90-conclusion}
 
 \bibliographystyle{abntex2-alf}
 \bibliography{biblio}

@@ -77,7 +77,6 @@
 
 \RequirePackage{xspace}
 \RequirePackage{keyval}
-% \RequirePackage{fixltx2e} %% removido por causa de warning avisando pra tirar
 
 \RequirePackage[english,brazilian]{babel}
 \input{brazilian.babel}
@@ -126,18 +125,18 @@
   \RequirePackage[T1]{fontenc}
 \fi
 
-%% EDIT BY FRANCISCO KNEBEL: using biblatex, so remove abntex2cite
-% \if@noabntcite
-% \else
-% \RequirePackage[
-%     % Habilita o uso de citações no formato autor-data.
-% 	alf,
-% 	% O modelo da UFRGS requer que os títulos dos trabalhos estejam em negrito.
-%     % Isso é opcional na norma ABNT (que permite que seja usado itálico) e
-%     % não é o padrão do abntex2.
-%     abnt-emphasize=bf
-% ]{abntex2cite}
-% \fi
+\if@noabntcite
+\else
+\RequirePackage[
+    % Habilita o uso de citações no formato autor-data.
+	alf,
+	% O modelo da UFRGS requer que os títulos dos trabalhos estejam em negrito.
+    % Isso é opcional na norma ABNT (que permite que seja usado itálico) e
+    % não é o padrão do abntex2.
+    abnt-emphasize=bf,
+    bibjustif
+]{abntex2cite}
+\fi
 
 % espaçamento entre as linhas
 \newcommand{\setlinespacing}{\setstretch{1.415}}
@@ -205,7 +204,6 @@
         \addtocounter{kwcounter}{1}
         \expandafter\gdef\csname keyw\alph{kwcounter}\endcsname{#1}
 }
-
 \newcommand{\@cipkw}{%
         \@ifundefined{keywa}{}{1.~\expandafter\MakeUppercase\keywa\@. }%
         \@ifundefined{keywb}{}{2.~\expandafter\MakeUppercase\keywb\@. }%
@@ -246,7 +244,7 @@
 % informados definindo-se o comando \titlepagespecificinfo. Veja os
 % arquivos .def incluídos com a classe.
 %==============================================================================
-\newlength{\titlepagewinwidth}\setlength{\titlepagewinwidth}{90mm} %% Francisco Knebel: reduzi de 95, dar quebra de linha
+\newlength{\titlepagewinwidth}\setlength{\titlepagewinwidth}{95mm}
 \newlength{\titlepagewinheight}\setlength{\titlepagewinheight}{64mm}
 \newlength{\titlepagewinvoffset}\setlength{\titlepagewinvoffset}{112mm}
 \newcommand{\location}[2]{
@@ -309,7 +307,7 @@
         \parbox[t]{\textwidth}{%
                 \centering%
                 \vbox to \titlepagewinvoffset{%
-                        \@winbox
+                        \titlepagetopinfo\vfill\@winbox
                 }
         }
 }
@@ -322,7 +320,7 @@
                 \@ifundefined{@authorb}{}{\MakeUppercase{\@authorb}\\}%
                 \@ifundefined{@authorc}{}{\MakeUppercase{\@authorc}\\}%
                 \@ifundefined{@authord}{}{\MakeUppercase{\@authord}\\}%
-                \vspace{25.65ex}
+                \vspace{12.65ex}
                 {\large\textbf{\@title}\par}
                 \vfill
         }}%
@@ -358,10 +356,10 @@
 %===============================================================================
 \newcommand{\@makenominatapage}{%
     \clearpage
-    
+    ~
     \vfill
     \nominata
-}
+}%
 
 % definição do quadro
 \def\iiu@cipwindow{%
@@ -371,12 +369,10 @@
                 \setlength{\parindent}{1.5em}%
                 \setlength{\parskip}{1.3ex}%
                 \noindent\@authoralast, \@authorafirst\par
-                \@title\ / \@authora.\ -- \@city: \@publyear.\par
-                \pageref{LastPage}~f.\par%: il.\par
-                \advisorname: \@advisorfirst\space\@advisorlast\par
-                \vspace{1cm}
-                \@cipspecificinfo\ -- \ufrgs, \eengenharia. \@course, \@city, BR--\@state, \@publyear \@ifundefined{@coadvisor}{}{; \coadvisorname: \@coadvisorfirst\ \@coadvisorlast}.\par
-                \@cipkw I.~\@advisorlast, \@advisorfirst, orient. \@ifundefined{@coadvisorfirst}{II.~T\'{\i}tulo.}{II.~\@coadvisorlast, \@coadvisorfirst. III.~T\'{\i}tulo.}\\
+                \@title\ / \@authora.\ -- \@city: \nomeDoProgramaPG~da~UFRGS, \@publyear.\par
+                \pageref{LastPage}~f.: il.\par
+                \@cipspecificinfo\ -- \ufrgs. \@course, \@city, BR--\@state, \@publyear. \advisorname: \@advisorfirst\ \@advisorlast\@ifundefined{@coadvisor}{}{; \coadvisorname: \@coadvisorfirst\ \@coadvisorlast}.\par
+                \@cipkw I.~\@advisorlast, \@advisorfirst. \@ifundefined{@coadvisorfirst}{II.~T\'{\i}tulo.}{II.~\@coadvisorlast, \@coadvisorfirst. III.~T\'{\i}tulo.}\\
                 \vspace{0.2ex}
         \end{minipage}%
         }%
@@ -614,6 +610,7 @@
         \end{list}
 }
 
+
 %==============================================================================
 % Ajuste do espaçamento entre itens em 'enumerate', 'itemize' e 'description'
 %==============================================================================
@@ -632,7 +629,6 @@
 %==============================================================================
 % Ajuste das legendas das figuras e tabelas
 %==============================================================================
-
 \RequirePackage[
         format=plain,labelsep=endash,justification=centering,font=small,
         skip=0pt
@@ -643,9 +639,6 @@
 % below it. The only thing that needs adjust is returning the font size to
 % the normal size.
 \newcommand{\legend}[1]{\caption*{\normalsize #1}}
-
-
-
 
 %==============================================================================
 % Ajuste do formato das citações e referências
