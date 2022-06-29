@@ -1,0 +1,65 @@
+\chapter{\TheSolutionName{}}
+\label{cap:proposal}
+
+In this chapter, I propose the \TheSolutionName{}, a solution for offloading some of Zeek's operations discussed in section \ref{sec:candidate_operations} to Network Programmable Forwarding Devices compatible with P4. This proposal uses the Reconfigurable Network Analytics (RNA) architecture, which was initially proposed in \cite{Ilha2022}. Since \TheSolutionName{} and RNA were developed simultaneously, contributing to each other, this text describes and presents them as a unique solution.
+
+\begin{figure}[h]
+    \caption{RNA Framework - High-level architectural view}
+    \begin{center}
+        \includegraphics[]{images/high_level_arch.pdf}  
+    \end{center}
+    \label{fig:high_level_arch}
+    \legend{Source: the author, adapted from \cite{Ilha2022}}
+\end{figure}
+
+As shown in \figref{} \ref{fig:high_level_arch}, the architecture is composed of two high-level components: the RNA Host Engine, which executes in a Zeek Work node inside the IDS; and the RNA Switch Engine, which is executed in a P4 switch. Both components work together to offload packet analysis from Zeek to a programmable forwarding device. The RNA Switch Engine is able to better parse packets and identify some of their characteristics, which are then summarized and sent to the RNA Host Engine. This summarized message is called mRNA. When the IDS receives this message, it is first processed by our Host Engine. It then converts the summarized message into Zeek native structures, which can then be forwarded to Zeek's normal processing pipeline. This allows us to bypass some operations that would be costly, and deliver this information one step closer to the Policy Script Interpreter, without disturbing its flow. By doing so, we make it that no change is required on existing scripts.
+
+In the original concept of RNA, each program and instance must be tailored made to offload certain and specific Zeek events. This quickly becomes impractical when we increase the number of desired scripts to be offloaded. This is why I later propose an automatic code generation tool, which allows \TheSolutionName{} to be a modular solution, where new offloaded scripts can be added or removed, without the need to re-develop a new solution. But firstly, let's talk about RNA.
+
+
+% Apresenta dois eixos principais:
+% 1. Projeto e entendimento das estruturas necessárias no P4 como no Zeek para fazer o 
+%    offloading e que essas informações entrem no pipeline ordinario do zeek sem modificacoes no sistema
+%
+% 2. Geração de código automática tanto para os elementos que precisam ser adicionados no P4, quanto no Zeek
+%    para viabilizar a monitoração de um conjuntos de scripts
+% 
+% Esta seção trata do item 1
+% 
+% Precisamos de um programa no P4 que processe os os pacotes que chegam nesse
+% 
+% Explicar pq é necessário do gerador de código -> muito dificil juntar vários analizadores/protocolos/scripts
+
+% Proposed structure
+
+% 1. Introduction and presentation of capabilities
+
+% How a packet becomes an event in Zeek
+% -> explain we process, generate a custom packet, packet is received at zeek with metadata, inject in event engine
+
+% Introduction to components of the architecture
+
+% Explain each component
+
+% Parser
+
+
+
+
+
+
+
+\section{Overview}
+
+% Apresentar componentes principais do RNA no nível de detalhamento do Alexandre (figura b do alexandre)
+
+\section{RNA Architecture}
+
+% Entrar nas "caixas amarelas"
+
+\subsection{Details}
+
+\section{Code Generation}
+
+
+

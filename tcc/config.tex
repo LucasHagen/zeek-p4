@@ -1,16 +1,30 @@
-\usepackage[utf8]{inputenc}     % pacote para acentuação
+% ----------------------------------------------------------------
+% Initial Packages
+% 
+% Refs:
+% https://github.com/schnorr/infufrgs/blob/master/exemplos/cic-tc.tex
 
-\usepackage{graphicx}           % pacote para importar figuras
+% Use unicode
+\usepackage[utf8]{inputenc}   % pacote para acentuação
+
+% Necessário para incluir figuras
+\usepackage{graphicx}         % pacote para importar figuras
 \usepackage{svg}
 
-\usepackage{times}              % pacote para usar fonte Adobe Times
-\usepackage{verbatim}
+\usepackage{times}            % pacote para usar fonte Adobe Times
+% \usepackage{palatino}
+% \usepackage{mathptmx}       % p/ usar fonte Adobe Times nas fórmulas
+
+\usepackage[alf,abnt-emphasize=bf]{abntex2cite}	% pacote para usar citações abnt
+
+% ----------------------------------------------------------------
+% Other Custom Packages
+% 
 
 \usepackage{csquotes}
 \usepackage{hyperref}
-\usepackage[alf]{abntex2cite}
-
-\usepackage{subcaption} % for subfigures
+\usepackage{subcaption}
+\usepackage{blindtext}
 
 % ----------------------------------------------------------------
 % Code Listings
@@ -21,7 +35,6 @@
 % https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
 % https://ctan.org/pkg/listings
 % https://mirrors.ctan.org/macros/latex/contrib/listings/listings.pdf
-
 \usepackage{listings}
 
 \lstdefinelanguage{P4}[]{C++}{
@@ -69,6 +82,9 @@
 % TODO figure out why this messes up line breaks.
 % \renewcommand{\code}[1]{\lstinline[style=inline]{#1}}
 
+% ----------------------------------------------------------------
+% Commands to save title, author, date and location in other variables to be reused later
+%
 
 % \NewCommandCopy{\oldtitle}{\title}
 % \renewcommand{\title}[1]{%
@@ -94,3 +110,8 @@
 %     \oldlocation{#1}{#2}%
 %     \edef\thelocation{#1}%
 % }
+
+% ----------------------------------------------------------------
+% Custom name and simple definitions
+%
+\input{custom}
