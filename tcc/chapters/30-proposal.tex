@@ -80,21 +80,22 @@ In our example which is shown in Figure \ref{fig:icmp_ex_parser}, the first pars
 
 
 
-The \textbf{RNA Transcriber} is the first component to be executed after the packets have their headers parsed, this happens in the ingress pipeline. In the Transcriber component, as shown in Figure \ref{fig:arch_low_level}, there are two types of modules, the Protocol Preprocessors, and the Offloader Triggers, both of which may have multiple instances. We start explaining the Protocol Preprocessors since they are the first modules to be executed inside this component.
+The \textbf{RNA Transcriber} is the first component to be executed after the packets have their headers parsed, this happens in the ingress pipeline. It's purpose is to extract information from the incoming packets and store them in the metadata. In this component, as shown in Figure \ref{fig:arch_low_level}, there are two types of modules, the Protocol Preprocessors, and the Offloader Triggers, both of which may have multiple instances. We start explaining the Protocol Preprocessors since they are the first modules to be executed inside this component.
 
 The Protocol Preprocessors are functions that every \ProtocolTemplate{} may execute to extract protocol metadata from the packet. This module is optional and every \ProtocolTemplate{} may have only one preprocessor. In our example, the processor extracts the ICMP type from the header and saves it in the metadata.
 
 The next modules to be executed in the Transcriber are the Offloader Triggers, which are conditions that identify which \Offloader{} should be triggered. Each of these conditions is checked, and the first \Offloader{} to have its trigger condition valid is marked as the triggered one in the packet's metadata. In our example of an ICMP echo request, our trigger condition is \texttt{icmp.type = 8}. This ensures the \Offloader{} \textsc{ICMP Echo Request} is triggered when a ping packet arrives.
 
-After a valid \Offloader{} is found, a copy of this packet is created and using this cloned packet, the switch will be able to construct the mRNA message. The original packet will follow its flow and be delivered to the originally intended destination. At this moment we transition into the Splicer component, where the construction of the summarized message starts. 
+% Maybe add here a code snippet
 
-The \textbf{RNA Splicer} is executed after the packet leaves the ingress pipeline and it enters the egress pipeline\footnotemark{}. The RNA Splicer is composed of the two following types of splicers:
+After a valid \Offloader{} is found, a copy of this packet is created and using this cloned packet, the switch will be able to construct the mRNA message. The original packet will follow its flow and be delivered to the originally intended destination. The next component we present is the Splicer component, where the construction of the summarized message starts.
 
-\begin{itemize}
-    \item The \textbf{RNA Base Splicer} constructs the base header for the mRNA message. This header contains general information, which all \Offloaders{} can use. This includes, for example, source IP, destination IP, L3, and L4 protocols. In our example, the RNA Base Splicer sets both source and destination IPs, the L3 protocol to \texttt{IPv4}, and L4 protocol to \texttt{ICMP}. The Base Splicer is executed for every triggered \Offloader{}.
-    
-    \item The \textbf{Offloader Splicers} are splicers that every \Offloader{} may have. Each \Offloader{} Splicer constructs the header with the extra information required to execute its functionality. In our example, the \textsc{ICMP Echo Request} Splicer will construct a header with information about the ICMP packet: \texttt{type}, \texttt{code}, \texttt{sequence}, and \texttt{id}.
-\end{itemize}
+The \textbf{RNA Splicer} is executed after the packet leaves the ingress pipeline and it enters the egress pipeline\footnotemark{}. The RNA Splicer is composed of two different types of Splicers, the RNA Base Splicer and the Offloader Splicers.
+
+The \textbf{RNA Base Splicer} constructs the base headers for the mRNA message. These headers contains general information, which all \Offloaders{} can use. This includes, for example, source IP, destination IP, L3, and L4 protocols. In our example, the RNA Base Splicer sets both source and destination IPs, the L3 protocol to \texttt{IPv4}, and L4 protocol to \texttt{ICMP}. The Base Splicer is executed for every triggered \Offloader{}. In our expanded version of the RNA architecture, we use two headers to construct our mRNA message: the RNA Header, which only contains the version of the protocol, and the type of RNA message; and the RNA Offloader Header, which is also a general header used by multiple \Offloaders{} which contains the information described above. Instead of using only one header that contains all the information for the offloaders, we decided to use two headers to allow for more expandability in the future, for example, adding a debugging messages.
+
+The second type of Splicers are the \textbf{Offloader Splicers}. These are splicers that every \Offloader{} may have. Each \Offloader{} Splicer constructs the header with the extra information required to execute its functionality. In our example, the \textsc{ICMP Echo Request} Splicer will construct a header with information about the ICMP packet: \texttt{type}, \texttt{code}, \texttt{sequence}, and \texttt{id}.
+% Maybe add code snippets here too
 
 \footnotetext{Since we are explaining the architecture behind \TheSolutionName{}, we are not considering the inner workings of the programmable data plane, where a buffer connects the ingress and egress pipeline.}
 
@@ -104,8 +105,13 @@ After every Splicer has finished constructing its headers, the mRNA message will
 
 In this section, we describe how the Host Engine receives the mRNA messages and uses them to execute the monitoring scripts. Figure \ref{fig:arch_low_level} shows the first components to receive the mRNA message are the Translators. In Zeek's architecture, there is one module responsible for analyzing each protocol, which is called Analyzers. Every Analyzer parses its respective headers and forwards the payload to the next one.
 
-The first Analyzer to receive the mRNA message is not displayed in Figure \ref{fig:arch_low_level} and is executed before the RNA Analyzer. Since the mRNA message is built over the Ethernet protocol, the first analyzer to receive the message is the Ethernet Analyzer. This Analyzer, using the \texttt{ethertype} code, forwards then every received packet to the Analyzer responsible for parsing the next protocol layer.
+The first Analyzer to receive the mRNA message is the Ethernet Analyzer. This is the first Analyzer to be executed because the mRNA message is built over the Ethernet protocol. Since the Ethernet Analyzer is a Zeek internal component and not a part of the RNA architecture, it is not displayed in Figure \ref{fig:arch_low_level}. This Analyzer, using the \texttt{ethertype} code, forwards then every received packet to the Analyzer responsible for parsing the next protocol layer. In this example, the ethertype field is going to indicate it is an RNA Message, forwarding to the RNA Analyzer and entering the RNA Translator component.
 
+The \textbf{RNA Analyzer} is the first Analyzer of the RNA architecture to receive the mRNA packet. As explained in the previous section, the RNA protocol has a generic header that indicates the version and the message type. In the case of this project, the only type we use is the \Offloader{} type\footnotemark. Using our previously described example, the mRNA packet created for the ICMP ping will have its type as \textsc{\Offloader{}}.
+
+\footnotetext{There are actually three types of \Offloaders{}, but for simplification purposes, in the architecture description we present the Offloader type as being one unique type. For more details about this, please refer to implementation details (Section \ref{sec:implementation}).}
+
+Next, the \textbf{RNA Offloader Analyzer} is the second Analyzer of our RNA implementation to receive the mRNA packet. It parses common information that is used by most \Offloaders{}, for example, source and destination IP addresses, L3 and L4 protocols, and \Offloader{} type. This Analyzer is also responsible for forwarding the mRNA packet to the \Offloader{} specific Analyzer by using the \Offloader{} \texttt{type} code. In our example, the next Analyzer to be called is the \textsc{ICMP Echo Request} Analyzer.
 
 
 
