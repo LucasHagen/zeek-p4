@@ -1,10 +1,11 @@
 \chapter{\TheSolutionName{}}
 \label{cap:proposal}
 
-In this chapter, we propose the \TheSolutionName{}, a solution for offloading some of Zeek's operations discussed in Section \ref{sec:candidate_operations} to Network Programmable Forwarding Devices compatible with P4. This proposal uses the Reconfigurable Network Analytics (RNA) architecture, which was initially proposed by Ilha \cite{Ilha2022}. Since \TheSolutionName{} also contributed to RNA's development, this text describes and presents them together.
+In this chapter, we propose the \TheSolutionName{}, a sole
+ution for offloading some of Zeek's operations discussed in Section \ref{sec:candidate_operations} to programmable forwarding devices compatible with P4. The proposal builds on top of the Reconfigurable Network Analytics (RNA) architecture, which was initially proposed by Ilha \cite{Ilha2022}. Since \TheSolutionName{} advances RNA, next we describe the solution resulting from both, highlighting the new functionality.
 
 \begin{figure}[h]
-    \caption{RNA Framework - High-level architectural view}
+    \caption{RNA architecture - high-level architectural view}
     \begin{center}
         \includegraphics[width=0.7\textwidth]{images/arch_high_level.pdf}  
     \end{center}
@@ -12,30 +13,30 @@ In this chapter, we propose the \TheSolutionName{}, a solution for offloading so
     \legend{Source: the author, adapted from Ilha \cite{Ilha2022}}
 \end{figure}
 
-Figure \ref{fig:arch_high_level} illustrates the RNA architecture. It is composed of two high-level components: the RNA Host Engine, which executes in one of Zeek's work nodes inside the IDS; and the RNA Switch Engine, which is executed in a P4 switch. Both components work together to offload packet analysis from Zeek to a programmable forwarding device. The RNA Switch Engine is able to better parse packets and identify some of their characteristics, which are then summarized and sent to the RNA Host Engine. This summarized message is called mRNA. When the IDS receives this message, it is first processed by our Host Engine. It then converts the summarized message into Zeek's native structures, which can then be forwarded to Zeek's normal processing pipeline. This procedure allows us to bypass some operations that would be costly, and deliver this information one step closer to the Policy Script Interpreter (PSI, Section \ref{sec:zeek_psi}), without disturbing its flow. By doing so, we make it that no change is required on existing scripts running on the PSI.
+% TODO: bypass some operations that would be costly (such as X and Y)
+% TODO(2): What step? ... one step closer (i.e., Z)
+Figure \ref{fig:arch_high_level} illustrates the RNA architecture. It is composed of two high-level components: the RNA Host Engine, which executes in one of Zeek's work nodes inside the IDS; and the RNA Switch Engine, which is executed in a P4 switch. Both components work together to offload packet analysis from Zeek to a programmable forwarding device. The RNA Switch Engine is able to parse packets and identify some of their characteristics, which are then summarized and sent to the RNA Host Engine. This summarized message is called mRNA. When the IDS receives this message, it is first processed by our Host Engine. It then converts the summarized message into Zeek's native structures, which can then be forwarded to Zeek's normal processing pipeline. This procedure allows us to bypass some operations that would be costly, and deliver this information one step closer to the Policy Script Interpreter (PSI, Section \ref{sec:zeek_psi}), without disturbing Zeek's flow. By doing so, we make it that no change is required on existing scripts running on the PSI.
 
 % TODO: check what to call this "'custom software' to be executed both...."
-In the original concept of RNA, depending on the IDS scripts chosen to be monitored by the operator, it is necessary to develop custom software to be executed both by the Host Engine and the Switch Engine. This ad-hoc development process quickly becomes impractical when we increase the number of desired scripts to be offloaded. For this reason, later propose an automatic code generation tool, which allows \TheSolutionName{} to be a modular solution, where new offloaded scripts can be added or removed, without the need to develop new software. Before detailing this automated process, first, we revisit the architectural concepts.
+In the original concept of RNA, depending on the IDS scripts chosen to be monitored by the operator, it is necessary to develop custom software to be executed both by the Host Engine and the Switch Engine. This ad-hoc development process quickly becomes impractical when we increase the number of desired scripts to be offloaded. For this reason, we propose an automatic code generation mechanism, described later in Section \ref{sec:code_gen}, which allows \TheSolutionName{} to be a modular solution, where varying combinations of Zeek scripts can be chosen to be monitored, without the need to develop new software. Before detailing this automated process, we briefly review the operation of RNA components.
 
 % ==============================================================================
 %                               RNA OVERVIEW
 % ==============================================================================
-\section{Overview}
+\section{RNA Components in a Nutshell}
 
-In this section, we'll describe the components shown in Figure \ref{fig:arch_high_level}. We start with the RNA Host Engine, since it is the controlling part of the whole deployment, and then we describe the RNA Switch Engine.
-
+Using Figure \ref{fig:arch_high_level} as a reference, we present the components of the RNA architecture and their functionality. We start with the RNA Host Engine, since it is the controlling part of the whole deployment, and then we describe the RNA Switch Engine.
 
 % TODO: check if we'll remove the "RNA Event Handler" completely, or say it was removed but exists in the original RNA
-The \textbf{Host Engine} unfolds into three components. The \textbf{RNA Manager} is a Zeek Script, which first configures the P4 switch, setting up a monitoring session and loading all P4 code that is required to execute the offloaded tasks. After configuring the switch, it registers all RNA Translators (one per-protocol of interest), so they receive mRNA messages. The \textbf{Translators} wait for such messages and translate them to Zeek native structures. Those structures are then used to trigger events, which are then consumed by the running scripts.
-
-% % Removed: too much 'unwanted' information
-% In order not to override and disturb the existing Zeek Packet and Protocol Analyzers described in Section \ref{sec:packet_analysis_framework}, the Translators are registered using a different protocol, the RNA protocol, which is used by the mRNA message (Section \ref{sec:mrna_message}) and is built over Ethernet. This means the packets encoded as mRNA messages, even if they represent an ICMP event, for example, will be first analyzed by the Ethernet \textit{Analyzer}, then the RNA Translator \textit{Analyzer}, where the normal flow for an ICMP packet would be the following analyzers: Ethernet, IPv4, and ICMP.
+% TODO(2): Por que o negrito agora e não na primeira vez em que o nome do componente foi referido (ainda no trecho anterior)? Há que estabelecer e seguir rigorosamente um critério.
+The \textbf{Host Engine} unfolds into two components. The \textbf{RNA Manager} is the controlling component of the deployment, which first configures the P4 switch, setting up a monitoring session and loading all P4 code that is required to execute the offloaded tasks. After configuring the switch, it registers all RNA Translators (one per-protocol of interest), so they receive mRNA messages. \textbf{Translators} are components responsible for waiting for such mRNA messages and translating them to Zeek native structures. Those structures are then used to trigger events, which are then consumed by the running scripts.
 
 The \textbf{RNA Switch Engine} is the program that executes in our P4-compatible programmable forwarding device. It has three components and we'll be following the route of an incoming packet to explain them. The first component that processes a packet is the \textbf{RNA Parser}. It parses and extracts headers from each protocol, from the link layer, up to the application layer if required. After all the headers have been extracted, the packet enters P4's ingress pipeline, where the \textbf{RNA Transcriber} is executed. It extracts useful information from the packet and sets metadata that later will be used to build our summarized message, while also filtering some undesired packets. Having all the required metadata and going into P4's egress pipeline, the \textbf{RNA Splicer} builds and sends our summarized message, the mRNA, to the Host Engine with all information it may require to trigger a native Zeek Event.
 
-Another important structure to be explained is The \textbf{mRNA Message} is a summary of a packet, summarizing all the information that the Switch Engine was able to extract from it. Sending an mRNA message is better than sending the whole packet because the original packet contains a lot of headers that still would need to be parsed, a lot of information that is not necessary in some cases, and is not validated. In the summarized message, all information from L2 up to the L7 layer is gathered, filtered, and even formatted sometimes to a one-to-one translation to Zeek's native structures, saving Zeek from doing these operations on its own. The information-gathering process still needs to happen, but it does in the Switch Engine, which runs in a purpose-built device, making it much more efficient for this task. So the more information the switch is able to extract, the less Zeek has to do.
+% TODO: negrito no \textbf{mRNA Message}
+Another important structure is the \textbf{mRNA Message}. It is a summary of a packet, summarizing all the information that the Switch Engine was able to extract from it. Sending an mRNA message is more efficient than sending a whole packet because the original packet contains headers that would still need to be parsed, information that, in come cases, is not necessary, and is not validated. In the summarized message, all information from L2 up to the L7 layer is gathered, filtered, and, in some cases, even formatted according to Zeek's native structures, saving Zeek from doing these operations on its own. The information-gathering process still needs to happen, but it does in the Switch Engine, which runs in a purpose-built device, making it much more efficient for this task. So the more information the switch is able to extract, the less Zeek has to do.
 
-In an ideal world scenario, we would like to extract all information that Zeek needs to trigger an event, but sometimes that's not possible. Zeek's internal structures track a lot of connection states and use a lot of heuristics, which because of P4's limited processing power for general tasks, we are unable to implement. This requires the mRNA message to be modular, allowing us to send, together with it, a part of the packet that was not able to be processed in the switch. This ensures P4 extracts all information it can, leaving the rest for Zeek to finish analyzing.
+In an ideal world scenario, we would like to extract all information that Zeek needs to trigger an event, but sometimes that is not possible. Zeek's internal structures track connection states and use detection heuristics, which, because of P4's limited processing power for general tasks, we are unable to implement. This requires the mRNA message to be modular, allowing us to send, together with it, a part of the packet that was not able to be processed in the switch. This ensures P4 extracts all information it can, leaving the rest for Zeek to finish analyzing.
 
 % ==============================================================================
 %                               RNA DETAILED ARCHITECTURE
@@ -116,3 +117,14 @@ Next, the \textbf{RNA Offloader Analyzer} is the second Analyzer of our RNA impl
 
 
 \section{Code Generation}
+\label{sec:code_gen}
+
+% Introduction
+
+\subsection{Requirements or Usage}
+
+% Describe how it is actually used to generate the code and then to deploy
+
+\subsection{Details}
+
+% Describe how to actually works and maybe some implementation details
