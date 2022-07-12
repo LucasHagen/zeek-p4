@@ -1,0 +1,25 @@
+\chapter{Automatic Code Generation for RNA}
+\label{cap:code_gen}
+
+% Introduction
+
+In this chapter, we present a tool for automatic code generation for the RNA Framework. This tool enables network operators to deploy the Framework without having the experience and knowledge to develop software for Zeek or programmable forwarding devices (P4). To support this tool, in the previous chapter we proposed additions to the RNA Framework. 
+
+% Those changes were necessary and we recapitulate two of those concepts that will server as inputs for our code generator: the \ProtocolTemplates{} and the \Offloaders{}.
+
+This tool started with the idea of having a set of Zeek scripts as input, and two components on the output: a Zeek Script/Package and a P4 program. This became evidently unfeasible for the scope of this project due to the complexity and the logic behind each event triggering logic in Zeek. This obstacle steered us into another approach. The proposed tool uses both previously mentioned concepts, the \ProtocolTemplates{} and the \Offloaders{}, as a source of templates and resources, in order to implement the software required to offload the desired scripts. 
+
+It is important to mention when we talk about offloading scripts, we are not offloading the processing of the scripts that happen on the PSI (see Section \ref{sec:zeek_psi}). We offload the steps and procedures required to transform network packets into the structures that are needed to run these scripts, usually Zeek Events. Those operations selected for offloading, which are described in Section \ref{sec:zeek_candidate_operations} and also analyzed in-depth by Ilha \cite{Ilha2022}, make the system more performative and able to support more network throughput in this world of constant increasing network speeds.
+
+In the next section, we first describe the system as a black box, explaining its inputs, options, and outputs. Later, in Section \ref{sec:code_gen_impl}, we describe how the inner components of this tool work and how it is able to generate and merge existing code, generating one ready-to-use solution.
+
+\section{Usage}
+
+
+
+% Describe how it is actually used to generate the code and then to deploy
+
+\section{Implementation Details}
+\label{sec:code_gen_impl}
+
+% Describe how to actually works and maybe some implementation details
