@@ -1,3 +1,17 @@
+% ----------------------------------------------------------------
+% Document class
+% 
+% * cic     -- Graduação em Ciência da Computação
+% * tc      -- Trabalhos de Conclusão (apenas cic e ecp)
+
+% Other Options:
+% * english         -- para textos em inglês
+% * openright       -- Força início de capítulos em páginas ímpares (padrão da
+% biblioteca)
+% * oneside         -- Desliga frente-e-verso
+% * nominatalocal   -- Lê os dados da nominata do arquivo nominatalocal.def
+\documentclass[cic,tc,english]{iiufrgs}
+
 \input{config}
 
 \title{A Code Generation Tool and Architecture for enabling Intrusion Detection Systems at Data Planes Speeds}
@@ -19,9 +33,13 @@
 \input{chapters/30-rna}             % 10 (or 20 if no implementation chapter)
 \input{chapters/40-code-gen}        % 10
 \input{chapters/50-evaluation}      % 5
-\input{chapters/90-conclusion}      % 1
+\input{chapters/60-conclusion}      % 1
 
 \bibliographystyle{abntex2-alf}
 \bibliography{biblio}
+
+\appendix
+\input{chapters/91-protocol-template}
+\input{chapters/92-offloader-template}
 
 \end{document}

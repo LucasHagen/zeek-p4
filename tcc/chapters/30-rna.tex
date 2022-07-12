@@ -1,7 +1,7 @@
 \chapter{Reconfigurable Network Analytics}
 \label{cap:rna}
 
-In this chapter, we present an extended version of the Reconfigurable Network Analytics (RNA), an approach for offloading some of Zeek's operations discussed in Section \ref{sec:zeek_candidate_operations} to programmable forwarding devices compatible with P4. This proposal is an extended version of the Reconfigurable Network Analytics (RNA) framework, which was initially proposed by Ilha \cite{Ilha2022}. Since we advance on the original RNA, we describe the solution resulting from both, highlighting the new functionality.
+In this chapter, we present an extended version of the Reconfigurable Network Analytics (RNA), an approach for offloading some of Zeek's operations discussed in Section \ref{sec:bg:zeek_candidate_operations} to programmable forwarding devices compatible with P4. This proposal is an extended version of the Reconfigurable Network Analytics (RNA) framework, which was initially proposed by Ilha \cite{Ilha2022}. Since we advance on the original RNA, we describe the solution resulting from both, highlighting the new functionality.
 
 \begin{figure}[h]
     \caption{RNA Framework}
@@ -12,7 +12,7 @@ In this chapter, we present an extended version of the Reconfigurable Network An
     \legend{Source: adapted from Ilha \cite{Ilha2022}}
 \end{figure}
 
-Figure \ref{fig:arch_high_level} illustrates the RNA framework. It is composed of two high-level components: the RNA Host Engine, which executes in one of Zeek's work nodes inside the IDS; and the RNA Switch Engine, which is executed in a P4 switch. Both components work together to offload packet analysis from Zeek to a programmable forwarding device. The RNA Switch Engine is able to parse packets and identify some of their characteristics, which are then summarized and sent to the RNA Host Engine. This summarized message is called mRNA. When the IDS receives this message, it is first processed by our Host Engine. It then converts the summarized message into Zeek's native structures, which can then be forwarded to Zeek's normal processing pipeline. This procedure allows us to bypass some operations that would be costly (such as protocol parsing and state tracking), and deliver this information closer or even directly to the Policy Script Interpreter (PSI, Section \ref{sec:zeek_psi}), without disturbing Zeek's flow. By doing so, we make it that no change is required on existing scripts running on the PSI.
+Figure \ref{fig:arch_high_level} illustrates the RNA framework. It is composed of two high-level components: the RNA Host Engine, which executes in one of Zeek's work nodes inside the IDS; and the RNA Switch Engine, which is executed in a P4 switch. Both components work together to offload packet analysis from Zeek to a programmable forwarding device. The RNA Switch Engine is able to parse packets and identify some of their characteristics, which are then summarized and sent to the RNA Host Engine. This summarized message is called mRNA. When the IDS receives this message, it is first processed by our Host Engine. It then converts the summarized message into Zeek's native structures, which can then be forwarded to Zeek's normal processing pipeline. This procedure allows us to bypass some operations that would be costly (such as protocol parsing and state tracking), and deliver this information closer or even directly to the Policy Script Interpreter (PSI, Section \ref{sec:bg:zeek_psi}), without disturbing Zeek's flow. By doing so, we make it that no change is required on existing scripts running on the PSI.
 
 % TODO: check what to call this "'custom software' to be executed both...."
 In the original concept of RNA, depending on the IDS scripts chosen to be monitored by the operator, it is necessary to develop custom software to be executed both by the Host Engine and the Switch Engine. This ad-hoc development process quickly becomes impractical when we increase the number of desired scripts to be offloaded. For this reason, we propose an automatic code generation mechanism, described later in Chapter \ref{cap:code_gen}, which allows RNA to be a modular solution, where varying combinations of Zeek scripts can be chosen to be monitored, without the need to develop new software. Before detailing this automated process, we briefly review the operation of RNA components.
@@ -21,6 +21,7 @@ In the original concept of RNA, depending on the IDS scripts chosen to be monito
 %                               RNA OVERVIEW
 % ==============================================================================
 \section{RNA Components in a Nutshell}
+\label{sec:rna:overview}
 
 Using Figure \ref{fig:arch_high_level} as reference, we present the high-level components of the RNA framework and their functionality. We start with the RNA Host Engine, since it is the controlling part of the whole deployment, and then we describe the RNA Switch Engine.
 
@@ -40,7 +41,7 @@ In an ideal world scenario, we would like to extract all information that Zeek n
 % ==============================================================================
 % TODO: Change the name of this section
 \section{Detailed Framework Design}
-\label{sec:detailed_design}
+\label{sec:rna:detailed_design}
 
 This proposed version of the RNA framework, different from the original framework, goes further and specifies another level of modules that make the framework adaptable to variable situations with varying sets of monitoring scripts. Before explaining the inner details of the framework, we will introduce two concepts that are fundamental for its understanding and will serve later as inputs for our code generator tool. Those concepts are \ProtocolTemplate{} and \Offloader{}:
 
@@ -116,7 +117,7 @@ In this section, we describe how the Host Engine receives the mRNA messages and 
 
 \subsubsection*{RNA Translator}
 
-The RNA Translator, similar to the RNA Splicer, is composed of three different types of Analyzers, which are components responsible for parsing each layer of the mRNA message. We use Figure \ref{fig:icmp_ex_translator} to explain how the analyzers connect to each other. First, it is important to note that Analyzers with a gray background are Zeek provided, and Analyzers with a dashed border are Analyzers present in our deployment, but they are not executed due to our ICMP ping packet example (explained at the beginning of Section \ref{sec:detailed_design}).
+The RNA Translator, similar to the RNA Splicer, is composed of three different types of Analyzers, which are components responsible for parsing each layer of the mRNA message. We use Figure \ref{fig:icmp_ex_translator} to explain how the analyzers connect to each other. First, it is important to note that Analyzers with a gray background are Zeek provided, and Analyzers with a dashed border are Analyzers present in our deployment, but they are not executed due to our ICMP ping packet example (explained at the beginning of Section \ref{sec:rna:detailed_design}).
 
 \begin{figure}[ht]
     \caption{Analyzers - ICMP Translation Example}

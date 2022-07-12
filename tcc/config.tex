@@ -1,18 +1,4 @@
 % ----------------------------------------------------------------
-% Document class
-% 
-% * cic     -- Graduação em Ciência da Computação
-% * tc      -- Trabalhos de Conclusão (apenas cic e ecp)
-
-% Other Options:
-% * english         -- para textos em inglês
-% * openright       -- Força início de capítulos em páginas ímpares (padrão da
-% biblioteca)
-% * oneside         -- Desliga frente-e-verso
-% * nominatalocal   -- Lê os dados da nominata do arquivo nominatalocal.def
-\documentclass[cic,tc,english]{iiufrgs}
-
-% ----------------------------------------------------------------
 % Initial Packages
 % 
 % Refs:
@@ -61,6 +47,12 @@
     morecomment=[l]{\#}
 }
 
+\lstdefinelanguage{Bash}[]{}{
+    morekeywords={},
+    morecomment=[l]{\#},
+    moredelim=[is][\bfseries]{<@}{@>}
+}
+
 \lstdefinestyle{code}{
     breaklines,
     basicstyle=\ttfamily\scriptsize,
@@ -84,6 +76,16 @@
 \lstdefinestyle{zeek}{
     style=code,
     language=Zeek
+}
+
+\lstdefinestyle{bash}{
+    style=code,
+    language=Bash
+}
+
+\lstdefinestyle{python}{
+    style=code,
+    language=Python
 }
 
 \lstdefinestyle{inline}{
