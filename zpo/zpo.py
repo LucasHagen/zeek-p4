@@ -23,7 +23,7 @@ class Zpo:
         if not self.check_output_dir():
             return
 
-        logging.info(f"Starting ZPO for '{self.settings.output_dir}'\n")
+        logging.info(f"Starting ZPO for '{self.settings.output_dir}'")
 
         templates = load_templates(self.settings.template_folders)
 
