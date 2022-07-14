@@ -53,6 +53,11 @@
     moredelim=[is][\bfseries]{<@}{@>}
 }
 
+\lstdefinelanguage{Py}[]{Python}{
+    morecomment=[s]{"""}{"""},
+    morekeywords={self}
+}
+
 \lstdefinestyle{code}{
     breaklines,
     basicstyle=\ttfamily\scriptsize,
@@ -85,7 +90,12 @@
 
 \lstdefinestyle{python}{
     style=code,
-    language=Python
+    language=Py
+}
+
+\lstdefinestyle{cpp}{
+    style=code,
+    language=C++
 }
 
 \lstdefinestyle{inline}{
