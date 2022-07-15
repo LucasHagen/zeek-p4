@@ -2,18 +2,55 @@
 
 \input{config}
 
-\title{A Code Generation Tool and Architecture for Enabling Intrusion Detection Systems at Data-Plane Speeds}
+% ==============================================================================
+% Title and Translated Title
+% ==============================================================================
+
+\title{A Framework and Automatic Code Generation Mechanism for Enabling Intrusion Detection Systems at Data-Plane Speeds}
+
+\translatedtitle{Um Framework e Mecanismo de Geração Automática de Código para Permitir Sistemas de Detecção de Intrusão em Velocidades de Planos de Dados}
+
+
+% ==============================================================================
+% General Information
+% ==============================================================================
+
 \author{Sonntag Hagen}{Lucas}
 \advisor[Prof.~Dr.]{Paschoal Gaspary}{Luciano}
 \coadvisor[M.Sc.]{da Silveira Ilha}{Alexandre}
 \date{July}{2022}
 \location{Porto Alegre}{RS}
 
-\begin{document}
+
+% ==============================================================================
+% Keywords
+% ==============================================================================
 
 \keyword{Zeek}
+\translatedkeyword{Zeek}
+
+\keyword{P4}
+\translatedkeyword{P4}
+
+\keyword{Security}
+\translatedkeyword{Segurança}
+
+\keyword{Data planes}
+\translatedkeyword{Plano de dados}
+
+% TODO: add more keywords
+
+
+
+% ==============================================================================
+% Document
+% ==============================================================================
+
+\begin{document}
 
 \maketitle
+
+% Chapters
 
 \input{chapters/00-pre-textual}     % 10+
 \input{chapters/10-introduction}    % 2
@@ -23,10 +60,14 @@
 \input{chapters/50-evaluation}      % 5
 \input{chapters/60-conclusion}      % 1
 
+% Bibliograpy
+
 \bibliographystyle{abntex2-alf}
 \bibliography{biblio}
 
+% Appendixes
 \appendix
+
 \input{chapters/91-protocol-template}
 \input{chapters/92-offloader-template}
 
