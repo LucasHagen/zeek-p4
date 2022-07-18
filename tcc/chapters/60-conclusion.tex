@@ -15,3 +15,13 @@ Conclusion...
     \item Multiple \Offloaders{} per incoming packet.
     \item Proper \textit{Connection} management: memory management, aggregation and reuse.
 \end{itemize}
+
+
+\section{Challenges and Difficulties}
+
+% Saved for later:
+
+% Professor's comment about this whole paragraph (previously in Chapter 4):
+% Acho ruim começar o capítulo mencionando mudanças de planos em função de dificuldades. Esse tipo de texto poderia aparecer perfeitamente em alguma seção sobre dificuldades ou mesmo na Conclusão, mas não aqui.
+% 
+% The automation mechanism started with the idea of having a set of Zeek scripts as input, and two components on the output: a Zeek Script/Package and a P4 program. This became evidently unfeasible for the scope of this project due to the complexity and the logic behind each event triggering logic in Zeek. This obstacle steered us into another approach. The proposed mechanism uses the previously mentioned concepts, the \ProtocolTemplates{} and the \Offloaders{}, as a source of templates and resources, in order to implement the software required to offload the events subscribed by the desired scripts. Another proposed change to the original design is the generation of a unique Zeek Plugin, which will automatically deploy the P4 code when initiated, instead of having two separate deployable components.
