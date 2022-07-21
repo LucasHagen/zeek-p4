@@ -1,0 +1,55 @@
+% \begin{algorithm}%[H]
+%     \caption{Knowledge Model Build Algorithm}
+%     \label{alg:knowledge_model}
+%     \begin{algorithmic}[1]
+%         \input{code/graph_code_alg}
+%     \end{algorithmic}
+% \end{algorithm}
+
+
+% Adicionar \! para remover o espaço extra
+
+\Function{BuildKnowledgeModel}{$templates$, $events$, $force\_offloaders$}
+
+    \State \Call{ValidateComponentList}{$templates$};
+
+    \State $protocol\_list \gets$ \Call{FilterListByType}{$templates$, $ProtocolTemplate$};
+    \State $offloader\_list \gets$ \Call{FilterListByType}{$templates$, $OffloaderTemplate$};
+
+    \State $req\_of\!floaders \gets$ \Call{RequiredOffloaders}{$offloader\_list$, $events$, $force\_offloaders$};
+
+    \vspace{1em}
+
+    \If{$| req\_offloaders | = 0 $}
+        \State \Return;
+    \EndIf
+    
+    \vspace{1em}
+    
+    \State $protocols \gets$ \Call{MakeTemplateDict}{$protocol\_list$};
+    \State $offloaders \gets$ \Call{MakeTemplateDict}{$offloader\_list$};
+    
+    \State $root \gets$ \Call{FindRootProtocol}{$protocols$};
+    
+    \State $graph \gets$ \Call{LinkGraph}{$root$, $protocols$};
+    
+    \State \Call{AttachOffloaders}{$graph, offloaders$};
+    
+    \vspace{1em}
+    
+    \If{\Call{HasCycles}{$graph$}}
+        \State \Return;
+    \EndIf
+    
+    \vspace{1em}
+    
+    \State \Call{TrimUnusedProtocols}{$graph$};
+    \State \Call{RemoveUnreachableProtocols}{$graph$};
+    
+    \State \Call{SetProtocolDepths}{$graph$};
+    \State \Call{SortProtocols}{$graph$};
+    \State \Call{SortOffloaders}{$graph$};
+    \State \Call{SetOffloadersUids}{$graph$};
+    
+    \State \Return $graph$;
+\EndFunction

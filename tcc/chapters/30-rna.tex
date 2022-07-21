@@ -35,8 +35,7 @@ Another important structure is the mRNA Message. It is a summary of a packet, co
 In an ideal world scenario, we would like to extract all information that Zeek needs to trigger an event, but sometimes that is not possible. Zeek's internal structures track connection states and use detection heuristics, which, because of P4's limited processing power for general tasks, we are unable to implement. This requires the mRNA message to be modular, allowing us to send, together with it, the parts of the packet that could not be further processed in the switch. This ensures P4 extracts all information it can, leaving the rest for Zeek to finish analyzing.
 
 % ==============================================================================
-%                               Detailed Framework Design
-% 
+%                            Detailed Framework Design
 % ==============================================================================
 \section{Detailed Framework Design}
 \label{sec:rna:detailed_design}

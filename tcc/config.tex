@@ -18,6 +18,22 @@
 \usepackage[alf,abnt-emphasize=bf]{abntex2cite}	% pacote para usar citações abnt
 
 % ----------------------------------------------------------------
+% Algorithms (extracted from Alexandre Ilha's Msc Thesis)
+
+% Good starting point for the docs on algorithm typesetting:
+% https://tex.stackexchange.com/a/230789
+
+\usepackage{mathtools}
+\usepackage{xspace}
+\usepackage{setspace}
+\usepackage{algorithm}                  % Floating environment.
+\usepackage[noend]{algpseudocode}       % An algorithmicx layout.
+
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\algrenewcommand\algorithmicindent{0.8em}
+
+% ----------------------------------------------------------------
 % Other Custom Packages
 % 
 
@@ -26,6 +42,7 @@
 \usepackage{subcaption}
 \usepackage{float}
 \usepackage{blindtext}
+
 
 % ----------------------------------------------------------------
 % Code Listings
