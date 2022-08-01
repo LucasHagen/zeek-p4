@@ -1,0 +1,21 @@
+{
+    "zpo_type": "PROTOCOL",
+    "zpo_version": "0.0.1",
+    "id": "icmp_echo",
+    "parent_protocols": [
+        {
+            "id": "icmp",
+            "id_for_parent_protocol": 0 // Echo reply
+        },
+        {
+            "id": "icmp",
+            "id_for_parent_protocol": 8 // Echo request
+        }
+    ],
+    "header": {
+        "header_file": "icmp_echo_header.p4",
+        "header_struct": "icmp_echo_h"
+    },
+    "next_protocol_selector": null, // A field of the header template provided
+    "ingress_processor": null // Optional
+}

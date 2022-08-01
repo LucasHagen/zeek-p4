@@ -27,5 +27,10 @@ def copy_file(source, destination):
 def copy_tree(source, destination, dirs_exist_ok=False):
     shutil.copytree(source, destination, dirs_exist_ok=dirs_exist_ok)
 
+
 def is_dir_empty(dir) -> bool:
     return len(os.listdir(dir)) == 0
+
+
+def flatten(l: List[List]) -> List:
+    return [item for sublist in l for item in sublist]

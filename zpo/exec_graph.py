@@ -47,10 +47,12 @@ class ExecGraph:
         offloader_list = _filter_list_by_type(
             self.raw_components, OffloaderComponent)
 
-        self.required_offloaders = self._get_required_offloaders(offloader_list)
+        self.required_offloaders = self._get_required_offloaders(
+            offloader_list)
 
         if len(self.required_offloaders) == 0:
-            raise ZpoException("No Offloader or Zeek Event specified for offloading. Aborting.")
+            raise ZpoException(
+                "No Offloader or Zeek Event specified for offloading. Aborting.")
 
         # Remove not required offloaders
         offloader_list = _filter_list(
@@ -247,8 +249,9 @@ class ExecGraph:
                 continue
 
             parents = protocol.parent_protocols
+            parents_ids = set(map(lambda p: p.parent_id, parents))
 
-            for parent_id in parents:
+            for parent_id in parents_ids:
                 if(parent_id not in self.protocols):
                     logging.warning(
                         f"Parent protocol '{parent_id}' not found for protocol '{id}'")
