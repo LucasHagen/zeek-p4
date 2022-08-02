@@ -1,4 +1,4 @@
-// Generated for ICMP *echo reply* messages.
+// Generated for ICMP *echo reply* and *request* messages.
 header icmp_echo_message_h {
     bit<16> id;         // id           (8 bytes)
     bit<16> seq;        // seq          (8 bytes)
