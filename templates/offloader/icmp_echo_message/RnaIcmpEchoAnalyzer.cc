@@ -52,8 +52,8 @@ bool RnaIcmpEchoAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet*
     auto offloader_hdr = rna_packet->GetOffloaderHdr();
     auto icmp_hdr = (const icmp_echo_message_h*)offloader_hdr->GetPayload();
 
-    auto payload = offloader_hdr->GetPayload() + sizeof(icmp_echo_message_h);
-    auto payload_len = ntohll(icmp_hdr->len);
+    int payload_len = len - sizeof(icmp_echo_message_h);
+    const u_char* payload = (const u_char*)(data + sizeof(icmp_echo_message_h));
     String* payloadStr = new String(payload, payload_len, false);
 
     auto conn = offloader_hdr->GetOrCreateConnection(packet);
@@ -78,10 +78,10 @@ bool RnaIcmpEchoAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet*
     EventHandlerPtr e;
     switch (icmp_hdr->itype) {
         case ICMP_ECHOREPLY:
-            e = icmp_echo_request;
+            e = icmp_echo_reply;
             break;
         case ICMP_ECHO:
-            e = icmp_echo_reply;
+            e = icmp_echo_request;
             break;
         default:
             return false;
