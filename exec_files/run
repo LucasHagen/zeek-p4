@@ -2,4 +2,4 @@
 
 ./configure
 make install -j8
-zeek -i s1-eth3 scripts
+zeek -i s1-eth3 scripts "$@"
