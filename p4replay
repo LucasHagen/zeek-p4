@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+SCRIPT=`realpath $0`
+SCRIPTPATH=`dirname $SCRIPT`
+SCRIPTNAME=`basename $SCRIPT`
+
+if [ "$1" = "" ] || [ "$2" = "" ] ; then
+    echo "This script executes the 'tcpreplay' command, replaying the provided"
+    echo "trace in the specified interface of p4app."
+    echo ""
+    echo "Error. Correct usage: ./$SCRIPTNAME <p4-interface> <trace-file>"
+    exit 1
+fi
+
+################################################################################
+# Code from p4.org
+container_id=${P4APP_NAME:-$(docker ps | grep -m1 p4app_ | awk '{print $1}')}
+
+if [ -z "$container_id" ]; then
+    echo "Couldn't find any p4app currently running."
+    echo "Use './run_zeek standalone' to run in standalone mode."
+    exit 1
+fi
+# End of code from p4.org
+################################################################################
+
+TRACE_FULLPATH=`realpath $2`
+TRACENAME=`basename $TRACE_FULLPATH`
+
+echo "tcpreplay -i $1 $TRACENAME"
+
+docker run \
+-it \
+--rm \
+--network container:$container_id \
+-v $TRACE_FULLPATH:/root/$TRACENAME \
+--workdir /root \
+lucashagen/zeek-full \
+tcpreplay -i $1 $TRACENAME

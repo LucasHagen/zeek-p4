@@ -42,7 +42,8 @@ ENV MININET_DEPS automake \
                  pyflakes3 \
                  pylint \
                  python3-pexpect \
-                 python3-setuptools
+                 python3-setuptools \
+                 tcpreplay
 
 ENV DEV_TOOLS flex curl gpg clang wget python3-dev bison swig libssl-dev libpcap-dev nano
 

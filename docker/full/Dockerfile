@@ -31,5 +31,3 @@ RUN test "${ZEEK_PATH}" != "/opt/zeek" && ln -s ${ZEEK_PATH} /opt/zeek
 # RUN sed -i "s~zeek_dist=~zeek_dist=${ZEEK_DIST}~" ${ZEEK_PATH}/bin/zeek-config
 
 WORKDIR /root
-
-ENTRYPOINT ["/bin/bash"]
