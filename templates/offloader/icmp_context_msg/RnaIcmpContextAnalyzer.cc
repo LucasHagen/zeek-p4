@@ -17,7 +17,7 @@
 #include "zeek/packet_analysis/protocol/icmp/events.bif.h"
 #include "zeek/session/Manager.h"
 
-// #define RNA_ICMP_ECHO_DEBUG
+// #define RNA_ICMP_CONTEXT_DEBUG
 
 enum ICMP_EndpointState {
     ICMP_INACTIVE,  // no packet seen
@@ -36,6 +36,7 @@ using ::zeek::packet_analysis::IP::SessionAdapter;
 
 RnaIcmpContextAnalyzer::RnaIcmpContextAnalyzer() : Analyzer("RNA_ICMP_CONTEXT") {}
 
+// Code from `deps/zeek/src/packet_analysis/protocol/icmp/ICMP.cc`
 RecordValPtr RnaIcmpContextAnalyzer::BuildInfo(const icmp_context_msg_h* icmp, size_t len,
                                                uint8_t ttl) {
     static auto icmp_info = zeek::id::find_type<RecordType>("icmp_info");
@@ -48,6 +49,7 @@ RecordValPtr RnaIcmpContextAnalyzer::BuildInfo(const icmp_context_msg_h* icmp, s
     return rval;
 }
 
+// Code from `deps/zeek/src/packet_analysis/protocol/icmp/ICMP.cc`
 int RnaIcmpContextAnalyzer::ICMP4_counterpart(int icmp_type, int icmp_code, bool& is_one_way) {
     is_one_way = false;
 
@@ -87,6 +89,7 @@ int RnaIcmpContextAnalyzer::ICMP4_counterpart(int icmp_type, int icmp_code, bool
     }
 }
 
+// Code from `deps/zeek/src/packet_analysis/protocol/icmp/ICMP.cc`
 TransportProto RnaIcmpContextAnalyzer::GetContextProtocol(const IP_Hdr* ip_hdr, uint32_t* src_port,
                                                           uint32_t* dst_port) {
     const u_char* transport_hdr;
@@ -143,6 +146,7 @@ TransportProto RnaIcmpContextAnalyzer::GetContextProtocol(const IP_Hdr* ip_hdr, 
     return proto;
 }
 
+// Code from `deps/zeek/src/packet_analysis/protocol/icmp/ICMP.cc`
 zeek::RecordValPtr RnaIcmpContextAnalyzer::ExtractICMP4Context(int len, const u_char*& data) {
     const IP_Hdr ip_hdr_data((const struct ip*)data, false);
     const IP_Hdr* ip_hdr = &ip_hdr_data;
@@ -226,6 +230,20 @@ bool RnaIcmpContextAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Pack
     }
 
     const uint8_t* context = data + 2;
+
+#ifdef RNA_ICMP_CONTEXT_DEBUG
+    std::cout << std::endl;
+    std::cout << "[RNA] START ICMP Context Msg!!! \\/ \\/ \\/" << std::endl;
+    std::cout << "[RNA] |- src_addr = " << packet->ip_hdr->SrcAddr().AsString() << std::endl;
+    std::cout << "[RNA] |- dst_addr = " << packet->ip_hdr->DstAddr().AsString() << std::endl;
+    std::cout << "[RNA] |- src_port = " << offloader_hdr->GetSrcPort() << std::endl;
+    std::cout << "[RNA] |- dst_port = " << offloader_hdr->GetDstPort() << std::endl;
+    std::cout << "[RNA] |- itype    = " << (uint)icmp_hdr->itype << std::endl;
+    std::cout << "[RNA] |- icode    = " << (uint)icmp_hdr->icode << std::endl;
+    std::cout << "[RNA] |- ttl      = " << (uint)offloader_hdr->GetIPHdr()->TTL() << std::endl;
+    std::cout << "[RNA] END   ICMP Context Msg!!!   /\\ /\\ /\\" << std::endl;
+    std::cout << std::endl;
+#endif
 
     if (e) {
         event_mgr.Enqueue(

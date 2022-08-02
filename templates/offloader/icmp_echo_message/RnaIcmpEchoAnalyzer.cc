@@ -50,11 +50,11 @@ RecordValPtr BuildInfo(const icmp_echo_message_h* icmp) {
 bool RnaIcmpEchoAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
     auto rna_packet = static_cast<RnaPacket*>(packet);
     auto offloader_hdr = rna_packet->GetOffloaderHdr();
-    auto icmp_hdr = (const icmp_echo_message_h*)offloader_hdr->GetPayload();
+    auto icmp_hdr = (const icmp_echo_message_h*)data;
 
     int payload_len = len - sizeof(icmp_echo_message_h);
-    const u_char* payload = (const u_char*)(data + sizeof(icmp_echo_message_h));
-    String* payloadStr = new String(payload, payload_len, false);
+    const u_char* payload = (const u_char*) (data + sizeof(icmp_echo_message_h));
+    auto zeekStr = new String(payload, payload_len, false);
 
     auto conn = offloader_hdr->GetOrCreateConnection(packet);
 
@@ -92,7 +92,7 @@ bool RnaIcmpEchoAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet*
     if (e) {
         event_mgr.Enqueue(e, conn->GetVal(), BuildInfo(icmp_hdr),
                           val_mgr->Count(ntohs(icmp_hdr->id)), val_mgr->Count(ntohs(icmp_hdr->seq)),
-                          make_intrusive<StringVal>(payloadStr));
+                          make_intrusive<StringVal>(zeekStr));
     }
 
     return true;

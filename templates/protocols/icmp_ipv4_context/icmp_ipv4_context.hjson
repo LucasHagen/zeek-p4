@@ -6,6 +6,10 @@
         {
             "id": "icmp",
             "id_for_parent_protocol": 3
+        },
+        {
+            "id": "icmp",
+            "id_for_parent_protocol": 11
         }
     ],
     "header": {
