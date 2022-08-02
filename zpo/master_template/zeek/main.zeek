@@ -40,6 +40,16 @@ event icmp_echo_reply(c: connection, info: icmp_info, id: count, seq: count, pay
     print "ICMP Echo Reply", c$id$orig_h, c$id$resp_h, id, seq;
 }
 
+event icmp_time_exceeded(c: connection, info: icmp_info, code: count, context: icmp_context)
+{
+    print "ICMP Time Exceeded", c$id$orig_h, c$id$resp_h, code;
+}
+
+event icmp_unreachable(c: connection, info: icmp_info, code: count, context: icmp_context)
+{
+	print "ICMP Unreachable", context;
+}
+
 event arp_request(mac_src: string, mac_dst: string, SPA: addr, SHA: string, TPA: addr,
                   THA: string)
 {
@@ -75,4 +85,3 @@ event ftp_reply(c: connection, code: count, msg: string, cont_resp: bool)
     print fmt(" |_ MSG:  %s", msg);
     print fmt(" |_ CONT: %s", cont_resp);
 }
-
