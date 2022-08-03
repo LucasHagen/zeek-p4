@@ -131,3 +131,19 @@
 % Custom name and simple definitions
 %
 \input{custom}
+
+% ----------------------------------------------------------------
+% Reference Names
+
+% Fix for autoref capitalization
+% https://tex.stackexchange.com/q/34155
+% https://tex.stackexchange.com/a/594330
+
+\addto\extrasenglish{
+    \def\CHAPTERautorefname{Chapter}
+    \def\sectionautorefname{Section}
+    \def\subsectionautorefname{§}
+    \def\subsubsectionautorefname{§}
+    \def\algorithmautorefname{Algorithm}
+    \def\figureautorefname{Figure}
+}
