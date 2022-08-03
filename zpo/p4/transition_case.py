@@ -1,4 +1,4 @@
-from zpo.model.protocol import ProtocolComponent
+from zpo.model.protocol import ParentProtocol, ProtocolComponent
 from zpo.utils import indent
 
 INDENTATION = 4 * " "
@@ -22,8 +22,8 @@ class DefaultTransitionCase(TransitionCase):
 
 class ProtocolTransitionCase(TransitionCase):
 
-    def __init__(self, parent: ProtocolComponent, child: ProtocolComponent):
+    def __init__(self, child: ProtocolComponent, parent_relation: ParentProtocol):
         super().__init__(
-            child.parent_protocols[parent.id].id_for_parent_protocol,
+            parent_relation.code_for_parent_protocol,
             child.parsing_state
         )

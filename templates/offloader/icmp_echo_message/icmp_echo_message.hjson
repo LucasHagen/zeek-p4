@@ -1,26 +1,27 @@
 {
     "zpo_type": "OFFLOADER",
     "zpo_version": "0.0.1",
-    "id": "icmp_echo_reply",
-    "protocol": "icmp",
+    "id": "icmp_echo_message",
+    "protocol": "icmp_echo",
     "is_ip_based": true,
     "p4": {
-        "header_struct_name": "icmp_echo_reply_event_h",
-        "header_file": "icmp_reply_header.p4",
+        "header_struct_name": "icmp_echo_message_h",
+        "header_file": "icmp_echo_message_header.p4",
         "splicer_file": "constructor.p4",
         "trigger_file": "identifier.p4"
     },
     "zeek": {
         "analyzer_namespace": "zeek::packet_analysis::BR_UFRGS_INF::RNA::ICMP",
-        "analyzer_class": "RnaIcmpReplyAnalyzer",
-        "analyzer_id": "RNA_ICMP_REP",
+        "analyzer_class": "RnaIcmpEchoAnalyzer",
+        "analyzer_id": "RNA_ICMP_ECHO",
         "header_files": [
-            "Icmp.h"
+            "RnaIcmpEchoAnalyzer.h"
         ],
         "cc_files": [
-            "Icmp.cc"
+            "RnaIcmpEchoAnalyzer.cc"
         ],
         "offloaded_event_ids": [
+            "icmp_echo_request",
             "icmp_echo_reply"
         ]
     }

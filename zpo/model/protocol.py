@@ -1,7 +1,7 @@
 import json
 import os
 import hashlib
-from typing import Dict
+from typing import Dict, List
 from zpo.exceptions import ZpoException
 
 from zpo.model.component import Component
@@ -17,9 +17,9 @@ class ParentProtocol:
     Used as a simple (but typed and named) pair.
     """
 
-    def __init__(self, parent_id: str, id_for_parent_protocol: str or int):
+    def __init__(self, parent_id: str, code_for_parent_protocol: str or int):
         self.parent_id = parent_id
-        self.id_for_parent_protocol = id_for_parent_protocol
+        self.code_for_parent_protocol = code_for_parent_protocol
 
 
 class ProtocolComponent(Component):
@@ -67,18 +67,18 @@ class ProtocolComponent(Component):
         self.depth = None
         self._hash_cache = None
 
-    def _parse_parent_protocols(self) -> Dict[str, ParentProtocol]:
-        """Parses the parent protocols in the hjson data and returns a Dict with the
-        `ParentProtocol`s indexed by the parent id.
+    def _parse_parent_protocols(self) -> List[ParentProtocol]:
+        """Parses the parent protocols in the hjson data and returns a List with the
+        `ParentProtocol`s.
         """
-        protocols = dict()
+        protocols = []
 
         if("parent_protocols" not in self._data):
             return protocols
 
         for p in self.read_data("parent_protocols"):
             parent = ParentProtocol(p["id"], p["id_for_parent_protocol"])
-            protocols[parent.parent_id] = parent
+            protocols.append(parent)
 
         return protocols
 

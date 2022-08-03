@@ -44,7 +44,7 @@ class ZeekGenerator:
             "noedit"
         )
         copy_tree(no_edit, self.output_zeek, dirs_exist_ok=True)
-        logging.info("Done coping no-edit zeek files")
+        logging.info("Done copying no-edit zeek files")
 
     def generate_constants_file(self, template_graph: ExecGraph):
         ConstantsFile(self.settings).generate(template_graph)
