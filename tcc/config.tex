@@ -76,6 +76,19 @@
     morekeywords={self}
 }
 
+\lstdefinelanguage{Hjson}{
+    morecomment=[l]{//},
+    morecomment=[l]{\#},
+    literate=
+     *{:}{{{\textbf{:}}}}{1}
+      {"}{{{\normalfont{"}}}}{1}
+      {,}{{{\textbf{\color{darkgray}{,}}}}}{1}
+      {\{}{{{\textbf{\{}}}}{1}
+      {\}}{{{\textbf{\}}}}}{1}
+      {[}{{{\textbf{[}}}}{1}
+      {]}{{{\textbf{]}}}}{1},
+}
+
 \lstdefinestyle{code}{
     breaklines,
     basicstyle=\ttfamily\scriptsize,
@@ -114,6 +127,11 @@
 \lstdefinestyle{cpp}{
     style=code,
     language=C++
+}
+
+\lstdefinestyle{hjson}{
+    style=code,
+    language=Hjson
 }
 
 \lstdefinestyle{inline}{

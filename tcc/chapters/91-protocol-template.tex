@@ -1,2 +1,25 @@
 \chapter{Example of a Protocol Template}
 \label{cap:protocol_template}
+
+\begin{figure}[htb]
+    \centering
+    \caption{Template configuration file: \texttt{icmp.hjson}}
+    \lstinputlisting[style=hjson]{code/icmp_template/icmp.hjson.txt}
+    \label{code:icmp_template:config}
+    %\vspace{-1em}
+\end{figure}
+
+\begin{figure}[htb]
+    \centering
+    \caption{Template header file: \texttt{icmp\_header.p4.txt}}
+    \lstinputlisting[style=p4]{code/icmp_template/icmp\_header.p4.txt}
+    \label{code:icmp_template:header}
+\end{figure}
+
+\begin{figure}[htb]
+    \centering
+    \caption{Template ingress processor file: \texttt{ingress\_processor.p4}}
+    \lstinputlisting[style=p4]{code/icmp_template/ingress\_processor.p4.txt}
+    \label{code:icmp_template:ingress_processor}
+    %\vspace{-1em}
+\end{figure}

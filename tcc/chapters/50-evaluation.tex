@@ -3,15 +3,30 @@
 
 % Introduction...
 
+In this chapter we present how the automatic code generation mechanism, proposed in \autoref{cap:code_gen}, was implemented in a fully functional proof of concept. We also describe how we evaluated the gain in performance, and ease of development and deployment.
+
+To facilitate the development of this project and to keep the scope in a defined limit, we did not use P4 compatible switches, instead, we use software emulation to run the P4 code. This enabled us to develop with great efficiency the generation tool, and enabled us to test each interaction of the development, making sure the prototype was funcitonal.
 
 
 \section{Implementation}
 \label{sec:evaluation:implementation}
 % Probably a small section, be careful not to be redundant (max 2 pages)
 
-% 1. Explain how we implemented two prototypes in a modular way, to then implement the code generation
+In this section, we describe in more details how whole development process of code generation tool. We divide this explanation into three different subsections. We first explain the structure of the Protocol and Offloader Templates, which are one of the main inputs for our tool. Then we explain the implementation aspects of our prototype. And to finalize, we explain how the output of our tool, the automatically generated code, is deployed in a virtualized network, using an emulation of a P4-switch.
 
-% 2. Explain why we used Python
+
+\subsection{Protocol and Offloader Templates}
+
+
+\subsection{Code generation}
+
+
+\subsection{Deployment}
+
+
+% 1. Explain how we implemented RNA and the code generation procedure (focando em aspectos mais arquiteturais e tecnologias empregadas. Os *why*s fazem parte do texto até para justificar escolhas mais importantes, mas não são o foco.)
+
+% 2. Explain why we used Python (not that important)
 
 % 3. Explain the master template and the markers (how they are replaced)
 
@@ -23,10 +38,10 @@
 
 
 
+
+
 % ----------------------------------------
 % moved from code generation chapter
-
-% Describe how it is actually used to generate the code and then to deploy
 
 % After verifying all \Offloaders{} and \ProtocolTemplates{} required to support the offloading of the desired scripts were provided, the code generation and merge procedure begins. Here is an example of usage:
 
@@ -59,4 +74,8 @@
 %     a. memory, cpu, execution time
 
 
+% - FTP Bruteforcing (done)
+% - Pingback (done): https://github.com/corelight/pingback
+% - Detect traceroute (theoretically done)
+% - NTP Monlist
 
