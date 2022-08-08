@@ -23,6 +23,8 @@ using ::zeek::StringVal;
 using ::zeek::StringValPtr;
 using ::zeek::packet_analysis::Analyzer;
 
+// #define RNA_NTP_DEBUG
+
 NtpMsgAnalyzer::NtpMsgAnalyzer() : Analyzer("RNA_NTP") {}
 
 NtpMsgAnalyzer::~NtpMsgAnalyzer() {
@@ -55,8 +57,7 @@ bool NtpMsgAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* pack
             break;
     }
 
-#define RNA_UDP_DEBUG
-#ifdef RNA_UDP_DEBUG
+#ifdef RNA_NTP_DEBUG
     std::cout << "[RNA] NTP Message:" << std::endl;
     std::cout << " |_ type     = " << (is_request ? "request" : "reply") << std::endl;
     std::cout << " |_ orig     = " << (packet->is_orig) << std::endl;
@@ -68,24 +69,19 @@ bool NtpMsgAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* pack
 
     static zeek::Tag ntp_analyzer_tag = analyzer_mgr->GetComponentTag("NTP");
     if (ntp_analyzer_tag) {
-        std::cout << " |_ ntp_tag  = true" << std::endl;
         auto analyzer = new zeek::analyzer::ntp::NTP_Analyzer(conn);
 
         interp = new binpac::NTP::NTP_Conn(analyzer);
 
-        // analyzer->DeliverPacket(len, data, orig, seq, ip, caplen);
-
         try {
-            interp->NewData(packet->is_orig, data, data + len);
+            interp->NewData(packet->is_orig, payload, payload + payload_len);
         } catch (const binpac::Exception& e) {
             std::cerr << "[RNA] NTP Binpac exception: " << e.c_msg() << std::endl;
         }
 
         delete interp;
+        packet->processed = true;
     }
 
-    std::cout << "[RNA] END NTP" << std::endl;
     return true;
 }
-
-// return ForwardPacket(payload_len, payload, packet, 123);
