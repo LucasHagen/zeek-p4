@@ -24,7 +24,7 @@ if [ "$1" != "standalone" ] ; then
     --network container:$container_id \
     -v ${SCRIPTPATH}/zpo.zeek:/root/plugin \
     --workdir /root/plugin \
-    lucashagen/zeek-full
+    lucashagen/zeek-dev
 
 else
 
@@ -34,6 +34,6 @@ else
     --name zpo-zeek \
     -v ${SCRIPTPATH}/zpo.zeek:/root/plugin \
     --workdir /root/plugin \
-    lucashagen/zeek-full
+    lucashagen/zeek-dev
 
 fi

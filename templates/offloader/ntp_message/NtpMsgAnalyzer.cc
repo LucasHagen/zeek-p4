@@ -8,6 +8,8 @@
 #include "zeek/Conn.h"
 #include "zeek/Event.h"
 #include "zeek/IPAddr.h"
+#include "zeek/analyzer/Manager.h"
+#include "zeek/analyzer/protocol/ntp/NTP.h"
 #include "zeek/analyzer/protocol/ntp/events.bif.h"
 
 using namespace zeek::packet_analysis::BR_UFRGS_INF::RNA::NTP;
@@ -21,9 +23,11 @@ using ::zeek::StringVal;
 using ::zeek::StringValPtr;
 using ::zeek::packet_analysis::Analyzer;
 
-NtpMsgAnalyzer::NtpMsgAnalyzer() : Analyzer("RNA_NTP") { interp = new binpac::NTP::NTP_Conn(this); }
+NtpMsgAnalyzer::NtpMsgAnalyzer() : Analyzer("RNA_NTP") {}
 
-NtpMsgAnalyzer::~NtpMsgAnalyzer() { delete interp; }
+NtpMsgAnalyzer::~NtpMsgAnalyzer() {
+    //  delete interp;
+}
 
 bool NtpMsgAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* packet) {
     auto rna_packet = static_cast<RnaPacket*>(packet);
@@ -34,9 +38,9 @@ bool NtpMsgAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* pack
 
     bool should_flip = ntp_message_hdr->type == RNA_NTP_MESSAGE_REPLY;
 
-    // auto conn = event_hdr->GetOrCreateConnection(packet,
-    //                                              /* is_one_way = */ false,
-    //                                              /* flip_roles = */ should_flip);
+    auto conn = event_hdr->GetOrCreateConnection(packet,
+                                                 /* is_one_way = */ false,
+                                                 /* flip_roles = */ should_flip);
 
     bool is_request;
     switch (ntp_message_hdr->type) {
@@ -47,7 +51,7 @@ bool NtpMsgAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* pack
             is_request = false;
             break;
         default:
-            // is_request = packet->is_orig;
+            is_request = packet->is_orig;
             break;
     }
 
@@ -55,25 +59,33 @@ bool NtpMsgAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* pack
 #ifdef RNA_UDP_DEBUG
     std::cout << "[RNA] NTP Message:" << std::endl;
     std::cout << " |_ type     = " << (is_request ? "request" : "reply") << std::endl;
+    std::cout << " |_ orig     = " << (packet->is_orig) << std::endl;
     std::cout << " |_ src_addr = " << packet->ip_hdr->SrcAddr().AsString() << std::endl;
     std::cout << " |_ dst_addr = " << packet->ip_hdr->DstAddr().AsString() << std::endl;
     std::cout << " |_ src_port = " << event_hdr->GetSrcPort() << std::endl;
     std::cout << " |_ dst_port = " << event_hdr->GetDstPort() << std::endl;
-    // std::cout << " |_ packet->is_orig = " << packet->is_orig << std::endl;
 #endif
 
-    // Analyzer::DeliverPacket(len, data, orig, seq, ip, caplen);
+    static zeek::Tag ntp_analyzer_tag = analyzer_mgr->GetComponentTag("NTP");
+    if (ntp_analyzer_tag) {
+        std::cout << " |_ ntp_tag  = true" << std::endl;
+        auto analyzer = new zeek::analyzer::ntp::NTP_Analyzer(conn);
 
-    try {
-        interp->NewData(orig, data, data + len);
-    } catch (const binpac::Exception& e) {
-        AnalyzerViolation(util::fmt("Binpac exception: %s", e.c_msg()));
+        interp = new binpac::NTP::NTP_Conn(analyzer);
+
+        // analyzer->DeliverPacket(len, data, orig, seq, ip, caplen);
+
+        try {
+            interp->NewData(packet->is_orig, data, data + len);
+        } catch (const binpac::Exception& e) {
+            std::cerr << "[RNA] NTP Binpac exception: " << e.c_msg() << std::endl;
+        }
+
+        delete interp;
     }
 
     std::cout << "[RNA] END NTP" << std::endl;
-
     return true;
 }
 
 // return ForwardPacket(payload_len, payload, packet, 123);
-}

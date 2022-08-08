@@ -26,7 +26,7 @@ typedef struct ntp_message_struct {
 class NtpMsgAnalyzer : public Analyzer {
 public:
     NtpMsgAnalyzer();
-    ~NtpMsgAnalyzer() override = default;
+    ~NtpMsgAnalyzer() override;
 
     static zeek::packet_analysis::AnalyzerPtr Instantiate() {
         return std::make_shared<NtpMsgAnalyzer>();
