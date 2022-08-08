@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 ./configure
 make install -j8
 zeek -i s1-eth3 scripts "$@"

@@ -12,6 +12,14 @@ if [ "$1" = "" ] || [ "$2" = "" ] ; then
     exit 1
 fi
 
+TRACE_FULLPATH=`realpath $2`
+TRACENAME=`basename $TRACE_FULLPATH`
+
+if [ ! -f "$TRACE_FULLPATH" ]; then
+    echo "File '$2' does not exist"
+    exit 1
+fi
+
 ################################################################################
 # Code from p4.org
 container_id=${P4APP_NAME:-$(docker ps | grep -m1 p4app_ | awk '{print $1}')}
@@ -23,9 +31,6 @@ if [ -z "$container_id" ]; then
 fi
 # End of code from p4.org
 ################################################################################
-
-TRACE_FULLPATH=`realpath $2`
-TRACENAME=`basename $TRACE_FULLPATH`
 
 echo "tcpreplay -i $1 $TRACENAME"
 
