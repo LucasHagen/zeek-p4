@@ -22,6 +22,9 @@ fi
 
 OUTPUT_DIR=`realpath $1`
 
+ZEEK_OUTPUT="$OUTPUT_DIR/zpo.zeek"
+P4_OUTPUT="$OUTPUT_DIR/zpo.p4app"
+
 if [ ! -d "$1" ] || [ ! -d "$1/zpo.zeek" ] || [ ! -d "$1/zpo.zeek" ]
 then
     echo "Error! '$1' is not a valid ZPO output folder! Did you run ZPO?"
@@ -31,16 +34,18 @@ fi
 
 echo "Preparing executable ZPO at '$1'"
 
-cp "$EXEC_FILES/p4app.json" "$OUTPUT_DIR/zpo.p4app/"
-cp "$EXEC_FILES/zpo.config" "$OUTPUT_DIR/zpo.p4app/"
+cp "$EXEC_FILES/p4app.json" "$P4_OUTPUT/"
+cp "$EXEC_FILES/zpo.config" "$P4_OUTPUT/"
 
 cp "$EXEC_FILES/run_zeek" "$OUTPUT_DIR/"
-cp "$EXEC_FILES/run" "$OUTPUT_DIR/zpo.zeek/"
+cp "$EXEC_FILES/run" "$ZEEK_OUTPUT/"
+cp "$EXEC_FILES/run_all" "$ZEEK_OUTPUT/"
 
-echo "$SCRIPT_DIR/p4app run $OUTPUT_DIR/zpo.p4app" > $OUTPUT_DIR/run_p4app
+echo "$SCRIPT_DIR/p4app run $P4_OUTPUT" > $OUTPUT_DIR/run_p4app
 
 chmod +x "$OUTPUT_DIR/run_zeek"
-chmod +x "$OUTPUT_DIR/zpo.zeek/run"
 chmod +x "$OUTPUT_DIR/run_p4app"
+chmod +x "$ZEEK_OUTPUT/run"
+chmod +x "$ZEEK_OUTPUT/run_all"
 
 echo "Done!"

@@ -3,6 +3,8 @@
 SCRIPT=`realpath $0`
 SCRIPTPATH=`dirname $SCRIPT`
 
+ZEEK_IMAGE="lucashagen/zeek-scripts"
+
 if [ "$1" != "standalone" ] ; then
 
     ################################################################################
@@ -24,7 +26,7 @@ if [ "$1" != "standalone" ] ; then
     --network container:$container_id \
     -v ${SCRIPTPATH}/zpo.zeek:/root/plugin \
     --workdir /root/plugin \
-    lucashagen/zeek-dev
+    ${ZEEK_IMAGE}
 
 else
 
@@ -34,6 +36,6 @@ else
     --name zpo-zeek \
     -v ${SCRIPTPATH}/zpo.zeek:/root/plugin \
     --workdir /root/plugin \
-    lucashagen/zeek-dev
+    ${ZEEK_IMAGE}
 
 fi

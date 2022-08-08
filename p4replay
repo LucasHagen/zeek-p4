@@ -32,7 +32,7 @@ fi
 # End of code from p4.org
 ################################################################################
 
-echo "tcpreplay -i $1 $TRACENAME"
+echo "tcpreplay -i $1 $TRACENAME ${@:3}"
 
 docker run \
 -it \
@@ -41,4 +41,4 @@ docker run \
 -v $TRACE_FULLPATH:/root/$TRACENAME \
 --workdir /root \
 lucashagen/zeek-full \
-tcpreplay -i $1 $TRACENAME
+tcpreplay -i $1 $TRACENAME ${@:3}
