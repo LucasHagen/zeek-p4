@@ -6,8 +6,9 @@ SCRIPT_DIR=`dirname $SCRIPT_PATH`
 
 FILES_DIR="$SCRIPT_DIR/to_merge"
 
+# editcap -i 10 equinix-chicago.dirA.20160406-130700.UTC.anon.pcap caida.pcap
 CAIDA_FILE="$SCRIPT_DIR/CAIDA/caida_00003_20160406100730.pcap"
 
-MERGE
+
 
 echo "Done!"
