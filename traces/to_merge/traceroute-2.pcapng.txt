@@ -1,4 +1,4 @@
-File name:           /home/lshagen/Documents/Projects/zeek-p4/traces/wip/traceroute-2.pcapng
+File name:           /home/lshagen/Documents/Projects/zeek-p4/traces/to_merge/traceroute-2.pcapng
 File type:           Wireshark/... - pcapng
 File encapsulation:  Linux cooked-mode capture v1
 File timestamp precision:  nanoseconds (9)
@@ -7,15 +7,15 @@ Number of packets:   279
 File size:           36 kB
 Data size:           27 kB
 Capture duration:    9,066694495 seconds
-First packet time:   2016-04-06 10:01:01,213742875
-Last packet time:    2016-04-06 10:01:10,280437370
+First packet time:   2016-04-06 10:07:30,713742875
+Last packet time:    2016-04-06 10:07:39,780437370
 Data byte rate:      3.063 bytes/s
 Data bit rate:       24 kbps
 Average packet size: 99,54 bytes
 Average packet rate: 30 packets/s
-SHA256:              1b7e24bbd4b354d7ee8d7360ea7303324ad454f11a33aced3b046199e22c3f95
-RIPEMD160:           2460a8bb6b52334de53d6a03e6f9951411546d16
-SHA1:                b492fc0bb8fd3886a5fbe577340a5b2aff231966
+SHA256:              50b8c799d58fbd8a5d3f11b2b14dc937296e25c077989cdeaf31aa6547cbd9fb
+RIPEMD160:           c532669ec7358d477e94f077127ca03584802b3d
+SHA1:                4c501b75ca5c8d0ee4701449c2454bc5e5086c62
 Strict time order:   True
 Capture hardware:    Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz (with SSE4.2)
 Capture oper-sys:    Linux 5.15.0-43-generic
