@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+SCRIPT_PATH=`realpath $0`
+SCRIPT_NAME=`basename $SCRIPT_PATH`
+SCRIPT_DIR=`dirname $SCRIPT_PATH`
+
+FILES_DIR="$SCRIPT_DIR/to_merge"
+
+CAIDA_FILE="$SCRIPT_DIR/CAIDA/caida_00003_20160406100730.pcap"
+
+MERGE
+
+echo "Done!"
