@@ -1,0 +1,33 @@
+File name:           /home/lshagen/Documents/Projects/zeek-p4/traces/originals/pingback_icmp.pcapng
+File type:           Wireshark/... - pcapng
+File encapsulation:  Ethernet
+File timestamp precision:  nanoseconds (9)
+Packet size limit:   file hdr: (not set)
+Number of packets:   12
+File size:           11 kB
+Data size:           10 kB
+Capture duration:    262,672425077 seconds
+First packet time:   2021-04-27 03:39:43,332605773
+Last packet time:    2021-04-27 03:44:06,005030850
+Data byte rate:      39 bytes/s
+Data bit rate:       319 bits/s
+Average packet size: 874,67 bytes
+Average packet rate: 0 packets/s
+SHA256:              b23888a98082ffe6449b5e45a1723b33f1a354ee90df2acb4faf33fd4fdb87d9
+RIPEMD160:           2c8c98f542d7d96e59ac93adc1d733581ab96502
+SHA1:                f5088554b271500500d4c0b0d6c651067c44baa9
+Strict time order:   True
+Capture hardware:    Intel(R) Core(TM) i7-4870HQ CPU @ 2.50GHz (with SSE4.2)
+Capture oper-sys:    Linux 4.15.0-111-generic
+Capture application: Dumpcap (Wireshark) 3.2.5 (Git v3.2.5 packaged as 3.2.5-1~ubuntu18.04.0+wiresharkdevstable1)
+Number of interfaces in file: 1
+Interface #0 info:
+                     Name = ens33
+                     Encapsulation = Ethernet (1 - ether)
+                     Capture length = 262144
+                     Time precision = nanoseconds (9)
+                     Time ticks per second = 1000000000
+                     Time resolution = 0x09
+                     Operating system = Linux 4.15.0-111-generic
+                     Number of stat entries = 1
+                     Number of packets = 12

@@ -1,0 +1,35 @@
+File name:           /home/lshagen/Documents/Projects/zeek-p4/traces/originals/ntp_monlist_ok.pcapng
+File type:           Wireshark/... - pcapng
+File encapsulation:  Ethernet
+File timestamp precision:  microseconds (6)
+Packet size limit:   file hdr: (not set)
+Number of packets:   6
+File size:           2.792 bytes
+Data size:           1.964 bytes
+Capture duration:    151,634994 seconds
+First packet time:   2021-10-26 05:57:21,436832
+Last packet time:    2021-10-26 05:59:53,071826
+Data byte rate:      12 bytes/s
+Data bit rate:       103 bits/s
+Average packet size: 327,33 bytes
+Average packet rate: 0 packets/s
+SHA256:              43fd1c3a1375ed9c62b0be226d220b80ae24959978a0fd288b4440f9cbcd911f
+RIPEMD160:           cbe1820e41303b4365ca7d89cf5e60818a3253b6
+SHA1:                491eb2ddbc9ddb6ed98000033dbfd00f2a62d895
+Strict time order:   True
+Capture hardware:    Intel(R) Core(TM) i7-7500U CPU @ 2.70GHz (with SSE4.2)
+Capture oper-sys:    64-bit Windows 10 (2009), build 19042
+Capture application: Dumpcap (Wireshark) 3.4.0 (v3.4.0-0-g9733f173ea5e)
+Number of interfaces in file: 1
+Interface #0 info:
+                     Name = \Device\NPF_{4850C816-83F9-4F3A-AB30-3ECC99B70D85}
+                     Description = vEthernet (WSL)
+                     Encapsulation = Ethernet (1 - ether)
+                     Capture length = 262144
+                     Time precision = microseconds (6)
+                     Time ticks per second = 1000000
+                     Time resolution = 0x06
+                     Operating system = 64-bit Windows 10 (2009), build 19042
+                     Number of stat entries = 1
+                     Number of packets = 6
+Number of resolved IPv4 addresses in file: 7
