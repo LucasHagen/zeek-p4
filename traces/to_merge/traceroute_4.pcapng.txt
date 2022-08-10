@@ -1,0 +1,27 @@
+File name:           /home/lshagen/Documents/Projects/zeek-p4/traces/to_merge/traceroute_4.pcapng
+File type:           Wireshark/tcpdump/... - pcap
+File encapsulation:  Ethernet
+File timestamp precision:  microseconds (6)
+Packet size limit:   file hdr: 65535 bytes
+Number of packets:   154
+File size:           19 kB
+Data size:           16 kB
+Capture duration:    6,747530 seconds
+First packet time:   2016-04-06 10:07:30,545505
+Last packet time:    2016-04-06 10:07:37,293035
+Data byte rate:      2.497 bytes/s
+Data bit rate:       19 kbps
+Average packet size: 109,44 bytes
+Average packet rate: 22 packets/s
+SHA256:              f7e7e3c6169336fb172fa2086498cfebdb9603759bc86c2b759a071fc724e4ef
+RIPEMD160:           1d0355a097bef7819d5e8d1bc23170c9e1bed65a
+SHA1:                18243cf48e1fc2fe87764afa4ac0383060956e93
+Strict time order:   True
+Number of interfaces in file: 1
+Interface #0 info:
+                     Encapsulation = Ethernet (1 - ether)
+                     Capture length = 65535
+                     Time precision = microseconds (6)
+                     Time ticks per second = 1000000
+                     Number of stat entries = 0
+                     Number of packets = 154
