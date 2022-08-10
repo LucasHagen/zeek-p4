@@ -3,26 +3,18 @@
 
 % Introduction...
 
-In this chapter we present how the automatic code generation mechanism, proposed in \autoref{cap:code_gen}, was implemented in a fully functional proof of concept. We also describe how we evaluated the gain in performance, and ease of development and deployment.
+In this chapter, we present how the automatic code generation mechanism, proposed in \autoref{cap:code_gen}, was implemented in a fully functional proof of concept. We also describe how we evaluated the gain in performance and ease of development and deployment for users of our Framework.
 
-To facilitate the development of this project and to keep the scope in a defined limit, we did not use P4 compatible switches, instead, we use software emulation to run the P4 code. This enabled us to develop with great efficiency the generation tool, and enabled us to test each interaction of the development, making sure the prototype was funcitonal.
+To facilitate the development of this project and to keep the scope within a defined limit, we did not use P4 compatible switches, instead, we use software emulation to run the P4 code. This enabled us to develop with great efficiency the generation tool and enabled us to test each interaction of the development, making sure the prototype was functional.
 
 
-\section{Implementation}
+% ==============================================================================
+%                               IMPLEMENTATION
+% ==============================================================================
+
+\section{Prototype Implementation and Deployment}
 \label{sec:evaluation:implementation}
 % Probably a small section, be careful not to be redundant (max 2 pages)
-
-In this section, we describe in more details how whole development process of code generation tool. We divide this explanation into three different subsections. We first explain the structure of the Protocol and Offloader Templates, which are one of the main inputs for our tool. Then we explain the implementation aspects of our prototype. And to finalize, we explain how the output of our tool, the automatically generated code, is deployed in a virtualized network, using an emulation of a P4-switch.
-
-
-\subsection{Protocol and Offloader Templates}
-
-
-\subsection{Code generation}
-
-
-\subsection{Deployment}
-
 
 % 1. Explain how we implemented RNA and the code generation procedure (focando em aspectos mais arquiteturais e tecnologias empregadas. Os *why*s fazem parte do texto até para justificar escolhas mais importantes, mas não são o foco.)
 
@@ -34,37 +26,72 @@ In this section, we describe in more details how whole development process of co
 
 % 5. Explain how it is deployed with p4app
 
+In this section, we describe some implementation details of the code generation tool that were not previously discussed. We divide this explanation into three subsections. We first explain the structure of the Protocol and Offloader Templates, which are one of the main inputs for our tool. Then we explain some of the implementation aspects of our prototype. And to finalize, we explain how the output of our tool, the automatically generated code, is deployed in a virtualized network using an emulation of a P4-switch.
+
+
+\subsection{Protocol and Offloader Templates}
+
+The Protocol and Offloader Templates have a similar structure based on a configuration file. This configuration file is in the Hjson \cite{Hjson} format, which is based on the well-known JSON format. We first explain the Protocol Templates. To explain the Protocol Template's structure, we use the example in Appendix \ref{cap:protocol_template}. Each Protocol Template needs to provide header definitions so it may be parsed. This is done by providing the name of the header structure and the file where it was defined (lines 13 and 12, \autoref{code:icmp_template:config}). The protocols may optionally have a custom \textit{ingress processor} and a custom parser to enable parsing of variable-size headers, both of which were explained in \autoref{sec:rna:detailed_design}.
+
+To enable a Protocol Template to be linked to its children, we need to define the parameter called \texttt{next\_protocol\_selector}. It specifies the field of the protocol's header that will be used to select the next protocol (line 15, \autoref{code:icmp_template:config}). To link a protocol to its parent, we need to specify the parent's protocol identifier (line 7) and specify what value the \texttt{next\_protocol\_selector} must have, for the packet to be forwarded to the child protocol (line 8). With this structure, the mechanism is able to generate all required code for parsing the protocols in the Switch Engine. Each protocol template may have more than one parent.
+
+An Offloader Template is also based on a configuration file, and we use the \autoref{code:icmp_echo:config} as an example. Each protocol needs to be associated with a Protocol Template by its identifier (line 5, \autoref{code:icmp_echo:config}). Each Offloader then must have its own header structure (line 8). This header structure is defined in a P4 file, which is also a part of the template, and its path must be specified in the configuration (line 9). The rest of the parameters used for the Switch Engine are extracted from separate P4 files, the splicer, and the trigger condition (lines 10 and 11). For the Host Engine, the template must specify the C++ code and header files, as well as the name and \textit{namespace} of the Analyzer (lines 14 to 22). To finalize, the configuration also specifies what Zeek Events the Offloader is capable of offloading (lines 23 to 26). Examples for the files of an Offloader Template can be found in Appendix \ref{cap:offloader_template}.
+
+\subsection{Prototype Implementation}
+
+Our prototype implementation of the code generation mechanism follows all architectural details explained in Chapters \ref{cap:rna} and \ref{cap:code_gen}. It was implemented in Python 3 in a modular way so it could be maintained and further developed as the RNA Framework grows. To explain further details of the implementation that were not yet discussed, we follow the same structure used to explain the mechanism details in \autoref{sec:code_gen:detailed}, and we start the Event Extraction part.
+
+The Event Extraction was a very strong point for using Python as our programming language since Zeek provides its own library for parsing Zeek Scripts, which is implemented in Python. In this phase, we parse the provided Zeek Scripts and search their Abstract Syntax Tree (AST) for event handler declarations. Once those event declarations are found, we extract their identifiers and forward this list of identifiers to the next phase, the Knowledge Model Builder.
+
+The Knowledge Model Builder uses as inputs the templates and the Zeek Script events. In this phase, we create a graph structure following the \autoref{alg:build_graph} and procedures explained in the \autoref{sec:code_gen:detailed}. In our implementation, we use exceptions to handle the flow of the algorithm and abort when any requirements are not met. Since our implementation of the Knowledge Model Builder does not differ from the algorithm explained in \autoref{sec:code_gen:detailed}, we do not repeat the explanation in this section.
+
+The Code Generation in our prototype uses template files with markers to insert the generated code in the correct location. The files used for this purpose are called \textit{master template} files and this is what defines the structure and organization of the resulting files. In the \textit{master template}, markers are strings in specific formats that define where a specific code section will be inserted. To generate code that will replace these markers, we use a structure similar to an AST, where each code element is a node, implemented using a class, containing its children nodes. The tool first builds this structure, linking all nodes, then converts the root node to a string. This conversion is done recursively by every node, returning in the end, the full generated code. When the code is generated, we replace all markers with it and save the file to the output directory.
+
+The output of our tool is also composed of code that is provided with each template. To merge these provided sections of code, we use the same strategy as explained in the previous paragraph. We use template files with markers to define where each part of the code will be inserted. We also split some files, mainly on the Zeek Script, as \textit{no-edit} files. These \textit{no-edit} files are copied to the output location as they are, because they do not need any modifications and most of them are static files required by the Zeek Package structure.
+
+When our tool is executed, it generates an output folder containing all the automatically generated code. As explained in the previous chapter, we have not yet implemented the deployment of the P4 code using the Zeek Package, so we split this output folder into two sub-folders. One of the folders contains the P4 code for the switch, and one contains the Zeek Plugin package. In the next section, we explain how the P4 and the Zeek Plugin are deployed.
+
+\subsection{RNA Deployment}
+
+The deployment of the automatically generated RNA Framework takes place in a virtualized network and using an emulated P4 switch, so no specific hardware or PFDs are required to test our solution. To emulate the switch we use the \textit{p4app} tool, which compiles and runs the P4 code, emulating a programmable forwarding device. To set up this network, the \textit{p4app} uses a tool called \textit{mininet}, which creates all the interfaces for each of our devices and allows us to simulate different network topologies. To run Zeek, we use a custom Docker image that contains all required dependencies. When executed, we link this Docker container's network to the \textit{p4app} container, which allows us to run Zeek on any interfaces of the virtual switch, but usually, on the port setup as a mirroring port.
+
+In our tests, we used a simple topology with two hosts, each one in its own network, with a mirroring port in the switch, where Zeek is listening. The hosts are linked by our switch, which also acts as a router. The mRNA messages generated by the switch are sent to the mirroring port, where Zeek is listening for incoming packets. To generate the traffic that is analyzed by our solution, we used two different methods. The first method is using \textit{p4app} to open terminals in virtual hosts, where we are able to run programs and generate traffic for the Framework to process. The second method is using packet traces that were previously captured and forwarding these traces to be processed as incoming traffic.
+
+% 
+% ====================       Pode revisar até aqui :)       ====================
+% 
+
+
+% \section{The Prototype in Action} % MAYBE!!! (max 1-2 pages)
 
 
 
-
-
-
-% ----------------------------------------
-% moved from code generation chapter
-
-% After verifying all \Offloaders{} and \ProtocolTemplates{} required to support the offloading of the desired scripts were provided, the code generation and merge procedure begins. Here is an example of usage:
-
-% \begin{figure}[htb]
-%     \centering
-%     \caption{RNA Code Generation}
-%     \lstinputlisting[style=Bash]{code/cmd_example.txt}
-%     \label{code:cmd_example}
-% \end{figure}
-
-% \begin{figure}[htb]
-%     \centering
-%     \caption{RNA Tool - Usage}
-%     \lstinputlisting[style=Bash]{code/cmd_usage.txt}
-%     \label{code:cmd_usage}
-%     %\vspace{-1em}
-% \end{figure}
-
-\section{The Prototype in Action} % MAYBE!!! (max 1-2 pages)
-
+% ==============================================================================
+%                                EVALUATION
+% ==============================================================================
 
 \section{Evaluation}
 \label{sec:evaluation:evaluation}
+
+In this section, we present an evaluation of our proposed solutions, which has two main aspects. We assess the ability of our code generation mechanism to generate code and enable an inexperienced network operator to offload monitoring scripts to PDPs, and we assess the performance of the output of our solution, the automatically generated instance of the RNA Framework.
+
+Since we use emulated switches for our deployments, we assess only the performance of the Zeek monitoring system. We assume that programmable forwarding devices are able to execute inline rate if the provided program fits the device's memory.
+
+% Explain the metrics
+
+% Explain the setup (and scripts)
+
+% Explain the dataset (with plots)
+
+% Show data
+
+
+
+
+
+
+
+
 
 % Metrics:
 % 1. How many scripts we can run (without intervention)

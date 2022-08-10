@@ -41,7 +41,7 @@ Some of the resulting code that is present in the final Zeek Plugin is extracted
 % ==============================================================================
 
 \section{Detailed Mechanism Design}
-\label{sec:code_gen_impl}
+\label{sec:code_gen:detailed}
 
 The operation of our RNA Code Generation Mechanism can be described into three different stages. The first stage identifies the events that our input scripts subscribe to. The second stage is building our knowledge model, which receives as inputs all \ProtocolTemplates{}, \Offloaders{}, and events of interest, which the network operator requested to be offloaded. We call this knowledge model \textit{ProtocolGraph}. The last stage is the actual code merge and generation process using this structured and validated knowledge model from the previous step. We start explaining the first stage of our mechanism, i.e., extracting the subscribed events from the Zeek Scripts.
 
@@ -51,7 +51,7 @@ To identify which events a Zeek Script subscribes to, we first need to parse the
 
 In this stage, the most important information to be forwarded to the next step is the identifiers of the events we want to offload. Those will indicate the requirements of our deployment. The name of the scripts are also passed to the knowledge model as a logging and debugging asset but are no longer essential for the final functionality.
 
-\subsection{Knowledge Model}
+\subsection{Knowledge Model Builder}
 
 The core logic behind the implementation of our RNA Code Generation Mechanism relies on a structure we call \textit{ProtocolGraph}. This is a graph structure that stores all protocols required for our events of interest. The \Offloaders{} are linked to their final protocol layer in the graph, generating, in the end, a structure as presented in Figure \ref{fig:protocol_graph}. This structure is a graph, with a node we assign as root, in most cases, the \textsc{Ethernet} protocol. The other protocols are linked to their respective parents. The Offloaders are linked to the protocol they analyze, which does not need to be a leaf protocol.
 
@@ -176,6 +176,3 @@ The most important files to be generated are the main plugin file (\texttt{Plugi
 
 The proposed mechanism was conceived to embed the P4 code in the Zeek Plugin package, so that when the RNA Manager is initiated, the P4 code can be deployed to the programmable forwarding device. This was not implemented in the prototype, but we briefly describe how it could be implemented. This could be implemented by first generating the P4 code, then compiling it, either with a P4 command, or even in a Docker container to ensure all dependencies are met. After that, when generating the Zeek Plugin package, the mechanism embeds the output of the P4 code compilation (a \textit{JSON} file), and generates a function to load it to the switch when the RNA Manager is initialized.
 
-% 
-% Pode revisar até aqui :)
-% 
