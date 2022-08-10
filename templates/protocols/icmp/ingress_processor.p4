@@ -6,22 +6,22 @@ if(hdr.ipv4.isValid()) {
         meta.dst_port = (bit<16>) ICMP_ECHOREPLY;
     } else if (hdr.icmp.type_ == ICMP_ECHOREPLY) {
         meta.dst_port = (bit<16>) ICMP_ECHO;
-    } else if (hdr.icmp.type_ == ICMP_TSTAMP) {
-        meta.dst_port = (bit<16>) ICMP_TSTAMPREPLY;
-    } else if (hdr.icmp.type_ == ICMP_TSTAMPREPLY) {
-        meta.dst_port = (bit<16>) ICMP_TSTAMP;
-    } else if (hdr.icmp.type_ == ICMP_IREQ) {
-        meta.dst_port = (bit<16>) ICMP_IREQREPLY;
-    } else if (hdr.icmp.type_ == ICMP_IREQREPLY) {
-        meta.dst_port = (bit<16>) ICMP_IREQ;
-    } else if (hdr.icmp.type_ == ICMP_ROUTERSOLICIT) {
-        meta.dst_port = (bit<16>) ICMP_ROUTERADVERT;
-    } else if (hdr.icmp.type_ == ICMP_ROUTERADVERT) {
-        meta.dst_port = (bit<16>) ICMP_ROUTERSOLICIT;
-    } else if (hdr.icmp.type_ == ICMP_MASKREQ) {
-        meta.dst_port = (bit<16>) ICMP_MASKREPLY;
-    } else if (hdr.icmp.type_ == ICMP_MASKREPLY) {
-        meta.dst_port = (bit<16>) ICMP_MASKREQ;
+    } else if (hdr.icmp.type_ == ICMP_TIMESTAMP) {
+        meta.dst_port = (bit<16>) ICMP_TIMESTAMPREPLY;
+    } else if (hdr.icmp.type_ == ICMP_TIMESTAMPREPLY) {
+        meta.dst_port = (bit<16>) ICMP_TIMESTAMP;
+    } else if (hdr.icmp.type_ == ICMP_INFO_REQUEST) {
+        meta.dst_port = (bit<16>) ICMP_INFO_REPLY;
+    } else if (hdr.icmp.type_ == ICMP_INFO_REPLY) {
+        meta.dst_port = (bit<16>) ICMP_INFO_REQUEST;
+    } else if (hdr.icmp.type_ == ICMP_ROUTER_SOLICIT) {
+        meta.dst_port = (bit<16>) ICMP_ROUTER_ADVERT;
+    } else if (hdr.icmp.type_ == ICMP_ROUTER_ADVERT) {
+        meta.dst_port = (bit<16>) ICMP_ROUTER_SOLICIT;
+    } else if (hdr.icmp.type_ == ICMP_ADDR_MASK_REQ) {
+        meta.dst_port = (bit<16>) ICMP_ADDR_MASK_REPLY;
+    } else if (hdr.icmp.type_ == ICMP_ADDR_MASK_REPLY) {
+        meta.dst_port = (bit<16>) ICMP_ADDR_MASK_REQ;
     } else {
         meta.dst_port = (bit<16>) hdr.icmp.code;
     }

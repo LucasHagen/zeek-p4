@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+./run \
+    site/pingback \
+    site/zeek-ntp-monlist \
+    policy/protocols/ftp/detect-bruteforcing \
+    policy/misc/detect-traceroute

@@ -2,6 +2,8 @@ import socket
 import os
 import signal
 import sys
+import random
+import string
 from time import sleep
 
 
@@ -10,9 +12,13 @@ def valid_type(t):
     return t == "c" or t == "client" or t == "server" or t == "s"
 
 
+def random_pass(size=16, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits + ",./<>?!@#$%^&*()~`"):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+
 if len(sys.argv) < 4 or int(sys.argv[3]) == 0 or not valid_type(sys.argv[1]):
     print("Error. Correct Usage:")
-    print(" |_ server: python3 %s server|s <ip> <port>" %
+    print(" |_ server: python3 %s server|s <host_ip> <port>" %
           os.path.basename(__file__))
     print(" |_ client: python3 %s client|c <ip> <port>" %
           os.path.basename(__file__))
@@ -60,7 +66,7 @@ if IS_SERVER:
                     conn.sendall(
                         "331 Please specify the password.".encode('ascii'))
                 elif cmd[0].lower() == "pass":
-                    sleep(1)
+                    sleep(0.3)
                     conn.sendall("530 Login incorrect.".encode('ascii'))
                 else:
                     conn.sendall(
@@ -73,7 +79,7 @@ else:
         socket_global = s
         s.connect((HOST, PORT))
 
-        while True:
+        for i in range(50):
             print("Waiting for server")
             data = s.recv(1024)
             if not data:
@@ -81,7 +87,18 @@ else:
 
             print("Received: '%s'" % data.decode('ascii'))
 
-            cmd = input()
+            cmd = "USER user1"
+            s.sendall(cmd.encode('ascii'))
+            print("Sent '%s'" % cmd)
+
+            print("Waiting for server")
+            data = s.recv(1024)
+            if not data:
+                break
+
+            print("Received: '%s'" % data.decode('ascii'))
+
+            cmd = "PASS %s" % random_pass()
             s.sendall(cmd.encode('ascii'))
             print("Sent '%s'" % cmd)
 

@@ -19,11 +19,6 @@
 
 // #define RNA_ICMP_ECHO_DEBUG
 
-enum ICMP_EndpointState {
-    ICMP_INACTIVE,  // no packet seen
-    ICMP_ACTIVE,    // packets seen
-};
-
 using namespace zeek::packet_analysis::BR_UFRGS_INF::RNA::ICMP;
 using namespace zeek::packet_analysis::IP;
 using ::zeek::make_intrusive;
@@ -32,10 +27,10 @@ using ::zeek::RecordType;
 using ::zeek::RecordVal;
 using ::zeek::RecordValPtr;
 using ::zeek::val_mgr;
-using ::zeek::packet_analysis::IP::SessionAdapter;
 
 RnaIcmpEchoAnalyzer::RnaIcmpEchoAnalyzer() : Analyzer("RNA_ICMP_ECHO") {}
 
+// Code adapted from `deps/zeek/src/packet_analysis/protocol/icmp/ICMP.cc`
 RecordValPtr BuildInfo(const icmp_echo_message_h* icmp) {
     static auto icmp_info = zeek::id::find_type<RecordType>("icmp_info");
     auto rval = make_intrusive<RecordVal>(icmp_info);
@@ -53,7 +48,7 @@ bool RnaIcmpEchoAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet*
     auto icmp_hdr = (const icmp_echo_message_h*)data;
 
     int payload_len = len - sizeof(icmp_echo_message_h);
-    const u_char* payload = (const u_char*) (data + sizeof(icmp_echo_message_h));
+    const u_char* payload = (const u_char*)(data + sizeof(icmp_echo_message_h));
     auto zeekStr = new String(payload, payload_len, false);
 
     auto conn = offloader_hdr->GetOrCreateConnection(packet);

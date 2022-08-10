@@ -1,0 +1,33 @@
+File name:           /home/lshagen/Documents/Projects/zeek-p4/traces/originals/ftp_bruteforce-4.pcapng
+File type:           Wireshark/... - pcapng
+File encapsulation:  Ethernet
+File timestamp precision:  nanoseconds (9)
+Packet size limit:   file hdr: (not set)
+Number of packets:   176
+File size:           20 kB
+Data size:           13 kB
+Capture duration:    8,149769554 seconds
+First packet time:   2022-08-09 16:05:51,952728591
+Last packet time:    2022-08-09 16:06:00,102498145
+Data byte rate:      1.701 bytes/s
+Data bit rate:       13 kbps
+Average packet size: 78,80 bytes
+Average packet rate: 21 packets/s
+SHA256:              af725c31d0970b54858fa8d4af694d0416827010bf577e6078a5bce3a7149ee2
+RIPEMD160:           4f446e55e898fef645f814f73c3c6ad2159d6f39
+SHA1:                46b85a8aa04dbd292d49bbfd163dbf8e27171aee
+Strict time order:   True
+Capture hardware:    Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz (with SSE4.2)
+Capture oper-sys:    Linux 5.15.0-43-generic
+Capture application: Dumpcap (Wireshark) 3.6.2 (Git v3.6.2 packaged as 3.6.2-2)
+Number of interfaces in file: 1
+Interface #0 info:
+                     Name = eno1
+                     Encapsulation = Ethernet (1 - ether)
+                     Capture length = 262144
+                     Time precision = nanoseconds (9)
+                     Time ticks per second = 1000000000
+                     Time resolution = 0x09
+                     Operating system = Linux 5.15.0-43-generic
+                     Number of stat entries = 1
+                     Number of packets = 176

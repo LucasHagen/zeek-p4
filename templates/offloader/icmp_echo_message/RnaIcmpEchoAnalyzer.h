@@ -8,10 +8,10 @@ namespace zeek::packet_analysis::BR_UFRGS_INF::RNA::ICMP {
 typedef struct icmp_echo_message_struct {
     uint16_t id;    // 2 bytes
     uint16_t seq;   // 2 bytes
-    uint8_t  itype; // 1 bytes
-    uint8_t  icode; // 1 bytes
+    uint8_t  itype; // 1 byte
+    uint8_t  icode; // 1 byte
     uint16_t len;   // 2 bytes
-    uint8_t  ttl;   // 1 bytes
+    uint8_t  ttl;   // 1 byte
 
     // Total: 9 bytes
 } icmp_echo_message_h;

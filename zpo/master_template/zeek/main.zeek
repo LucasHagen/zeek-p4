@@ -9,9 +9,6 @@ module PacketAnalyzer::ETHERNET;
 @load base/frameworks/notice
 @load frameworks/files/hash-all-files
 
-export {}
-
-
 event zeek_init() &priority=20
 {
     print "Initializing RNA Plugin...";
@@ -84,4 +81,9 @@ event ftp_reply(c: connection, code: count, msg: string, cont_resp: bool)
     print fmt(" |_ CODE: %s", code);
     print fmt(" |_ MSG:  %s", msg);
     print fmt(" |_ CONT: %s", cont_resp);
+}
+
+event ntp_message(c: connection, is_orig: bool, msg: NTP::Message)
+{
+    print fmt("NTP Message (%s:%s -> %s:%s)", c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p);
 }

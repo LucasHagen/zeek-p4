@@ -1,0 +1,33 @@
+File name:           /home/lshagen/Documents/Projects/zeek-p4/traces/originals/traceroute-3.pcapng
+File type:           Wireshark/... - pcapng
+File encapsulation:  Linux cooked-mode capture v1
+File timestamp precision:  nanoseconds (9)
+Packet size limit:   file hdr: (not set)
+Number of packets:   58
+File size:           7.128 bytes
+Data size:           4.912 bytes
+Capture duration:    5,030586940 seconds
+First packet time:   2022-08-09 15:11:54,591305705
+Last packet time:    2022-08-09 15:11:59,621892645
+Data byte rate:      976 bytes/s
+Data bit rate:       7.811 bits/s
+Average packet size: 84,69 bytes
+Average packet rate: 11 packets/s
+SHA256:              d75528b77f9c182b02497d754ca6cc877307ea28de42429f72899febc9f1b30c
+RIPEMD160:           566421ec66698e1bd52f2a7effdef4083e0efb6d
+SHA1:                5fd9050188b3c8ad34054a7481155a35c3d909d7
+Strict time order:   True
+Capture hardware:    Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz (with SSE4.2)
+Capture oper-sys:    Linux 5.15.0-43-generic
+Capture application: Dumpcap (Wireshark) 3.6.2 (Git v3.6.2 packaged as 3.6.2-2)
+Number of interfaces in file: 1
+Interface #0 info:
+                     Name = any
+                     Encapsulation = Linux cooked-mode capture v1 (25 - linux-sll)
+                     Capture length = 262144
+                     Time precision = nanoseconds (9)
+                     Time ticks per second = 1000000000
+                     Time resolution = 0x09
+                     Operating system = Linux 5.15.0-43-generic
+                     Number of stat entries = 1
+                     Number of packets = 58
