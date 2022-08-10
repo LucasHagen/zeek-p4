@@ -19,11 +19,6 @@
 
 // #define RNA_ICMP_CONTEXT_DEBUG
 
-enum ICMP_EndpointState {
-    ICMP_INACTIVE,  // no packet seen
-    ICMP_ACTIVE,    // packets seen
-};
-
 using namespace zeek::packet_analysis::BR_UFRGS_INF::RNA::ICMP;
 using namespace zeek::packet_analysis::IP;
 using ::zeek::make_intrusive;
@@ -32,7 +27,6 @@ using ::zeek::RecordType;
 using ::zeek::RecordVal;
 using ::zeek::RecordValPtr;
 using ::zeek::val_mgr;
-using ::zeek::packet_analysis::IP::SessionAdapter;
 
 RnaIcmpContextAnalyzer::RnaIcmpContextAnalyzer() : Analyzer("RNA_ICMP_CONTEXT") {}
 
