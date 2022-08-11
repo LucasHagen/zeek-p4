@@ -1,0 +1,16 @@
+#separator \x09
+#set_separator	,
+#empty_field	(empty)
+#unset_field	-
+#path	notice
+#open	2022-08-11-13-54-43
+#fields	ts	uid	id.orig_h	id.orig_p	id.resp_h	id.resp_p	fuid	file_mime_type	file_desc	proto	note	msg	sub	src	dst	p	n	peer_descr	actions	email_dest	suppress_for	remote_location.country_code	remote_location.region	remote_location.city	remote_location.latitude	remote_location.longitude
+#types	time	string	addr	port	addr	port	string	string	string	enum	enum	string	string	addr	addr	port	count	string	set[enum]	set[string]	interval	string	string	string	double	double
+1459948050.070598	CL05SYOwldOUOmhhh	172.28.159.47	56546	172.29.148.156	123	-	-	-	udp	NTP::NTP_Monlist_Queries	NTP monlist queries	-	172.28.159.47	172.29.148.156	123	-	-	Notice::ACTION_LOG	(empty)	21600.000000	-	-	-	-	-
+1459948050.132605	CfaLlO5KFSzF9i5Ja	192.168.38.131	8	192.168.38.172	0	-	-	-	icmp	Pingback::Pingback_Tunnel	An ICMP ping request message may have been Pingback C2 ref:trustwave.com/en-us/resources/blogs/spiderlabs-blog/backdoor-at-the-end-of-the-icmp-tunnel/	seq=53764 , |payload|=788 , icmp_info=[v6=F, itype=8, icode=0, len=788, ttl=64] , first 20 bytes of ICMP payload=shell\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00	192.168.38.131	192.168.38.172	0	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+1459948050.133021	CfaLlO5KFSzF9i5Ja	192.168.38.131	8	192.168.38.172	0	-	-	-	icmp	Pingback::Pingback_Tunnel	An ICMP ping reply message may have been Pingback C2 ref:trustwave.com/en-us/resources/blogs/spiderlabs-blog/backdoor-at-the-end-of-the-icmp-tunnel/	seq=53764 , |payload|=788 , icmp_info=[v6=F, itype=0, icode=0, len=788, ttl=128] , first 20 bytes of ICMP payload=shell\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00	192.168.38.131	192.168.38.172	0	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+1459948050.923719	-	-	-	-	-	-	-	-	-	Traceroute::Detected	192.168.0.44 seems to be running traceroute using icmp	-	192.168.0.44	-	-	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+1459948051.415000	-	-	-	-	-	-	-	-	-	Traceroute::Detected	192.168.0.99 seems to be running traceroute using icmp	-	192.168.0.99	-	-	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+1459948053.802448	-	-	-	-	-	-	-	-	-	Traceroute::Detected	192.168.0.9 seems to be running traceroute using icmp	-	192.168.0.9	-	-	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+1459948055.410502	-	-	-	-	-	-	-	-	-	FTP::Bruteforcing	192.168.56.1 had 20 failed logins on 1 FTP server in 0m4s	-	192.168.56.1	-	-	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+#close	2022-08-11-13-54-43

@@ -1,0 +1,11 @@
+#separator \x09
+#set_separator	,
+#empty_field	(empty)
+#unset_field	-
+#path	weird
+#open	2022-08-11-13-55-38
+#fields	ts	uid	id.orig_h	id.orig_p	id.resp_h	id.resp_p	name	addl	notice	peer	source
+#types	time	string	addr	port	addr	port	string	string	bool	string	string
+1459948050.003310	-	-	-	-	-	undefined_ether_type	-	F	zeek	ETHERNET
+1459948056.309666	-	-	-	-	-	truncated_ARP	-	F	zeek	ARP
+#close	2022-08-11-13-55-40
