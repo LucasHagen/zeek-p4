@@ -1,8 +1,8 @@
-File name:           /home/lshagen/Documents/Projects/zeek-p4/traces/dataset_attacks.pcap
+File name:           dataset_attacks.pcap
 File type:           Wireshark/tcpdump/... - pcap
 File encapsulation:  Ethernet
 File timestamp precision:  microseconds (6)
-Packet size limit:   file hdr: 262144 bytes
+Packet size limit:   file hdr: 65535 bytes
 Number of packets:   1.200
 File size:           133 kB
 Data size:           114 kB
@@ -13,14 +13,14 @@ Data byte rate:      11 kBps
 Data bit rate:       93 kbps
 Average packet size: 95,22 bytes
 Average packet rate: 123 packets/s
-SHA256:              2d0906a95ec0e534b9b7819ab214fc5dfc7b15ccee883c9e63c4383dc376421a
-RIPEMD160:           76b6d01b73080c3f45931323ccb603ac72e08ba4
-SHA1:                b325c3e8d6aafb0c26d5bfd0b117e0d129c47bb6
+SHA256:              896f848a138feed69c67fe6a2ff63579729126098d692962093c48e71c16cac8
+RIPEMD160:           1585e3df10fd3bc8cd38f10037984386ae9da6f1
+SHA1:                ea4ac8d695ff90e3a8391adcb3997a166bdf5ab1
 Strict time order:   True
 Number of interfaces in file: 1
 Interface #0 info:
                      Encapsulation = Ethernet (1 - ether)
-                     Capture length = 262144
+                     Capture length = 65535
                      Time precision = microseconds (6)
                      Time ticks per second = 1000000
                      Number of stat entries = 0

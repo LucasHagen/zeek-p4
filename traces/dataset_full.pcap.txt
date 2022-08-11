@@ -1,22 +1,22 @@
-File name:           /home/lshagen/Documents/Projects/zeek-p4/traces/dataset_full.pcap
+File name:           dataset_full.pcap
 File type:           Wireshark/tcpdump/... - pcap
 File encapsulation:  Ethernet
 File timestamp precision:  microseconds (6)
 Packet size limit:   file hdr: 262144 bytes
-Packet size limit:   inferred: 20 bytes - 64 bytes (range)
+Packet size limit:   inferred: 34 bytes - 78 bytes (range)
 Number of packets:   5.564 k
-File size:           349 MB
-Data size:           4.008 MB
+File size:           427 MB
+Data size:           4.086 MB
 Capture duration:    9,999992 seconds
 First packet time:   2016-04-06 10:07:30,000004
 Last packet time:    2016-04-06 10:07:39,999996
-Data byte rate:      400 MBps
-Data bit rate:       3.207 Mbps
-Average packet size: 720,46 bytes
+Data byte rate:      408 MBps
+Data bit rate:       3.269 Mbps
+Average packet size: 734,46 bytes
 Average packet rate: 556 kpackets/s
-SHA256:              c356a5e98ddb053df27688f031868bba7806ca65233e96be928ea1e54b3995a2
-RIPEMD160:           82177fcc017169f675a14c9f52db671a135a2157
-SHA1:                82755bcb8da625789378c603a98d7865ee07cdb1
+SHA256:              d1c6c303d62ceb36c6571b63c6aef3cd17d13912159f18ea9134ba9d527e371b
+RIPEMD160:           4f496706c527e0faeb734a727c17785b775504a7
+SHA1:                e151d95e5fb56a18d1c0e4fe500fbe05b975ac00
 Strict time order:   True
 Number of interfaces in file: 1
 Interface #0 info:
