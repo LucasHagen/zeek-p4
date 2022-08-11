@@ -38,12 +38,13 @@ cp "$EXEC_FILES/p4app.json" "$P4_OUTPUT/"
 cp "$EXEC_FILES/zpo.config" "$P4_OUTPUT/"
 
 cp "$EXEC_FILES/run_zeek" "$OUTPUT_DIR/"
+cp "$EXEC_FILES/run_zeek_traces" "$OUTPUT_DIR/"
 cp "$EXEC_FILES/run" "$ZEEK_OUTPUT/"
 cp "$EXEC_FILES/run_all" "$ZEEK_OUTPUT/"
 
 echo "$SCRIPT_DIR/p4app run $P4_OUTPUT" > $OUTPUT_DIR/run_p4app
 
-chmod +x "$OUTPUT_DIR/run_zeek"
+chmod +x "$OUTPUT_DIR/run_zeek_traces"
 chmod +x "$OUTPUT_DIR/run_p4app"
 chmod +x "$ZEEK_OUTPUT/run"
 chmod +x "$ZEEK_OUTPUT/run_all"
