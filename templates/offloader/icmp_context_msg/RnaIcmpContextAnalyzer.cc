@@ -224,6 +224,7 @@ bool RnaIcmpContextAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Pack
     }
 
     const uint8_t* context = data + 2;
+    int context_len = len - 2;
 
 #ifdef RNA_ICMP_CONTEXT_DEBUG
     std::cout << std::endl;
@@ -242,8 +243,8 @@ bool RnaIcmpContextAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Pack
     if (e) {
         event_mgr.Enqueue(
             e, conn->GetVal(),
-            BuildInfo(icmp_hdr, len - sizeof(icmp_context_msg_h), offloader_hdr->GetIPHdr()->TTL()),
-            val_mgr->Count(icmp_hdr->icode), ExtractICMP4Context(len - 2, context));
+            BuildInfo(icmp_hdr, context_len, offloader_hdr->GetIPHdr()->TTL()),
+            val_mgr->Count(icmp_hdr->icode), ExtractICMP4Context(context_len, context));
     }
 
     packet->processed = true;
