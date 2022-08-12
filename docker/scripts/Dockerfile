@@ -9,7 +9,7 @@ ARG ZEEK_DIST_SOURCE=deps/zeek
 ENV ZEEK_HOME="$ZEEK_PATH"
 
 RUN apt-get install -y git python3-pip && \
-    pip3 install GitPython semantic-version && \
+    pip3 install GitPython semantic-version psutil && \
     zkg install --force corelight/pingback && \
     zkg install --force dopheide/zeek-ntp-monlist
 
