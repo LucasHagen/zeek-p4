@@ -26,8 +26,9 @@ zeek = None
 
 def signal_handler(sig, frame):
     global zeek
-    print("Terminating zeek...")
-    zeek.kill()
+    if zeek is not None:
+        print("Terminating zeek...")
+        zeek.kill()
     exit(1)
 
 
@@ -65,10 +66,24 @@ def main():
         logging.error("Input dataset doesn't exist: %s" % input_dataset)
         exit(1)
 
+    signal.signal(signal.SIGINT, signal_handler)
+
+    run_iteration(input_dataset,
+                  interface,
+                  is_rna,
+                  speed_mult,
+                  mbps)
+
+
+def run_iteration(
+        input_dataset,
+        interface,
+        is_rna,
+        speed_mult,
+        mbps):
+    global zeek
     logging.info(
         f"Starting zeek in interface {interface} for dataset {input_dataset} (x{speed_mult})")
-
-    signal.signal(signal.SIGINT, signal_handler)
 
     zeek_cmd = ["zeek", "-i", interface] + \
         (SCRIPTS_RNA if is_rna else SCRIPTS)
@@ -77,8 +92,8 @@ def main():
         (["-M", mbps] if mbps is not None else []) + \
         [input_dataset]
 
-    logging.debug(f"Zeek comand: {zeek_cmd}")
-    logging.debug(f"Tcpreplay comand: {tcpreplay_cmd}")
+    logging.info(f"Zeek comand: {zeek_cmd}")
+    logging.info(f"Tcpreplay comand: {tcpreplay_cmd}")
 
     zeek = subprocess.Popen(
         zeek_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -108,15 +123,22 @@ def main():
         if status == None:
             print_status(zeek_process, starttime)
         elif status == 0:
-            logging.info("Tcpreplay finished")
             break
         else:
-            logging.warning("Tcpreplay finished: unexpected status")
+            logging.info("%i\ttcpreplay finished: unexpected status" %
+                         (endtime*1000))
             break
         time.sleep(0.1)
 
-    zeek.terminate()
-    logging.info("Finished after %0.2fs" % (get_timestamp() - starttime))
+    endtime = (get_timestamp() - starttime)
+    logging.info("%i\ttcpreplay finished" % (endtime*1000))
+
+    while ((get_timestamp() - starttime) - endtime) <= 5:
+        time.sleep(0.1)
+        print_status(zeek_process, starttime)
+
+    zeek.send_signal(signal.SIGINT)
+    logging.info("%i\tzeek terminated" % ((get_timestamp() - starttime)*1000))
 
 
 def get_timestamp():
