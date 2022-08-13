@@ -3,4 +3,6 @@
 set -e
 
 ./configure
-make install -j8
+cd build
+make install
+cd ..
