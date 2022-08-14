@@ -87,6 +87,7 @@ def read_iteraction_count(log_dir):
 
     return int(result.group(1))
 
+
 def read_is_rna(log_dir):
     general_log = os.path.join(log_dir, "general.log")
 
@@ -201,12 +202,11 @@ def plot_mem_graph(averages: np.ndarray, log_dir: str, is_rna: bool):
     y = averages[:, MEM_INDEX]
 
     # plot
-    fig, ax = plt.subplots(1,1)
+    fig, ax = plt.subplots(1, 1)
     fig.set_tight_layout(True)
-    fig.set_size_inches(5,5)
+    fig.set_size_inches(5, 5)
 
-
-    ax.plot(x, y, linewidth=2.0)
+    ax.plot(x, y, linewidth=2.0, color='gray')
 
     ax.set(
         title=f"Memory usage by time (with{'' if is_rna else 'out'} RNA)",
@@ -218,8 +218,6 @@ def plot_mem_graph(averages: np.ndarray, log_dir: str, is_rna: bool):
     plt.show()
 
 
-
-
 def plot_cpu_graph(averages: np.ndarray, log_dir: str, is_rna: bool):
     plt.style.use('_mpl-gallery')
 
@@ -228,12 +226,11 @@ def plot_cpu_graph(averages: np.ndarray, log_dir: str, is_rna: bool):
     y = averages[:, CPU_INDEX]
 
     # plot
-    fig, ax = plt.subplots(1,1)
+    fig, ax = plt.subplots(1, 1)
     fig.set_tight_layout(True)
-    fig.set_size_inches(5,5)
+    fig.set_size_inches(5, 5)
 
-
-    ax.plot(x, y, linewidth=2.0, color="green")
+    ax.plot(x, y, linewidth=2.0, color="gray")
 
     ax.set(
         title=f"CPU usage by time (with{'' if is_rna else 'out'} RNA)",
