@@ -99,10 +99,12 @@ def read_is_rna(log_dir):
     with open(general_log, 'r') as file:
         content = file.read()
 
-    result = re.search(r"Params \([^)]*rna: ([a-zA-Z+])[^)]*\)", content)
+    result = re.search(r"Params \([^)]*rna: ([a-zA-Z+]+)[^)]*\)", content)
     if not result:
         logging.error("Error finding RNA")
         exit(1)
+
+    logging.info("RNA RNA: " + result.group(1))
 
     return result.group(1).lower() == "true"
 
@@ -214,7 +216,7 @@ def plot_mem_graph(averages: np.ndarray, log_dir: str, is_rna: bool):
         ylim=(0, 1000), yticks=np.arange(0, 1100, 100), ylabel="Memory (Mb)",
     )
 
-    plt.savefig(os.path.join(log_dir, "mem_plot.pdf"))
+    plt.savefig(os.path.join(log_dir, f"memory_with{'' if is_rna else 'out'}_rna.pdf"))
     plt.show()
 
 
@@ -238,7 +240,7 @@ def plot_cpu_graph(averages: np.ndarray, log_dir: str, is_rna: bool):
         ylim=(0, 130), yticks=np.arange(0, 140, 10), ylabel="CPU (%)",
     )
 
-    plt.savefig(os.path.join(log_dir, "cpu_plot.pdf"))
+    plt.savefig(os.path.join(log_dir, f"cpu_with{'' if is_rna else 'out'}_rna.pdf"))
     plt.show()
 
 
