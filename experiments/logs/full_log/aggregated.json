@@ -3,5 +3,6 @@
         "average": 35.246,
         "median": 35.97
     },
+    "is_rna": false,
     "iteractions": 15
 }

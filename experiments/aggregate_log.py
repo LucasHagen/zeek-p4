@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+
+import matplotlib.pyplot as plt
 import json
 import numpy as np
 import os
@@ -13,6 +15,10 @@ from typing import List
 SCRIPT_PATH = os.path.abspath(__file__)
 SCRIPT_DIR = os.path.dirname(SCRIPT_PATH)
 SCRIPT_NAME = os.path.basename(SCRIPT_PATH)
+
+TIME_INDEX = 0
+MEM_INDEX = 1
+CPU_INDEX = 2
 
 
 def main():
@@ -40,7 +46,9 @@ def main():
     output = {}
 
     iteractions = read_iteraction_count(log_dir)
+    is_rna = read_is_rna(log_dir)
     logging.info(f"Iteractions: {iteractions}")
+    logging.info(f"Is RNA: {is_rna}")
 
     dropped_p = get_all_dropped_packets_count(log_dir, iteractions)
 
@@ -49,8 +57,11 @@ def main():
         "average": statistics.mean(dropped_p),
         "median": statistics.median(dropped_p)
     }
+    output["is_rna"] = is_rna
 
-    aggregate_zeek_perf(log_dir, iteractions)
+    averages = aggregate_zeek_perf(log_dir, iteractions)
+    plot_mem_graph(averages, log_dir, is_rna)
+    plot_cpu_graph(averages, log_dir, is_rna)
 
     with open(os.path.join(log_dir, "aggregated.json"), 'w') as file:
         file.write(json.dumps(output, sort_keys=True, indent=4))
@@ -75,6 +86,24 @@ def read_iteraction_count(log_dir):
         exit(1)
 
     return int(result.group(1))
+
+def read_is_rna(log_dir):
+    general_log = os.path.join(log_dir, "general.log")
+
+    if not os.path.exists(general_log):
+        logging.error("General log not found")
+        exit(1)
+
+    content = ""
+    with open(general_log, 'r') as file:
+        content = file.read()
+
+    result = re.search(r"Params \([^)]*rna: ([a-zA-Z+])[^)]*\)", content)
+    if not result:
+        logging.error("Error finding RNA")
+        exit(1)
+
+    return result.group(1).lower() == "true"
 
 
 def get_all_dropped_packets_count(log_dir: str, iteractions: int) -> List[float]:
@@ -105,7 +134,7 @@ def read_zeek_log(zeek_log_path):
     return float(result.group(1))
 
 
-def aggregate_zeek_perf(log_dir, iteractions):
+def aggregate_zeek_perf(log_dir: str, iteractions: int) -> np.ndarray:
     counts = []
 
     TIME_MAX = 10100
@@ -141,10 +170,10 @@ def aggregate_zeek_perf(log_dir, iteractions):
 
     for t in range(0, COLUMNS):
         ms = t*TIME_STEP
-        average[t, 0] = ms
+        average[t, TIME_INDEX] = ms
 
-    average[:, 1] = mem_average
-    average[:, 2] = cpu_average
+    average[:, MEM_INDEX] = mem_average
+    average[:, CPU_INDEX] = cpu_average
 
     np.savetxt(os.path.join(log_dir, "aggregated_perf.csv"), average,
                delimiter=",", fmt='%i,%0.2f,%0.2f', header="Time (ms),Memory (Mb),CPU (%)")
@@ -152,7 +181,7 @@ def aggregate_zeek_perf(log_dir, iteractions):
     return average
 
 
-def read_zeek_perf(perf_log):
+def read_zeek_perf(perf_log: str) -> List[List]:
     output = []
 
     with open(perf_log, 'r') as file:
@@ -162,6 +191,58 @@ def read_zeek_perf(perf_log):
             output.append(row)
 
     return output
+
+
+def plot_mem_graph(averages: np.ndarray, log_dir: str, is_rna: bool):
+    plt.style.use('_mpl-gallery')
+
+    # make data
+    x = averages[:, TIME_INDEX] / 1000
+    y = averages[:, MEM_INDEX]
+
+    # plot
+    fig, ax = plt.subplots(1,1)
+    fig.set_tight_layout(True)
+    fig.set_size_inches(5,5)
+
+
+    ax.plot(x, y, linewidth=2.0)
+
+    ax.set(
+        title=f"Memory usage by time (with{'' if is_rna else 'out'} RNA)",
+        xlim=(0, 10), xticks=np.arange(0, 11), xlabel="Time (s)",
+        ylim=(0, 1000), yticks=np.arange(0, 1100, 100), ylabel="Memory (Mb)",
+    )
+
+    plt.savefig(os.path.join(log_dir, "mem_plot.pdf"))
+    plt.show()
+
+
+
+
+def plot_cpu_graph(averages: np.ndarray, log_dir: str, is_rna: bool):
+    plt.style.use('_mpl-gallery')
+
+    # make data
+    x = averages[:, TIME_INDEX] / 1000
+    y = averages[:, CPU_INDEX]
+
+    # plot
+    fig, ax = plt.subplots(1,1)
+    fig.set_tight_layout(True)
+    fig.set_size_inches(5,5)
+
+
+    ax.plot(x, y, linewidth=2.0, color="green")
+
+    ax.set(
+        title=f"CPU usage by time (with{'' if is_rna else 'out'} RNA)",
+        xlim=(0, 10), xticks=np.arange(0, 11), xlabel="Time (s)",
+        ylim=(0, 130), yticks=np.arange(0, 140, 10), ylabel="CPU (%)",
+    )
+
+    plt.savefig(os.path.join(log_dir, "cpu_plot.pdf"))
+    plt.show()
 
 
 if (__name__ == "__main__"):
