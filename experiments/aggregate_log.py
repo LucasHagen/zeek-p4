@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import json
 import numpy as np
 import os
 import re
@@ -50,6 +51,9 @@ def main():
     }
 
     aggregate_zeek_perf(log_dir, iteractions)
+
+    with open(os.path.join(log_dir, "aggregated.json"), 'w') as file:
+        file.write(json.dumps(output, sort_keys=True, indent=4))
 
     print(output)
 
@@ -104,8 +108,13 @@ def read_zeek_log(zeek_log_path):
 def aggregate_zeek_perf(log_dir, iteractions):
     counts = []
 
-    mem_matrix = np.zeros((100, iteractions))
-    cpu_matrix = np.zeros((100, iteractions))
+    TIME_MAX = 10100
+    TIME_STEP = 100
+
+    COLUMNS = int(TIME_MAX/TIME_STEP)
+
+    mem_matrix = np.zeros((COLUMNS, iteractions))
+    cpu_matrix = np.zeros((COLUMNS, iteractions))
 
     for i in range(iteractions):
         perf = read_zeek_perf(os.path.join(log_dir, f"zeek_perf_{i}.csv"))
@@ -113,33 +122,34 @@ def aggregate_zeek_perf(log_dir, iteractions):
         for row in perf:
             ms, mem, cpu, comment = row
             ms = int(ms)
-            ms -= 100
-            time_index = int(ms/100)
+            ms -= TIME_STEP
+            time_index = int(ms/TIME_STEP)
 
             if time_index < 0:
                 continue
 
-            if time_index >= 100:
+            if time_index >= COLUMNS:
                 break
 
-            mem_matrix[time_index,i] = float(mem)
-            cpu_matrix[time_index,i] = float(cpu)
+            mem_matrix[time_index, i] = float(mem)
+            cpu_matrix[time_index, i] = float(cpu)
 
     mem_average = mem_matrix.mean(1)
     cpu_average = cpu_matrix.mean(1)
 
-    average = np.zeros((100, 3))
+    average = np.zeros((COLUMNS, 3))
 
-    for t in range(0, 100):
-        ms = t*100
-        average[t,0] = ms
+    for t in range(0, COLUMNS):
+        ms = t*TIME_STEP
+        average[t, 0] = ms
 
-    average[:,1] = mem_average
-    average[:,2] = cpu_average
+    average[:, 1] = mem_average
+    average[:, 2] = cpu_average
 
-    print(average)
+    np.savetxt(os.path.join(log_dir, "aggregated_perf.csv"), average,
+               delimiter=",", fmt='%i,%0.2f,%0.2f', header="Time (ms),Memory (Mb),CPU (%)")
 
-    return mem_matrix, cpu_matrix
+    return average
 
 
 def read_zeek_perf(perf_log):
