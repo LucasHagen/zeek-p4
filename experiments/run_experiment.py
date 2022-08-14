@@ -144,7 +144,7 @@ def main():
 
     logging.info(f"Starting experiments")
     logging.info(
-        f"Params (iface: {interface}; dataset: {input_dataset}; x: {speed_mult}; mbps: {mbps}; it: {iterations})")
+        f"Params (iface: {interface}; dataset: {input_dataset}; rna: {is_rna}; x: {speed_mult}; mbps: {mbps}; it: {iterations})")
 
     try:
         for it in range(iterations):
@@ -398,6 +398,7 @@ def clean_iteration():
 
     if docker_client is not None and zeek_container is not None:
         zeek_container.kill()
+        time.sleep(1)
         zeek_container = None
 
     if p_zeek is not None:

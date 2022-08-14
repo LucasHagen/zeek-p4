@@ -1,0 +1,4 @@
+listening on dummy0
+
+1660490973.142511 received termination signal
+1660490973.142511 3144637 packets received on interface dummy0, 1931082 (38.05%) dropped, 2057464 (65.43%) not processed

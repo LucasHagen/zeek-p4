@@ -1,0 +1,168 @@
+[INFO] Starting experiments
+[INFO] Params (iface: dummy0; dataset: ../traces/dataset_rna.pcap; rna: True; x: 1.0; mbps: None; it: 15)
+[INFO] Starting iteration #0
+[INFO] Starting docker
+[INFO] Installed RNA
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 scripts site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 28765
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_rna.pcap
+[INFO] Tcpreplay finished at 10324ms
+[INFO] Zeek terminated at 11328
+[INFO] Finished iteration 0
+[INFO] Starting iteration #1
+[INFO] Starting docker
+[INFO] Installed RNA
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 scripts site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 29082
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_rna.pcap
+[INFO] Tcpreplay finished at 10325ms
+[INFO] Zeek terminated at 11329
+[INFO] Finished iteration 1
+[INFO] Starting iteration #2
+[INFO] Starting docker
+[INFO] Installed RNA
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 scripts site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 29324
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_rna.pcap
+[INFO] Tcpreplay finished at 10322ms
+[INFO] Zeek terminated at 11326
+[INFO] Finished iteration 2
+[INFO] Starting iteration #3
+[INFO] Starting docker
+[INFO] Installed RNA
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 scripts site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 29567
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_rna.pcap
+[INFO] Tcpreplay finished at 10322ms
+[INFO] Zeek terminated at 11327
+[INFO] Finished iteration 3
+[INFO] Starting iteration #4
+[INFO] Starting docker
+[INFO] Installed RNA
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 scripts site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 29802
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_rna.pcap
+[INFO] Tcpreplay finished at 10322ms
+[INFO] Zeek terminated at 11326
+[INFO] Finished iteration 4
+[INFO] Starting iteration #5
+[INFO] Starting docker
+[INFO] Installed RNA
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 scripts site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 30036
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_rna.pcap
+[INFO] Tcpreplay finished at 10322ms
+[INFO] Zeek terminated at 11327
+[INFO] Finished iteration 5
+[INFO] Starting iteration #6
+[INFO] Starting docker
+[INFO] Installed RNA
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 scripts site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 30273
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_rna.pcap
+[INFO] Tcpreplay finished at 10322ms
+[INFO] Zeek terminated at 11326
+[INFO] Finished iteration 6
+[INFO] Starting iteration #7
+[INFO] Starting docker
+[INFO] Installed RNA
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 scripts site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 30506
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_rna.pcap
+[INFO] Tcpreplay finished at 10322ms
+[INFO] Zeek terminated at 11326
+[INFO] Finished iteration 7
+[INFO] Starting iteration #8
+[INFO] Starting docker
+[INFO] Installed RNA
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 scripts site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 30739
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_rna.pcap
+[INFO] Tcpreplay finished at 10322ms
+[INFO] Zeek terminated at 11326
+[INFO] Finished iteration 8
+[INFO] Starting iteration #9
+[INFO] Starting docker
+[INFO] Installed RNA
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 scripts site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 30976
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_rna.pcap
+[INFO] Tcpreplay finished at 10322ms
+[INFO] Zeek terminated at 11327
+[INFO] Finished iteration 9
+[INFO] Starting iteration #10
+[INFO] Starting docker
+[INFO] Installed RNA
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 scripts site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 31211
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_rna.pcap
+[INFO] Tcpreplay finished at 10322ms
+[INFO] Zeek terminated at 11326
+[INFO] Finished iteration 10
+[INFO] Starting iteration #11
+[INFO] Starting docker
+[INFO] Installed RNA
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 scripts site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 31445
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_rna.pcap
+[INFO] Tcpreplay finished at 10321ms
+[INFO] Zeek terminated at 11326
+[INFO] Finished iteration 11
+[INFO] Starting iteration #12
+[INFO] Starting docker
+[INFO] Installed RNA
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 scripts site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 31678
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_rna.pcap
+[INFO] Tcpreplay finished at 10322ms
+[INFO] Zeek terminated at 11327
+[INFO] Finished iteration 12
+[INFO] Starting iteration #13
+[INFO] Starting docker
+[INFO] Installed RNA
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 scripts site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 31913
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_rna.pcap
+[INFO] Tcpreplay finished at 10321ms
+[INFO] Zeek terminated at 11326
+[INFO] Finished iteration 13
+[INFO] Starting iteration #14
+[INFO] Starting docker
+[INFO] Installed RNA
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 scripts site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 32148
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_rna.pcap
+[INFO] Tcpreplay finished at 10322ms
+[INFO] Zeek terminated at 11326
+[INFO] Finished iteration 14
+[INFO] Finished all 15 iterations
