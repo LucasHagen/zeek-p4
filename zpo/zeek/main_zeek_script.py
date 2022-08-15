@@ -1,4 +1,5 @@
 import os
+from zpo.file_gen_stats import FileGenerationStats
 from zpo.model.offloader import OffloaderComponent
 from zpo.file_generator_template import TemplateBasedFileGenerator
 from zpo.exec_graph import ExecGraph
@@ -10,7 +11,7 @@ REGISTER_OFFLOADERS = "@@REGISTER_OFFLOADERS@@"
 
 class MainZeekFile(TemplateBasedFileGenerator):
 
-    def __init__(self, settings: ZpoSettings):
+    def __init__(self, settings: ZpoSettings, stats: FileGenerationStats = None):
         super().__init__(
             os.path.join(settings.zeek_master_template_dir, "main.zeek"),
             os.path.join(
@@ -18,7 +19,8 @@ class MainZeekFile(TemplateBasedFileGenerator):
                 "scripts",
                 "BR_UFRGS_INF",
                 "RNA",
-                "main.zeek")
+                "main.zeek"),
+            stats,
         )
 
         self.settings: ZpoSettings = settings
@@ -31,8 +33,12 @@ PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_RNA_OFFLOADER,
 """.strip() % (offloader.uid, offloader.zeek_analyzer_id)
 
 
-def _get_register_offloaders(template_graph: ExecGraph, _: MainZeekFile) -> str:
-    return indent("\n".join(map(
+def _get_register_offloaders(template_graph: ExecGraph, gen: MainZeekFile) -> str:
+    output = indent("\n".join(map(
         _register_offloader,
         template_graph.offloaders_by_priority()
     )))
+
+    gen.stats.auto_increament_generated(output)
+
+    return output

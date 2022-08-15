@@ -1,6 +1,7 @@
 
 
 from typing import List
+from ..file_gen_stats import FileGenerationStats
 from zpo.model.protocol import ProtocolComponent
 from zpo.model.offloader import OffloaderComponent
 from zpo.utils import indent
@@ -8,7 +9,7 @@ from zpo.utils import indent
 
 class OffloaderTriggers:
 
-    def __init__(self, protocol_templates: List[ProtocolComponent]):
+    def __init__(self, protocol_templates: List[ProtocolComponent], stats: FileGenerationStats = None):
         self.protocols: List[ProtocolComponent] = []
 
         for protocol in protocol_templates:
@@ -19,8 +20,14 @@ class OffloaderTriggers:
                 _get_offloader_trigger,
                 protocol.offloaders.values()
             ))
-            self.protocols.append(_protocol_guard(
-                protocol, offloader_triggers))
+            final_code = _protocol_guard(protocol, offloader_triggers)
+
+            trigger_lines = map(lambda o: o.read_p4_trigger(), protocol.offloaders.values())
+            stats.auto_increament_generated(final_code)
+            stats.auto_increament_offloader_template(trigger_lines)
+            stats.auto_increament_generated(trigger_lines, mult=-1) # subtract offloader lines
+
+            self.protocols.append(final_code)
 
     def __str__(self):
         return indent("\n".join(self.protocols), spaces=12)

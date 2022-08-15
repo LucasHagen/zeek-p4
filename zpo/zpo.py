@@ -38,10 +38,12 @@ class Zpo:
         graph.print_tree()
 
         p4_generator = P4Generator(self.settings)
-        p4_generator.generate_all(graph)
+        p4_stats = p4_generator.generate_all(graph)
 
         zeek_generator = ZeekGenerator(self.settings)
-        zeek_generator.generate_all(graph)
+        zeek_stats = zeek_generator.generate_all(graph)
+
+        logging.debug(f"Gen stats: {p4_stats.merged_with(zeek_stats)}")
 
         logging.info("Execution hash: %s" % graph.compute_hash_hex())
 

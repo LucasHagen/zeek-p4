@@ -2,6 +2,7 @@ import logging
 import os
 from typing import Callable, Dict
 from zpo.exceptions import ZpoException
+from zpo.file_gen_stats import FileGenerationStats
 
 from zpo.file_generator import FileGenerator
 from zpo.exec_graph import ExecGraph
@@ -12,15 +13,15 @@ class TemplateBasedFileGenerator(FileGenerator):
     that file by the defined content.
     """
 
-    def __init__(self, template_path: str, output_path: str):
+    def __init__(self, template_path: str, output_path: str, stats: FileGenerationStats = None):
         """Constructor.
 
         Args:
             template_path (str): the path to the template file
             output_path (str): the path to the output file (will override)
         """
+        super().__init__(output_path, stats)
         self.template_path: str = template_path
-        self.output_path: str = output_path
         self.markers: Dict = {}
 
     def add_marker(self, marker_id: str, content_or_func: str or Callable[[ExecGraph, FileGenerator], str]):
@@ -90,6 +91,9 @@ class TemplateBasedFileGenerator(FileGenerator):
             template_content = file.read()
 
         self._check_markers_exist(template_content)
+
+        self.stats.auto_increament_master_template(template_content)
+        self.stats.increament_master_template(- len(self.markers))
 
         output_content = self._replace_markers(
             template_graph, template_content)

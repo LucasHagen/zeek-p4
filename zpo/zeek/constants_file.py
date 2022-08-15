@@ -1,5 +1,6 @@
 import os
 from zpo.exceptions import ZpoException
+from zpo.file_gen_stats import FileGenerationStats
 from zpo.file_generator_template import TemplateBasedFileGenerator
 from zpo.p4.offloader_uid_definition import OffloaderUidDefinition, NoOffloaderDefinition
 from zpo.exec_graph import ExecGraph
@@ -11,10 +12,11 @@ VERSION_CONSTANTS = "@@VERSION_CONSTANTS@@"
 
 class ConstantsFile(TemplateBasedFileGenerator):
 
-    def __init__(self, settings: ZpoSettings):
+    def __init__(self, settings: ZpoSettings, stats: FileGenerationStats = None):
         super().__init__(
             os.path.join(settings.zeek_master_template_dir, "constants.h"),
-            os.path.join(settings.zeek_output_dir, "src/constants.h")
+            os.path.join(settings.zeek_output_dir, "src/constants.h"),
+            stats,
         )
 
         self.settings: ZpoSettings = settings
@@ -22,14 +24,18 @@ class ConstantsFile(TemplateBasedFileGenerator):
         self.add_marker(VERSION_CONSTANTS, _get_version_constants)
 
 
-def _get_offloader_ids(template_graph: ExecGraph, _: ConstantsFile) -> str:
+def _get_offloader_ids(template_graph: ExecGraph, gen: ConstantsFile) -> str:
     offloader_uids = [str(NoOffloaderDefinition())]
     offloader_uids = offloader_uids + list(map(
         lambda e: str(OffloaderUidDefinition(e)),
         template_graph.offloaders_by_priority())
     )
 
-    return "\n".join(offloader_uids).strip()
+    output = "\n".join(offloader_uids).strip()
+
+    gen.stats.auto_increament_generated(output)
+
+    return output
 
 
 def _get_version_constants(_: ExecGraph, generator: ConstantsFile) -> str:
@@ -39,9 +45,13 @@ def _get_version_constants(_: ExecGraph, generator: ConstantsFile) -> str:
     if len(version_array) != 3:
         raise ZpoException(f"Version in invalid format (X.X.X): '{version}'")
 
-    return """
+    output = """
 #define RNA_VERSION "%s"
 #define RNA_VERSION_1 %d
 #define RNA_VERSION_2 %d
 #define RNA_VERSION_3 %d
 """.strip() % (version, int(version_array[0]), int(version_array[1]), int(version_array[2]))
+
+    generator.stats.auto_increament_generated(output)
+
+    return output

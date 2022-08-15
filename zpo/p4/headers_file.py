@@ -1,6 +1,8 @@
 
 
 import os
+from random import random
+from zpo.file_gen_stats import FileGenerationStats
 from zpo.file_generator_template import TemplateBasedFileGenerator
 from zpo.p4.offloader_uid_definition import OffloaderUidDefinition, NoOffloaderDefinition
 from zpo.p4.headers_struct import HeadersStruct
@@ -21,10 +23,11 @@ HEADERS_STRUCT = "@@HEADERS_STRUCT@@"
 
 class HeadersFileGenerator(TemplateBasedFileGenerator):
 
-    def __init__(self, settings: ZpoSettings):
+    def __init__(self, settings: ZpoSettings, stats: FileGenerationStats = None):
         super().__init__(
             os.path.join(settings.p4_master_template_dir, "headers.p4"),
-            os.path.join(settings.p4_output_dir, "headers.p4")
+            os.path.join(settings.p4_output_dir, "headers.p4"),
+            stats,
         )
         self.settings = settings
 
@@ -40,8 +43,8 @@ def _get_extra_definitions(template_graph: ExecGraph, gen: HeadersFileGenerator)
     random_definitions = [
         "#define RNA_HASH_VERSION 0",
     ]
+    gen.stats.auto_increament_generated(random_definitions)
     return "\n".join(random_definitions)
-
 
 
 def _get_loaded_protocols(template_graph: ExecGraph, gen: HeadersFileGenerator) -> str:
@@ -51,8 +54,9 @@ def _get_loaded_protocols(template_graph: ExecGraph, gen: HeadersFileGenerator) 
     protocols_definitions = list(
         map(define_proto, template_graph.protocols_by_depth()))
 
-    return "\n".join(protocols_definitions)
+    gen.stats.auto_increament_generated(protocols_definitions)
 
+    return "\n".join(protocols_definitions)
 
 
 def _get_offloader_uids(template_graph: ExecGraph, gen: HeadersFileGenerator) -> str:
@@ -60,16 +64,28 @@ def _get_offloader_uids(template_graph: ExecGraph, gen: HeadersFileGenerator) ->
         lambda e: str(OffloaderUidDefinition(e)),
         template_graph.offloaders_by_priority())
 
-    return "\n".join([str(NoOffloaderDefinition())] + uids)
+    all_uids = [str(NoOffloaderDefinition())] + uids
 
-def _merge_headers_definitions(template_graph: ExecGraph, _: HeadersFileGenerator) -> str:
-    return "\n".join(map(_read_p4_header,
-                         template_graph.protocols_by_depth() + template_graph.offloaders_by_priority()
-                         ))
+    gen.stats.auto_increament_generated(all_uids)
+
+    return "\n".join(all_uids)
 
 
-def _generate_headers_struct(template_graph: ExecGraph, _: HeadersFileGenerator) -> str:
-    return str(HeadersStruct(template_graph))
+def _merge_headers_definitions(template_graph: ExecGraph, gen: HeadersFileGenerator) -> str:
+    protocols = lmap(_read_p4_header, template_graph.protocols_by_depth())
+    offloaders = lmap(_read_p4_header, template_graph.offloaders_by_priority())
+
+    gen.stats.auto_increament_protocol_template(protocols)
+    gen.stats.auto_increament_offloader_template(offloaders)
+
+    return "\n".join(protocols + offloaders)
+
+
+def _generate_headers_struct(template_graph: ExecGraph, gen: HeadersFileGenerator) -> str:
+    header_struct = str(HeadersStruct(template_graph))
+    gen.stats.auto_increament_generated(header_struct)
+
+    return header_struct
 
 
 def _read_p4_header(template: Component):
