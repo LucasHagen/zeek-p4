@@ -46,7 +46,7 @@ def main():
         exit(1)
 
     pps = parse_stats(stats_dir)
-    plot_mem_graph(pps, stats_dir)
+    plot_pps(pps, stats_dir)
 
 
 counter = None
@@ -80,12 +80,12 @@ def parse_stats(stats_dir):
         index = int(time_diff_s * 10)
 
         counter[index, 0] = time_diff_ms
-        counter[index, 1] = int(get_packet_count(content))
+        counter[index, 1] = int(get_pps(content))
 
     return counter
 
 
-def plot_mem_graph(averages: np.ndarray, stats_dir: str):
+def plot_pps(averages: np.ndarray, stats_dir: str):
     plt.style.use('_mpl-gallery')
 
     # make data
@@ -97,22 +97,36 @@ def plot_mem_graph(averages: np.ndarray, stats_dir: str):
     fig.set_tight_layout(True)
     fig.set_size_inches(5, 5)
 
-    ax.plot(x, y, linewidth=2.0, color='gray')
+    ax.plot(x, y, linewidth=2.0, color='black')
 
     # ax.scatter([0,1,3], [90000, 90000, 90000], s=10, c='b', marker="s", label='first')
 
     ax.set(
         # title=f"PPS in time",
         xlim=(0, 10), xticks=np.arange(0, 11), xlabel="Time (s)",
-        ylim=(0, 100000), yticks=np.arange(0, 110000, 10000), ylabel="Packets per second (pps)",
+        ylim=(0, pow(10, 6)), yticks=np.arange(0, pow(10, 6) + 100000, 100000), ylabel="Packets per second (pps)",
     )
 
-    plt.gca().set_yticklabels([f"{int(x/1000)}{' k' if x != 0 else ''}" for x in range(0, 110000, 10000)])
+    plt.gca().set_yticklabels(
+        [format_number(x) for x in range(0, pow(10, 6) + 100000, 100000)])
 
     plt.savefig(os.path.join(
         stats_dir, f"pps_in_time.pdf"))
     plt.show()
 
+def format_number(number: float or int) -> str:
+    n = number
+    letter = ""
+
+    if n/1000 >= 1:
+        n = n/1000
+        letter = " k"
+
+    if n/1000 >= 1:
+        n = n/1000
+        letter = " M"
+
+    return f"{int(n)}{letter}"
 
 def get_start_time(content: str):
     # First packet time:   2016-04-06 10:07:30,000004
@@ -136,7 +150,7 @@ def get_packet_count(content: str) -> int:
         content)
 
     if not result:
-        logging.error(f"Error getting start time from stats")
+        logging.error(f"Error getting packet count")
         exit(1)
 
     packets = int(result.group(1))
@@ -147,6 +161,28 @@ def get_packet_count(content: str) -> int:
         pass
     else:
         logging.error(f"Error reading packet count: {content}")
+
+    return packets
+
+
+def get_pps(content: str) -> int:
+    # Average packet rate: 546 kpackets/s
+    result = re.search(
+        r"Average packet rate:[ \t]*([0-9.]+)[ \t]+([a-zA-Z]?)packets/s",
+        content)
+
+    if not result:
+        logging.error(f"Error getting pps")
+        exit(1)
+
+    packets = int(result.group(1))
+
+    if result.group(2) == "k":
+        packets = packets * 1000
+    elif result.group(2) == "":
+        pass
+    else:
+        logging.error(f"Error reading pps: {content}")
 
     return packets
 

@@ -208,10 +208,10 @@ def plot_mem_graph(averages: np.ndarray, log_dir: str, is_rna: bool):
     fig.set_tight_layout(True)
     fig.set_size_inches(5, 5)
 
-    ax.plot(x, y, linewidth=2.0, color='gray')
+    ax.plot(x, y, linewidth=2.0, color='black')
 
     ax.set(
-        title=f"Memory usage by time (with{'' if is_rna else 'out'} RNA)",
+        # title=f"Memory usage by time (with{'' if is_rna else 'out'} RNA)",
         xlim=(0, 10), xticks=np.arange(0, 11), xlabel="Time (s)",
         ylim=(0, 1000), yticks=np.arange(0, 1100, 100), ylabel="Memory (Mb)",
     )
@@ -232,10 +232,10 @@ def plot_cpu_graph(averages: np.ndarray, log_dir: str, is_rna: bool):
     fig.set_tight_layout(True)
     fig.set_size_inches(5, 5)
 
-    ax.plot(x, y, linewidth=2.0, color="gray")
+    ax.plot(x, y, linewidth=2.0, color="black")
 
     ax.set(
-        title=f"CPU usage by time (with{'' if is_rna else 'out'} RNA)",
+        # title=f"CPU usage by time (with{'' if is_rna else 'out'} RNA)",
         xlim=(0, 10), xticks=np.arange(0, 11), xlabel="Time (s)",
         ylim=(0, 130), yticks=np.arange(0, 140, 10), ylabel="CPU (%)",
     )
