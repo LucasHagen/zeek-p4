@@ -109,8 +109,8 @@ def plot_mem_graph(averages: np.ndarray, stats_dir: str):
 
     plt.gca().set_yticklabels([f"{int(x/1000)}{' k' if x != 0 else ''}" for x in range(0, 110000, 10000)])
 
-    # plt.savefig(os.path.join(
-    #     stats_dir, f"pps_in_time.pdf"))
+    plt.savefig(os.path.join(
+        stats_dir, f"pps_in_time.pdf"))
     plt.show()
 
 
