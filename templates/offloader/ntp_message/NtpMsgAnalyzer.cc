@@ -76,7 +76,9 @@ bool NtpMsgAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, Packet* pack
         try {
             interp->NewData(packet->is_orig, payload, payload + payload_len);
         } catch (const binpac::Exception& e) {
+#ifdef RNA_NTP_DEBUG
             std::cerr << "[RNA] NTP Binpac exception: " << e.c_msg() << std::endl;
+#endif
         }
 
         delete interp;

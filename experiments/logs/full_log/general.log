@@ -1,0 +1,153 @@
+[INFO] Starting experiments
+[INFO] Params (iface: dummy0; dataset: ../traces/dataset_full.pcap; is_rna: false, x: 1.0; mbps: None; it: 15)
+[INFO] Starting iteration #0
+[INFO] Starting docker
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 7849
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_full.pcap
+[INFO] Tcpreplay finished at 10330ms
+[INFO] Zeek terminated at 11334
+[INFO] Finished iteration 0
+[INFO] Starting iteration #1
+[INFO] Starting docker
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 8062
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_full.pcap
+[INFO] Tcpreplay finished at 10229ms
+[INFO] Zeek terminated at 11232
+[INFO] Finished iteration 1
+[INFO] Starting iteration #2
+[INFO] Starting docker
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 8200
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_full.pcap
+[INFO] Tcpreplay finished at 10329ms
+[INFO] Zeek terminated at 11332
+[INFO] Finished iteration 2
+[INFO] Starting iteration #3
+[INFO] Starting docker
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 8344
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_full.pcap
+[INFO] Tcpreplay finished at 10329ms
+[INFO] Zeek terminated at 11332
+[INFO] Finished iteration 3
+[INFO] Starting iteration #4
+[INFO] Starting docker
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 8491
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_full.pcap
+[INFO] Tcpreplay finished at 10328ms
+[INFO] Zeek terminated at 11331
+[INFO] Finished iteration 4
+[INFO] Starting iteration #5
+[INFO] Starting docker
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 8628
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_full.pcap
+[INFO] Tcpreplay finished at 10328ms
+[INFO] Zeek terminated at 11331
+[INFO] Finished iteration 5
+[INFO] Starting iteration #6
+[INFO] Starting docker
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 8768
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_full.pcap
+[INFO] Tcpreplay finished at 10328ms
+[INFO] Zeek terminated at 11331
+[INFO] Finished iteration 6
+[INFO] Starting iteration #7
+[INFO] Starting docker
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 9052
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_full.pcap
+[INFO] Tcpreplay finished at 10330ms
+[INFO] Zeek terminated at 11333
+[INFO] Finished iteration 7
+[INFO] Starting iteration #8
+[INFO] Starting docker
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 9233
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_full.pcap
+[INFO] Tcpreplay finished at 10328ms
+[INFO] Zeek terminated at 11331
+[INFO] Finished iteration 8
+[INFO] Starting iteration #9
+[INFO] Starting docker
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 9448
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_full.pcap
+[INFO] Tcpreplay finished at 10328ms
+[INFO] Zeek terminated at 11331
+[INFO] Finished iteration 9
+[INFO] Starting iteration #10
+[INFO] Starting docker
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 9613
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_full.pcap
+[INFO] Tcpreplay finished at 10329ms
+[INFO] Zeek terminated at 11332
+[INFO] Finished iteration 10
+[INFO] Starting iteration #11
+[INFO] Starting docker
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 9908
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_full.pcap
+[INFO] Tcpreplay finished at 10328ms
+[INFO] Zeek terminated at 11331
+[INFO] Finished iteration 11
+[INFO] Starting iteration #12
+[INFO] Starting docker
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 10051
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_full.pcap
+[INFO] Tcpreplay finished at 10329ms
+[INFO] Zeek terminated at 11332
+[INFO] Finished iteration 12
+[INFO] Starting iteration #13
+[INFO] Starting docker
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 10193
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_full.pcap
+[INFO] Tcpreplay finished at 10228ms
+[INFO] Zeek terminated at 11231
+[INFO] Finished iteration 13
+[INFO] Starting iteration #14
+[INFO] Starting docker
+[INFO] Zeek command: docker exec zeek-experiment zeek -i dummy0 site/pingback site/zeek-ntp-monlist policy/protocols/ftp/detect-bruteforcing policy/misc/detect-traceroute
+[INFO] Waiting 5s for zeek to initialize.
+[INFO] Zeek started with pid 10330
+[INFO] Starting tcpreplay
+[INFO] Tcpreplay command: tcpreplay -i dummy0 ../traces/dataset_full.pcap
+[INFO] Tcpreplay finished at 10329ms
+[INFO] Zeek terminated at 11332
+[INFO] Finished iteration 14
+[INFO] Finished all 15 iterations

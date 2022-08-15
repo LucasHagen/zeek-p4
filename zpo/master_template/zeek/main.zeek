@@ -27,63 +27,63 @@ event zeek_init() &priority=20
     print "Initialized RNA Plugin.";
 }
 
-event icmp_echo_request(c: connection, info: icmp_info, id: count, seq: count, payload: string)
-{
-	print "ICMP Echo Request", c$id$orig_h, c$id$resp_h, id, seq;
-}
+# event icmp_echo_request(c: connection, info: icmp_info, id: count, seq: count, payload: string)
+# {
+# 	print "ICMP Echo Request", c$id$orig_h, c$id$resp_h, id, seq;
+# }
 
-event icmp_echo_reply(c: connection, info: icmp_info, id: count, seq: count, payload: string)
-{
-    print "ICMP Echo Reply", c$id$orig_h, c$id$resp_h, id, seq;
-}
+# event icmp_echo_reply(c: connection, info: icmp_info, id: count, seq: count, payload: string)
+# {
+#     print "ICMP Echo Reply", c$id$orig_h, c$id$resp_h, id, seq;
+# }
 
-event icmp_time_exceeded(c: connection, info: icmp_info, code: count, context: icmp_context)
-{
-    print "ICMP Time Exceeded", c$id$orig_h, c$id$resp_h, code;
-}
+# event icmp_time_exceeded(c: connection, info: icmp_info, code: count, context: icmp_context)
+# {
+#     print "ICMP Time Exceeded", c$id$orig_h, c$id$resp_h, code;
+# }
 
-event icmp_unreachable(c: connection, info: icmp_info, code: count, context: icmp_context)
-{
-	print "ICMP Unreachable", context;
-}
+# event icmp_unreachable(c: connection, info: icmp_info, code: count, context: icmp_context)
+# {
+# 	print "ICMP Unreachable", context;
+# }
 
-event arp_request(mac_src: string, mac_dst: string, SPA: addr, SHA: string, TPA: addr,
-                  THA: string)
-{
-	print "ARP Request", SHA, SPA, THA, TPA;
-}
+# event arp_request(mac_src: string, mac_dst: string, SPA: addr, SHA: string, TPA: addr,
+#                   THA: string)
+# {
+# 	print "ARP Request", SHA, SPA, THA, TPA;
+# }
 
-event arp_reply(mac_src: string, mac_dst: string, SPA: addr, SHA: string, TPA: addr, THA: string)
-{
-	print "ARP Reply", SHA, SPA, THA, TPA;
-}
+# event arp_reply(mac_src: string, mac_dst: string, SPA: addr, SHA: string, TPA: addr, THA: string)
+# {
+# 	print "ARP Reply", SHA, SPA, THA, TPA;
+# }
 
-event udp_request(c: connection)
-{
-    print "UDP Request",  c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p, c$history;
-}
+# event udp_request(c: connection)
+# {
+#     print "UDP Request",  c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p, c$history;
+# }
 
-event udp_reply(c: connection)
-{
-    print "UDP Reply",  c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p, c$history;
-}
+# event udp_reply(c: connection)
+# {
+#     print "UDP Reply",  c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p, c$history;
+# }
 
-event ftp_request(c: connection, command: string, arg: string)
-{
-    print fmt("FTP Request (%s:%s -> %s:%s)", c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p);
-    print fmt(" |_ CMD: %s", command);
-    print fmt(" |_ ARG: %s", arg);
-}
+# event ftp_request(c: connection, command: string, arg: string)
+# {
+#     print fmt("FTP Request (%s:%s -> %s:%s)", c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p);
+#     print fmt(" |_ CMD: %s", command);
+#     print fmt(" |_ ARG: %s", arg);
+# }
 
-event ftp_reply(c: connection, code: count, msg: string, cont_resp: bool)
-{
-    print fmt("FTP Reply (%s:%s -> %s:%s)", c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p);
-    print fmt(" |_ CODE: %s", code);
-    print fmt(" |_ MSG:  %s", msg);
-    print fmt(" |_ CONT: %s", cont_resp);
-}
+# event ftp_reply(c: connection, code: count, msg: string, cont_resp: bool)
+# {
+#     print fmt("FTP Reply (%s:%s -> %s:%s)", c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p);
+#     print fmt(" |_ CODE: %s", code);
+#     print fmt(" |_ MSG:  %s", msg);
+#     print fmt(" |_ CONT: %s", cont_resp);
+# }
 
-event ntp_message(c: connection, is_orig: bool, msg: NTP::Message)
-{
-    print fmt("NTP Message (%s:%s -> %s:%s)", c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p);
-}
+# event ntp_message(c: connection, is_orig: bool, msg: NTP::Message)
+# {
+#     print fmt("NTP Message (%s:%s -> %s:%s)", c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p);
+# }

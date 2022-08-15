@@ -4,57 +4,101 @@ SCRIPT_PATH=`realpath $0`
 SCRIPT_NAME=`basename $SCRIPT_PATH`
 SCRIPT_DIR=`dirname $SCRIPT_PATH`
 
-FILES_DIR="$SCRIPT_DIR/to_merge"
+FILES_DIR="$SCRIPT_DIR/attacks"
+
+BUILD_FOLDER="$SCRIPT_DIR/build"
+mkdir -p $BUILD_FOLDER
 
 GZ_EQUINIX_FILE="$SCRIPT_DIR/CAIDA/equinix-chicago.dirA.20160406-130700.UTC.anon.pcap.gz"
+EQUINIX_FILE="$SCRIPT_DIR/CAIDA/equinix-chicago.dirA.20160406-130700.UTC.anon.pcap"
+TRACE_PART="$SCRIPT_DIR/CAIDA/equinix-chicago.dirA.20160406-130700.UTC.anon_00003_20160406100730.pcap"
+
 GZ_EQUINIX_FILE_SHA256="72440cb663607a735d3eccee30d65d94b34a83f7b1be7a18ab63ae32ea617503"
 
-EQUINIX_FILE="$SCRIPT_DIR/CAIDA/equinix-chicago.dirA.20160406-130700.UTC.anon.pcap"
-EQUINIX_FILE_SHA256="3c4493fe28182288249f550e950018f7be33c735183e79dfe43bef84d38efafb"
+GENUINE_FILE="$SCRIPT_DIR/dataset_genuine.pcap"
 
-TRACE_PART="$SCRIPT_DIR/CAIDA/equinix-chicago.dirA.20160406-130700.UTC.anon_00003_20160406100730.pcap"
-TRACE_PART_SHA256="95f28aed67136b86ec0ae0396af36fddca6f118f0ebe3ff32ce42e8dd42781bc"
+ATTACKS_FILE="$SCRIPT_DIR/dataset_attacks.pcap"
+ATTACKS_FILE_SHA256="6152de9fd1aea102c6aa8a30a123f3b1afa70a386a8d35fab7b237713eedd7de"
 
-ATTACKS_FILE="$SCRIPT_DIR/attacks.pcapng"
-ATTACKS_FILE_SHA256="61bf26889e311c87d20bca598beaa8b6114701f367757009cedafc2ab6aa5991"
+OUTPUT_FILE="$SCRIPT_DIR/dataset_full.pcap"
+OUTPUT_FILE_SHA256="d1c6c303d62ceb36c6571b63c6aef3cd17d13912159f18ea9134ba9d527e371b"
 
-OUTPUT_FILE="$SCRIPT_DIR/full_dataset.pcapng"
-OUTPUT_FILE_SHA256="74feb7c9ed8a1d0f57a52a419785713f8c3e087523872791053498f8ef173c5e"
+if [ "$1" = "override" ] | [ "$1" = "-o" ] | [ "$1" = "--override" ] ; then
+    OVERRIDE=true
+else
+    OVERRIDE=false
+fi
 
 echo "Generating complete dataset at '$OUTPUT_FILE'"
+echo ""
 
-if [ ! $(sha256sum $GZ_EQUINIX_FILE | awk '{print $1}') = "$GZ_EQUINIX_FILE_SHA256" ] ; then
-    echo "Error: sha256sum mismatch for '$GZ_EQUINIX_FILE'"
-    exit 1
+# ==============================================================================
+# BUILD GENUINE
+# ==============================================================================
+
+if $OVERRIDE || [ ! -f "$GENUINE_FILE" ] ; then
+    echo "[1] Building 'genuine' dataset"
+
+    echo "    - Verifying checksum"
+    if [ ! $(sha256sum $GZ_EQUINIX_FILE | awk '{print $1}') = "$GZ_EQUINIX_FILE_SHA256" ] ; then
+        echo ""
+        echo "Error: sha256sum mismatch for '$GZ_EQUINIX_FILE'"
+        exit 1
+    fi
+
+    if $OVERRIDE || [ ! -f "$EQUINIX_FILE" ] ; then
+        echo "    - Decompressing equinix file"
+        gunzip -c $GZ_EQUINIX_FILE > $EQUINIX_FILE
+    fi
+
+    if $OVERRIDE || [ ! -f "$TRACE_PART" ] ; then
+        echo "    - Splitting equinix file into 10s windows"
+        editcap -F pcap -s 65535 -i 10 $EQUINIX_FILE $EQUINIX_FILE
+    fi
+
+    echo "    - Adding Ethernet header"
+    tcprewrite --dlt=enet --enet-dmac=02:00:00:00:00:01 --enet-smac=02:00:00:00:00:02 --infile=$TRACE_PART --outfile=$GENUINE_FILE
+
+    # echo "    - Adding ethernet header"
+    # tshark -F pcap -r $BUILD_FOLDER/genuine.pcapng -w $GENUINE_FILE
+
 else
-    echo "Equinix/CAIDA file sha256sum matches!"
+    echo "[1] Building genuine dataset                                [SKIPPED]"
 fi
 
-echo "Decompressing equinix file"
+# ==============================================================================
+# BUILD ATTACKS
+# ==============================================================================
 
-gunzip -c $GZ_EQUINIX_FILE > $EQUINIX_FILE
-
-echo "Splitting equinix file into 10 seconds window"
-
-editcap -i 10 $EQUINIX_FILE $EQUINIX_FILE
-
-echo "Merging all attack pcaps"
-
-mergecap -w $ATTACKS_FILE $FILES_DIR/*.pcapng
-
-if [ ! $(sha256sum $ATTACKS_FILE | awk '{print $1}') = "$ATTACKS_FILE_SHA256" ] ; then
-    echo "Error: sha256sum mismatch for '$ATTACKS_FILE'"
-    exit 1
+if $OVERRIDE || [ ! -f "$ATTACKS_FILE" ] ; then
+    echo "[3] Building 'attacks' dataset"
+    mergecap -F pcap -s 65535 -w $ATTACKS_FILE $FILES_DIR/*.pcapng $FILES_DIR/*.pcap
+    # mergecap -F pcap -s 65535 -w $BUILD_FOLDER/attacks.pcapng $FILES_DIR/*.pcapng $FILES_DIR/*.pcap
+    # tshark -s 65535 -F pcap -r $BUILD_FOLDER/attacks.pcapng -w $ATTACKS_FILE
+else
+    echo "[3] Building 'attacks' dataset                              [SKIPPED]"
 fi
 
-echo "Merging attacks with equinix (10s window) file"
+# ==============================================================================
+# BUILD FULL
+# ==============================================================================
 
-mergecap -w $OUTPUT_FILE $TRACE_PART $ATTACKS_FILE
+if $OVERRIDE || [ ! -f "$OUTPUT_FILE" ] ; then
+    echo "[4] Building 'full' dataset"
+    mergecap -w $BUILD_FOLDER/dataset_full.pcapng $GENUINE_FILE $ATTACKS_FILE
+    echo "    Converting to pcap"
+    editcap -F pcap $BUILD_FOLDER/dataset_full.pcapng $OUTPUT_FILE
+else
+    echo "[4] Building 'full' dataset                                 [SKIPPED]"
+fi
 
+echo "    Verifying 'full' dataset..."
 if [ ! $(sha256sum $OUTPUT_FILE | awk '{print $1}') = "$OUTPUT_FILE_SHA256" ] ; then
+    echo ""
     echo "Error: sha256sum mismatch for '$OUTPUT_FILE'"
     exit 1
 fi
 
-
-echo "Done! Saved as: $OUTPUT_FILE"
+echo ""
+echo "Output file: $OUTPUT_FILE"
+echo "Done!"

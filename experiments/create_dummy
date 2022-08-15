@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+SCRIPT=`realpath $0`
+SCRIPT_DIR=`dirname $SCRIPT`
+SCRIPT_NAME=`basename $SCRIPT`
+
+
+if [ "$1" = "help" ] || [ "$1" = "--help" ] || [ "$1" = "-h" ] ; then
+    echo "Create a dummy interface, adds an IP to it, and enables it."
+    echo "Usage: ./${SCRIPT_NAME} [interface_name] [ip_address]"
+    exit 0
+fi
+
+INTERFACE_NAME="dummy0"
+if [ ! "$1" = "" ] ; then
+    INTERFACE_NAME=$1
+fi
+
+IP_ADDR="10.0.0.1/24"
+if [ ! "$2" = "" ] ; then
+    IP_ADDR=$2
+fi
+
+echo "Creating interface '${INTERFACE_NAME}' with address '${IP_ADDR}'"
+
+set -e
+ip link add $INTERFACE_NAME type dummy
+ip addr add $IP_ADDR dev $INTERFACE_NAME
+ip link set $INTERFACE_NAME up
+
+echo "Done!"

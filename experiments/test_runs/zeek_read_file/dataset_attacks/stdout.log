@@ -1,0 +1,5 @@
+root@4f3daa187728:~/plugin# time zeek -r ../traces/dataset_attacks.pcap site/pingback     site/zeek-ntp-monlist     policy/protocols/ftp/detect-bruteforcing     policy/misc/detect-traceroute
+
+real	0m0.227s
+user	0m0.195s
+sys	0m0.025s

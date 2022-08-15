@@ -1,0 +1,29 @@
+File name:           dataset_stats_00036_20160406100733.pcap
+File type:           Wireshark/... - pcapng
+File encapsulation:  Ethernet
+File timestamp precision:  microseconds (6)
+Packet size limit:   file hdr: (not set)
+Packet size limit:   inferred: 34 bytes - 78 bytes (range)
+Number of packets:   52 k
+File size:           5.036 kB
+Data size:           37 MB
+Capture duration:    0,099997 seconds
+First packet time:   2016-04-06 10:07:33,600007
+Last packet time:    2016-04-06 10:07:33,700004
+Data byte rate:      377 MBps
+Data bit rate:       3.019 Mbps
+Average packet size: 712,66 bytes
+Average packet rate: 529 kpackets/s
+SHA256:              94c27e5de0443ae9caa9b7c065fcf88a77eb2dd786ca06397f91c9299d8a2aa4
+RIPEMD160:           0e12b99f445055bb37cba66fd2712ad2e27a0091
+SHA1:                859057c2a14f09b0ed199f55db54704d473be9bb
+Strict time order:   True
+Capture application: Editcap (Wireshark) 3.6.2 (Git v3.6.2 packaged as 3.6.2-2)
+Number of interfaces in file: 1
+Interface #0 info:
+                     Encapsulation = Ethernet (1 - ether)
+                     Capture length = 65535
+                     Time precision = microseconds (6)
+                     Time ticks per second = 1000000
+                     Number of stat entries = 0
+                     Number of packets = 52957

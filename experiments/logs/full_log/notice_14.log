@@ -1,0 +1,21 @@
+#separator \x09
+#set_separator	,
+#empty_field	(empty)
+#unset_field	-
+#path	notice
+#open	2022-08-14-15-33-16
+#fields	ts	uid	id.orig_h	id.orig_p	id.resp_h	id.resp_p	fuid	file_mime_type	file_desc	proto	note	msg	sub	src	dst	p	n	peer_descr	actions	email_dest	suppress_for	remote_location.country_code	remote_location.region	remote_location.city	remote_location.latitude	remote_location.longitude
+#types	time	string	addr	port	addr	port	string	string	string	enum	enum	string	string	addr	addr	port	count	string	set[enum]	set[string]	interval	string	string	string	double	double
+1660491196.732670	CAY4on3zLeg2Lr5dN	129.19.108.23	35068	1.102.41.73	80	-	-	-	tcp	Weird::Activity	SYN_after_partial	-	129.19.108.23	1.102.41.73	80	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+1660491196.889534	CVqX6s1pQTv0tXNMvb	172.28.159.47	56546	172.29.148.156	123	-	-	-	udp	NTP::NTP_Monlist_Queries	NTP monlist queries	-	172.28.159.47	172.29.148.156	123	-	-	Notice::ACTION_LOG	(empty)	21600.000000	-	-	-	-	-
+1660491196.889534	CCOYoKQ2ic1DcnuSa	192.168.38.131	8	192.168.38.172	0	-	-	-	icmp	Pingback::Pingback_Tunnel	An ICMP ping request message may have been Pingback C2 ref:trustwave.com/en-us/resources/blogs/spiderlabs-blog/backdoor-at-the-end-of-the-icmp-tunnel/	seq=53764 , |payload|=788 , icmp_info=[v6=F, itype=8, icode=0, len=788, ttl=64] , first 20 bytes of ICMP payload=shell\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00	192.168.38.131	192.168.38.172	0	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+1660491196.889534	CCOYoKQ2ic1DcnuSa	192.168.38.131	8	192.168.38.172	0	-	-	-	icmp	Pingback::Pingback_Tunnel	An ICMP ping reply message may have been Pingback C2 ref:trustwave.com/en-us/resources/blogs/spiderlabs-blog/backdoor-at-the-end-of-the-icmp-tunnel/	seq=53764 , |payload|=788 , icmp_info=[v6=F, itype=0, icode=0, len=788, ttl=128] , first 20 bytes of ICMP payload=shell\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00	192.168.38.131	192.168.38.172	0	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+1660491197.889675	-	-	-	-	-	-	-	-	-	Traceroute::Detected	192.168.0.44 seems to be running traceroute using icmp	-	192.168.0.44	-	-	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+1660491197.889675	CqAjKC8XrBpdMxPFg	207.169.18.15	13560	1.102.246.202	443	-	-	-	tcp	Weird::Activity	SYN_after_partial	-	207.169.18.15	1.102.246.202	443	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+1660491198.889921	-	-	-	-	-	-	-	-	-	Traceroute::Detected	192.168.0.99 seems to be running traceroute using icmp	-	192.168.0.99	-	-	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+1660491199.890071	CYUJH34EDStlZboOYj	128.84.247.183	24357	5.243.19.255	80	-	-	-	tcp	Weird::Activity	SYN_after_partial	-	128.84.247.183	5.243.19.255	80	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+1660491199.890071	C6R8I3qZDsJmpvjP	128.84.66.4	5576	1.32.181.202	443	-	-	-	tcp	Weird::Activity	SYN_after_partial	-	128.84.66.4	1.32.181.202	443	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+1660491205.204170	-	-	-	-	-	-	-	-	-	Traceroute::Detected	192.168.0.9 seems to be running traceroute using icmp	-	192.168.0.9	-	-	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+1660491205.457733	C2X5Az4ywJ0UftoOtl	50.25.199.237	59898	3.255.169.68	443	-	-	-	tcp	Weird::Activity	SYN_after_partial	-	50.25.199.237	3.255.169.68	443	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+1660491207.528669	C0mhO32Kf8T6R7cg78	138.147.208.76	50940	5.252.121.55	80	-	-	-	tcp	Weird::Activity	SYN_after_partial	-	138.147.208.76	5.252.121.55	80	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-
+1660491207.719932	CzeIVE15yMr0e3Ci6e	128.84.84.78	19305	107.29.112.106	443	-	-	-	tcp	Weird::Activity	SYN_after_partial	-	128.84.84.78	107.29.112.106	443	-	-	Notice::ACTION_LOG	(empty)	3600.000000	-	-	-	-	-

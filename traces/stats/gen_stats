@@ -1,0 +1,4 @@
+#!/bin/bash
+for filename in *.pcap; do
+    capinfos $filename > ${filename}.stats
+done

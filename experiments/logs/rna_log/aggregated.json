@@ -1,0 +1,8 @@
+{
+    "dropped_packets": {
+        "average": 0.0,
+        "median": 0.0
+    },
+    "is_rna": true,
+    "iteractions": 15
+}

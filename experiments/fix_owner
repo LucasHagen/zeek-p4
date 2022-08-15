@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+SCRIPT=`realpath $0`
+SCRIPT_DIR=`dirname $SCRIPT`
+SCRIPT_NAME=`basename $SCRIPT`
+
+echo "$SCRIPT_DIR/logs"
+
+sudo chown -R $USER:$USER $SCRIPT_DIR/logs
+
+echo "Done!"
