@@ -43,7 +43,7 @@ In an ideal world scenario, we would like to extract all information that Zeek n
 This proposed version of the RNA framework, differently from the original framework, goes further and specifies another level of subcomponents that make the framework adaptable to variable situations with varying sets of monitoring scripts. Before explaining the inner details of the framework, we will introduce two concepts that are fundamental for its understanding and will serve later as inputs for our code generator mechanism. Those concepts are \Offloader{} and \ProtocolTemplate{}:
 
 \begin{itemize}
-    \item An \textit{\Offloader{}} is a set of files and settings that allows RNA to offload the monitoring of new protocols and the generation of corresponding events of interest. Like the idea of a module, it can be added and removed to the deployment, without needing to develop new software or change existing components.
+    \item An \textit{\Offloader{} Template} is a set of files and settings that allows RNA to offload the monitoring of new protocols and the generation of corresponding events of interest. Like the idea of a module, it can be added and removed to the deployment, without needing to develop new software or change existing components.
 
     \item A \textit{\ProtocolTemplate{}} is a set of files and settings that allows RNA to parse a new protocol. An \Offloader{} requires a set of \ProtocolTemplates{} to be able to offload and parse the protocols that are of interest to Zeek scripts chosen by a network operator.
 \end{itemize}
@@ -57,7 +57,7 @@ This proposed version of the RNA framework, differently from the original framew
     \legend{Source: the author}
 \end{figure}
 
-In order to explain the details of the architecture behind RNA, presented in Figure \ref{fig:arch_low_level}, we use the example of an incoming ICMPv4 \textsc{Echo Request} ("\texttt{ping}") packet and its trajectory through a deployed instance of RNA. In this hypothetical deployed system, the network operator also chooses other scripts that monitor protocols such as ARP, TCP, and UDP, which are not triggered by this specific incoming \texttt{ping} packet.
+In order to explain the details of the architecture behind RNA, presented in Figure \ref{fig:arch_low_level}, we use the example of an incoming ICMPv4 Echo Request ("\texttt{ping}") packet and its trajectory through a deployed instance of RNA. In this hypothetical deployed system, the network operator also chooses other scripts that monitor protocols such as ARP, TCP, and UDP, which are not triggered by this specific incoming \texttt{ping} packet.
 
 \subsection{Switch Engine}
 
@@ -82,7 +82,7 @@ In the RNA Transcriber, as shown in Figure \ref{fig:arch_low_level}, there are t
 
 The Protocol Preprocessors are functions that every \ProtocolTemplate{} may execute to extract protocol-related information from the packet and save it to the metadata structure. This subcomponent is optional and every \ProtocolTemplate{} may have only one preprocessor. In our example, the preprocessor extracts the ICMP \texttt{type} field from the header and saves it to the metadata.
 
-The next subcomponents to be executed in the Transcriber are the Offloader Triggers, which are conditions that identify which \Offloader{} should be triggered. Each of these conditions is checked, and the first \Offloader{} to have its trigger condition valid is marked as the triggered one in the packet's metadata. In our example of an ICMP \textsc{Echo Request}, our trigger condition is \texttt{icmp.type = 8}. This ensures the \Offloader{} \textsc{ICMP Echo Request} is triggered when a \texttt{ping} packet has arrived.
+The next subcomponents to be executed in the Transcriber are the Offloader Triggers, which are conditions that identify which \Offloader{} should be triggered. Each of these conditions is checked, and the first \Offloader{} to have its trigger condition valid is marked as the triggered one in the packet's metadata. In our example of an ICMP Echo Request, our trigger condition is \texttt{icmp.type = 8}. This ensures the \Offloader{} ICMP Echo Request is triggered when a \texttt{ping} packet has arrived.
 
 % TODO: Maybe add here a code snippet
 
@@ -96,9 +96,9 @@ The RNA Base Splicer constructs the base header for the mRNA message, the first 
 
 % TODO: add code snippet of the header?
 
-The next splicer, The General Offloader Splicer, constructs a header that contains general information, which all \Offloaders{} share, and is executed for every \Offloader{}. This information includes, for example, source IP, destination IP, L3, and L4 protocols, and triggered \Offloader{}. In our example of the ICMP \textsc{Echo Request}, the General Offloader Splicer sets both source and destination IPs, the L3 protocol to \texttt{IPv4}, the L4 protocol to \texttt{ICMP}, and the offloader type to \textsc{ICMP Echo Request}.
+The next splicer, The General Offloader Splicer, constructs a header that contains general information, which all \Offloaders{} share, and is executed for every \Offloader{}. This information includes, for example, source IP, destination IP, L3, and L4 protocols, and triggered \Offloader{}. In our example of the ICMP Echo Request, the General Offloader Splicer sets both source and destination IPs, the L3 protocol to \texttt{IPv4}, the L4 protocol to \texttt{ICMP}, and the offloader type to ICMP Echo Request.
 
-The third type of splicer is the set of Offloader Specific Splicers. These are splicers that every \Offloader{} has. Each \Offloader{} Splicer constructs the header with the extra information required to execute its functionality, which was not yet present in the General Offloader Splicer. In our example, the \textsc{ICMP Echo Request} Splicer will construct a header with information about the ICMP \texttt{ping} packet: \texttt{icmp.type}, \texttt{icmp.code}, \texttt{icmp.sequence}, and \texttt{icmp.id}.
+The third type of splicer is the set of Offloader Specific Splicers. These are splicers that every \Offloader{} has. Each \Offloader{} Splicer constructs the header with the extra information required to execute its functionality, which was not yet present in the General Offloader Splicer. In our example, the ICMP Echo Request Splicer will construct a header with information about the ICMP \texttt{ping} packet: \texttt{icmp.type}, \texttt{icmp.code}, \texttt{icmp.sequence}, and \texttt{icmp.id}.
 
 % TODO: Maybe add code snippets here too
 
@@ -123,12 +123,12 @@ The RNA Translator, similar to the RNA Splicer, is composed of three different t
     \legend{Source: the author}
 \end{figure}
 
-The RNA Analyzer is the first Analyzer of the RNA architecture to receive the mRNA packet. As explained in the previous section, the first layer of the mRNA message format has a generic header that indicates only the protocol version and the message type. This is the header that is extracted by the first Analyzer. In the case of this project, the only message type we use is the \Offloader{} type\footnotemark. Using our previously described example of the ICMP \texttt{ping}, the resulting mRNA packet will have its type set to \textsc{\Offloader{}}, forwarding it to the RNA Offloader Analyzer.
+The RNA Analyzer is the first Analyzer of the RNA architecture to receive the mRNA packet. As explained in the previous section, the first layer of the mRNA message format has a generic header that indicates only the protocol version and the message type. This is the header that is extracted by the first Analyzer. In the case of this project, the only message type we use is the \Offloader{} type\footnotemark. Using our previously described example of the ICMP \texttt{ping}, the resulting mRNA packet will have its type set to \Offloader{}, forwarding it to the RNA Offloader Analyzer.
 
 \footnotetext{There are actually three types of \Offloaders{}, but for simplification purposes, in this description, we present the Offloader type as being one unique type.}
 
-Next, the RNA Offloader Analyzer is the second Analyzer of our RNA implementation to receive the mRNA packet. It parses the header generated by the General Offloader Splicer with \Offloader{} generic information. This Analyzer is also responsible for forwarding the mRNA packet and its payload to the \Offloader{} specific Analyzer, after extracting its layer's header, by using the \Offloader{} \texttt{type} code. In our example, the next Analyzer to be executed is the \textsc{ICMP Echo Request} Analyzer.
+Next, the RNA Offloader Analyzer is the second Analyzer of our RNA implementation to receive the mRNA packet. It parses the header generated by the General Offloader Splicer with \Offloader{} generic information. This Analyzer is also responsible for delivering the mRNA packet and its payload to the \Offloader{} specific Analyzer, after extracting its layer's header, by using the \Offloader{} \texttt{type} code. In our example, the next Analyzer to be executed is the ICMP Echo Request Analyzer.
 
-The last Analyzer to be executed is the Offloader Specific Analyzer. This is a subcomponent every \Offloader{} must have. It is responsible for converting the received information to Zeek's native structures. It can then trigger one or more desired events, which will be consumed by the monitoring scripts. In our example, the \textsc{ICMP Echo Request Analyzer} is going to trigger Zeek's native \texttt{icmp\_echo\_request} event. By triggering this event, we ensure all scripts that subscribe to it will perform exactly as if Zeek had processed the ICMP \texttt{ping} request entirely in its own built-in infrastructure.
+The last Analyzer to be executed is the Offloader Specific Analyzer. This is a subcomponent every \Offloader{} must have. It is responsible for converting the received information to Zeek's native structures. It can then trigger one or more desired events, which will be consumed by the monitoring scripts. In our example, the ICMP Echo Request Analyzer is going to trigger Zeek's native \texttt{icmp\_echo\_request} event. By triggering this event, we ensure all scripts that subscribe to it will perform exactly as if Zeek had processed the ICMP \texttt{ping} request entirely in its own built-in infrastructure.
 
 As previously explained in Section \ref{sec:rna:overview}, an Analyzer directly triggering a Zeek Event is the ideal case, but not always possible. In the cases this is not possible, the Analyzer has the option to extract the mRNA headers and forward the rest of the payload to another Zeek-provided Analyzer. This other Analyzer, which is already part of Zeek's infrastructure, can then analyze the packet and trigger the proper events. This is also called the \textit{fall-back mode} by \citeonline{Ilha2022}.
