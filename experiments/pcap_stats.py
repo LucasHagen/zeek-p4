@@ -2,14 +2,11 @@
 
 import signal
 import matplotlib.pyplot as plt
-import json
 import numpy as np
 import os
 import re
-import csv
 import logging
 import argparse
-import statistics
 from typing import List
 from scapy.all import *
 
@@ -19,6 +16,13 @@ SCRIPT_NAME = os.path.basename(SCRIPT_PATH)
 
 TIME_INDEX = 0
 PACKET_COUNT_INDEX = 1
+
+ATTACK_CATEGORIES = [
+    "ntp",
+    "pingback",
+    "ftp_bruteforce",
+    "traceroute",
+]
 
 
 def main():
@@ -32,21 +36,34 @@ def main():
     parser.add_argument("pcap_stats_dir", nargs=1, type=str,
                         help="the path to the pcap stats dir.")
 
+    parser.add_argument("--attacks", metavar="attacks_dir", nargs=1, type=str, default=None, required=False,
+                        help="the path to the atack pcaps dir.")
+
     args = parser.parse_args()
 
     logging.basicConfig(format='[%(levelname)s] %(message)s',
                         level=logging.DEBUG if args.debug else logging.INFO)
 
-    signal.signal(signal.SIGINT, signal_handler)
-
     stats_dir = str(args.pcap_stats_dir[0])
+    attacks_dir = str(args.attacks[0]) if args.attacks is not None else None
 
     if not os.path.exists(stats_dir) or not os.path.isdir(stats_dir):
         logging.error(f"Invalid stats dir: {stats_dir}")
         exit(1)
 
+    if attacks_dir is not None and (not os.path.exists(attacks_dir) or not os.path.isdir(attacks_dir)):
+        logging.error(f"Invalid attacks dir: {attacks_dir}")
+        exit(1)
+
     pps = parse_stats(stats_dir)
-    plot_pps(pps, stats_dir)
+    if attacks_dir is None:
+        times = None
+    else:
+        times = get_attack_packets(attacks_dir)
+
+    plot_pps(pps, stats_dir, times)
+
+    logging.info("Done")
 
 
 counter = None
@@ -85,7 +102,7 @@ def parse_stats(stats_dir):
     return counter
 
 
-def plot_pps(averages: np.ndarray, stats_dir: str):
+def plot_pps(averages: np.ndarray, stats_dir: str, times=None):
     plt.style.use('_mpl-gallery')
 
     # make data
@@ -95,11 +112,22 @@ def plot_pps(averages: np.ndarray, stats_dir: str):
     # plot
     fig, ax = plt.subplots(1, 1)
     fig.set_tight_layout(True)
-    fig.set_size_inches(5, 5)
+    fig.set_size_inches(7, 7)
 
     ax.plot(x, y, linewidth=2.0, color='black')
 
-    # ax.scatter([0,1,3], [90000, 90000, 90000], s=10, c='b', marker="s", label='first')
+    if times is not None:
+        for category in ATTACK_CATEGORIES:
+            attack_x = times[category]
+            count = len(attack_x)
+            attack_y = get_ys(count)
+
+            category_color = get_color()
+
+            height = attack_y[0]
+            # plt.axhline(y=height, color=color, label=category)
+            ax.scatter(attack_x, attack_y, s=1, marker="s",
+                       color=category_color, label=get_label(category))
 
     ax.set(
         # title=f"PPS in time",
@@ -107,12 +135,37 @@ def plot_pps(averages: np.ndarray, stats_dir: str):
         ylim=(0, pow(10, 6)), yticks=np.arange(0, pow(10, 6) + 100000, 100000), ylabel="Packets per second (pps)",
     )
 
+    if times is not None:
+        ax.legend()
+
     plt.gca().set_yticklabels(
         [format_number(x) for x in range(0, pow(10, 6) + 100000, 100000)])
 
     plt.savefig(os.path.join(
         stats_dir, f"pps_in_time.pdf"))
     plt.show()
+
+
+ATTACKS_Y_INDEX = 800000
+
+
+def get_ys(amount: int):
+    global ATTACKS_Y_INDEX
+    value = [ATTACKS_Y_INDEX for i in range(0, amount)]
+    ATTACKS_Y_INDEX += 50000
+    return value
+
+
+color_index = 0
+colors = ['orange', 'blue', 'green', 'red']
+
+
+def get_color():
+    global color_index, colors
+    color = colors[color_index % len(colors)]
+    color_index += 1
+    return color
+
 
 def format_number(number: float or int) -> str:
     n = number
@@ -127,6 +180,7 @@ def format_number(number: float or int) -> str:
         letter = " M"
 
     return f"{int(n)}{letter}"
+
 
 def get_start_time(content: str):
     # First packet time:   2016-04-06 10:07:30,000004
@@ -187,32 +241,45 @@ def get_pps(content: str) -> int:
     return packets
 
 
-# def parse_pcap(stats_dir):
-#     p = None
-#     for packet in PcapReader(stats_dir):
-#         try:
-#             p = packet
-#             processed += 1
-#             # index = (packet.time - start_time) * 10
-#             # print(index)
-#             # index = int(index)
-#             # counter[index, 0] += 1
-#             # print(index)
-#             # exit(1)
-#             # if packet[TCP].dport == 80:
-#             #     payload = bytes(packet[TCP].payload)
-#             #     url = get_url_from_payload(payload)
-#             #     urls_output.write(url.encode())
-#         except Exception as e:
-#             pass
+def get_attack_packets(attacks_dir):
+    file_paths = [os.path.join(attacks_dir, f)
+                  for f in os.listdir(attacks_dir)
+                  if (f.endswith(".pcap") or f.endswith(".pcapng")) and os.path.isfile(os.path.join(attacks_dir, f))]
 
-#     print(f"Last {p.time-start_time}")
+    file_paths.sort()
+
+    times: Dict[List] = {}
+    for category in ATTACK_CATEGORIES:
+        times[category] = []
+
+    for file_path in file_paths:
+        category = get_category(file_path)
+        for packet in PcapReader(file_path):
+            times[category].append(packet.time - 1459948050)
+
+    return times
 
 
-def signal_handler(sig, frame):
-    global counter
-    print(counter)
-    print(f"Processed: {processed}")
+def get_category(file: str) -> str:
+    for cat in ATTACK_CATEGORIES:
+        if cat in file:
+            return cat
+
+    logging.error(f"Category not found for file: {file}")
+    exit(1)
+
+
+def get_label(category: str) -> str:
+    if category == "ftp_bruteforce":
+        return "FTP Bruteforce"
+    elif category == "ntp":
+        return "NTP Monlist"
+    elif category == "pingback":
+        return "Pingback Tunnel"
+    elif category == "traceroute":
+        return "Traceroute"
+
+    logging.error(f"Label not found for category {category}")
     exit(1)
 
 
