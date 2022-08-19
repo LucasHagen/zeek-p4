@@ -54,7 +54,7 @@ This proposed version of the RNA framework, differently from the original framew
         \includegraphics[width=0.6\textwidth]{images/arch_low_level.pdf}  
     \end{center}
     \label{fig:arch_low_level}
-    \legend{Source: the author}
+    \legend{Source: the author (2022).}
 \end{figure}
 
 In order to explain the details of the architecture behind RNA, presented in Figure \ref{fig:arch_low_level}, we use the example of an incoming ICMPv4 Echo Request ("\texttt{ping}") packet and its trajectory through a deployed instance of RNA. In this hypothetical deployed system, the network operator also chooses other scripts that monitor protocols such as ARP, TCP, and UDP, which are not triggered by this specific incoming \texttt{ping} packet.
@@ -73,7 +73,7 @@ In our example, shown in Figure \ref{fig:icmp_ex_parser}, the first parser is th
         \includegraphics[width=0.7\textwidth]{images/icmp_ex_parser.pdf}  
     \end{center}
     \label{fig:icmp_ex_parser}
-    \legend{Source: the author}
+    \legend{Source: the author (2022).}
 \end{figure}
 
 \subsubsection*{RNA Transcriber}
@@ -120,7 +120,7 @@ The RNA Translator, similar to the RNA Splicer, is composed of three different t
         \includegraphics[width=0.8\textwidth]{images/icmp_ex_translator.pdf}  
     \end{center}
     \label{fig:icmp_ex_translator}
-    \legend{Source: the author}
+    \legend{Source: the author (2022).}
 \end{figure}
 
 The RNA Analyzer is the first Analyzer of the RNA architecture to receive the mRNA packet. As explained in the previous section, the first layer of the mRNA message format has a generic header that indicates only the protocol version and the message type. This is the header that is extracted by the first Analyzer. In the case of this project, the only message type we use is the \Offloader{} type\footnotemark. Using our previously described example of the ICMP \texttt{ping}, the resulting mRNA packet will have its type set to \Offloader{}, forwarding it to the RNA Offloader Analyzer.

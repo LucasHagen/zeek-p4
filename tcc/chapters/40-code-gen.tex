@@ -22,7 +22,7 @@ This section presents an overview of the RNA Code Generation Mechanism, starting
         \includegraphics[width=0.98\textwidth]{images/code_gen_mechanism.pdf}
     \end{center}
     \label{fig:code_gen_black_box}
-    \legend{Source: the author}
+    \legend{Source: the author (2022).}
 \end{figure}
 
 The second set of inputs is what we call \textit{templates}, which can be either  \ProtocolTemplates{} or \Offloader{} Templates. They are a pool of known implementations of protocols and events that can be used to offload scripts. A template being present in this pool does not mean it will be included in the final output, but it means it is available in case its implementation is needed by a script.
@@ -61,7 +61,7 @@ The core logic behind the implementation of our RNA Code Generation Mechanism re
         \includegraphics[width=0.98\textwidth]{images/icmp_ex_protocol_graph.pdf}  
     \end{center}
     \label{fig:protocol_graph}
-    \legend{Source: the author}
+    \legend{Source: the author (2022).}
 \end{figure}
 
 The procedure to generate and validate the \textit{ProtocolGraph} is outlined in \autoref{alg:build_graph}. The pseudo-code will be used to describe and guide the explanation of our method and we will refer to the lines according to their respective roles.

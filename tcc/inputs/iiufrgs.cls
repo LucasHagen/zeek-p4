@@ -217,7 +217,7 @@
         \@ifundefined{keywj}{}{10.~\expandafter\MakeUppercase\keywj\@. }%
 }
 \newcommand{\@abstractkw}{%
-        \@ifundefined{keywa}{}{\keywa. }%
+        \@ifundefined{keywa}{}{\keywa.}%
         \@ifundefined{keywb}{}{ \keywb.}%
         \@ifundefined{keywc}{}{ \keywc.}%
         \@ifundefined{keywd}{}{ \keywd.}%

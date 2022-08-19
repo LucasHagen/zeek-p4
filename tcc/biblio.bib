@@ -55,39 +55,71 @@
 }
 
 @misc{Hjson,
-    author= {Hjson},
+    key   = {Hjson},
     year  = {2022},
     title = {Hjson, a user interface for JSON},
-    note  = {\url{https://hjson.github.io/}, 
-             Last accessed on 2022-08-05},
+    note  = {Available in \url{https://hjson.github.io/}, 
+             accessed on 2022-08-05},
 }
 
 @misc{CorelightPingback,
     author= {Ben Reardon},
     year  = {2021},
     title = {Pingback C2 Detection},
-    note  = {\url{https://github.com/corelight/pingback/}, 
-             Last accessed on 2022-08-14},
+    note  = {Available in \url{https://github.com/corelight/pingback/}, 
+             accessed on 2022-08-14},
 }
 
 @misc{NtpMonlist,
-    author= {dopheide-esnet},
+    key   = {NTP Monlist Detection},
     year  = {2021},
-    title = {NTP monlist detection},
-    note  = {\url{https://github.com/dopheide-esnet/zeek-ntp-monlist/}, 
-             Last accessed on 2022-08-14},
+    title = {NTP Monlist Detection},
+    note  = {Available in \url{https://github.com/dopheide-esnet/zeek-ntp-monlist/}, 
+             accessed on 2022-08-14},
 }
 
 @Misc{CAIDA2016,
-  author = {{CAIDA}},
-  title  = {{The CAIDA UCSD Anonymized Internet Traces 2016}},
-  year   = {2016},
-  url    = {http://www.caida.org/data/passive/passive\_2016\_dataset.xml},
+    author = {CAIDA},
+    title  = {The CAIDA UCSD Anonymized Internet Traces 2016},
+    year   = {2016},
+    note   = {Available in \url{https://catalog.caida.org/dataset/passive_2016_pcap}, 
+             accessed on 2022-08-16},
 }
 
-% https://github.com/dopheide-esnet/zeek-ntp-monlist
+@Misc{ZeekWebsite,
+    author = {{The Zeek Project}},
+    title  = {The Zeek Network Security Monitor},
+    year   = {2022},
+    note   = {Available in \url{https://zeek.org/}, 
+             accessed on 2022-08-16},
+}
 
-@InProceedings{Dreger2006DPD,
+@Misc{SnortWebsite,
+    author = {{Cisco Systems}},
+    title  = {Snort - Network Intrusion Detection and Prevention System},
+    year   = {2022},
+    note   = {Available in \url{https://www.snort.org/}, 
+             accessed on 2022-08-16},
+}
+
+@Misc{SuricataWebsite,
+    author = {{The Open Information Security Foundation}},
+    title  = {Home - Suricata},
+    year   = {2022},
+    note   = {Available in \url{https://suricata.io/}, 
+             accessed on 2022-08-16},
+}
+
+@Misc{Libpcap,
+    author       = {Van Jacobson and Craig Leres and Steven McCanne},
+    title        = {libpcap},
+    howpublished = {Lawrence Berkeley Laboratory, Berkeley, CA},
+    year         = {1994},
+    note         = {Available in \url{https://www.tcpdump.org/}, 
+                        accessed on 2022-08-16},
+}
+
+@InProceedings{Dreger2006,
     author           = {Dreger, Holger and Feldmann, Anja and Mai, Michael and Paxson, Vern and Sommer, Robin},
     booktitle        = {15th {USENIX} Security Symposium (USENIX Security 06)},
     title            = {{Dynamic Application-Layer Protocol Analysis for Network Intrusion Detection}},
@@ -104,4 +136,82 @@
     modificationdate = {2022-03-16T14:51:16},
     timestamp        = {Mon, 01 Feb 2021 08:43:12 +0100},
     url              = {https://www.usenix.org/conference/15th-usenix-security-symposium/dynamic-application-layer-protocol-analysis-network},
+}
+
+@Article{Cordeiro2017,
+    author   = {da Costa Cordeiro, Weverton Luis and Marques, Jonatas Adilson and Gaspary, Luciano Paschoal},
+    journal  = {Journal of Network and Systems Management},
+    title    = {{Data Plane Programmability Beyond OpenFlow: Opportunities and Challenges for Network and Service Operations and Management}},
+    year     = {2017},
+    issn     = {1573-7705},
+    month    = oct,
+    number   = {4},
+    pages    = {784--818},
+    volume   = {25},
+    abstract = {SDN and OpenFlow reshaped the way we configure forwarding devices and determine network behavior, by offering an open interface upon which apps like routing, monitoring, etc. can be built. SDN/OpenFlow helped break network ``ossification'' and unleash evolution, by enabling one to effectively think networking from top-down. It evidenced, however, a subtle but important problem: networking evolution is also hampered by the inability to change switch behavior, which forces one to build systems constrained from the bottom up. This scenario can change dramatically with the re-emergence of programmable data planes, and languages like POF and P4. Although recent, these languages proved to be very influential, powering several contributions towards flexible and customizable forwarding devices. In this paper, we survey the literature on data plane programmability, from early concepts (like Active Networks) to state-of-the-art solutions. We then dive into research questions that more recent work (especially P4) have uncovered: how to deploy and manage custom switch programs in large-scale networks? Can we improve services like monitoring and security with programmable data planes? Can we make network operation more dependable? As another contribution, we organize and discuss opportunities and challenges with potential to influence research in the field, from the perspective of network and service operations and management.},
+    day      = {01},
+    doi      = {10.1007/s10922-017-9423-2},
+}
+
+@inproceedings{Song2013,
+    author    = {Song, Haoyu},
+    title     = {Protocol-Oblivious Forwarding: Unleash the Power of SDN through a Future-Proof Forwarding Plane},
+    year      = {2013},
+    isbn      = {9781450321785},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    url       = {https://doi.org/10.1145/2491185.2491190},
+    doi       = {10.1145/2491185.2491190},
+    abstract  = {A flexible and programmable forwarding plane is essential to maximize the value of Software-Defined Networks (SDN). In this paper, we propose Protocol-Oblivious Forwarding (POF) as a key enabler for highly flexible and programmable SDN. Our goal is to remove any dependency on protocol-specific configurations on the forwarding elements and enhance the data-path with new stateful instructions to support genuine software defined networking behavior. A generic flow instruction set (FIS) is defined to fulfill this purpose. POF helps to lower network cost by using commodity forwarding elements and to create new value by enabling numerous innovative network services. We built both hardware-based and open source software-based prototypes to demonstrate the feasibility and advantages of POF. We report the preliminary evaluation results and the insights we learnt from the experiments. POF is future-proof and expressive. We believe it represents a promising direction to evolve the OpenFlow protocol and the future SDN forwarding elements.},
+    booktitle = {Proceedings of the Second ACM SIGCOMM Workshop on Hot Topics in Software Defined Networking},
+    pages     = {127–132},
+    numpages  = {6},
+    keywords  = {forwarding plane, pof, openflow, sdn},
+    location  = {Hong Kong, China},
+    series    = {HotSDN '13}
+}
+
+
+@Misc{Kim2016,
+    author           = {Kim, Changhoon and Lee, Jeongkeun},
+    month            = aug,
+    title            = {Programming the network dataplane. {ACM} {SIGCOMM} {Tutorial}.},
+    year             = {2016},
+    comment          = {https://web.archive.org/web/2017*/https://conferences.sigcomm.org/sigcomm/2016/files/program/netpl/netpl16-kim.pdf
+    https://conferences.sigcomm.org/sigcomm/2016/tutorial-p4.php},
+    creationdate     = {2022-05-13T09:09:12},
+    modificationdate = {2022-05-13T09:23:02},
+    timestamp        = {2022-05-13},
+    url              = {https://conferences.sigcomm.org/sigcomm/2016/files/program/netpl/netpl16-kim.pdf},
+}
+
+@Misc{BMv2,
+    author           = {{The P4 Language Consortium}},
+    month            = jan,
+    title            = {{BMv2}},
+    year             = {2020},
+    modificationdate = {2022-03-15T11:16:37},
+    organization     = {P4 Language Consortium},
+    relevance        = {relevant},
+    url              = {https://github.com/p4lang/behavioral-model},
+}
+
+@Misc{P4App,
+    author           = {{The P4 Language Consortium}},
+    month            = dec,
+    title            = {{p4app}},
+    year             = {2019},
+    creationdate     = {2022-08-18T11:52:23},
+    modificationdate = {2022-08-18T11:54:52},
+    organization     = {P4 Language Consortium},
+    timestamp        = {2022-08-18},
+    url              = {https://github.com/p4lang/p4app},
+}
+
+@inproceedings{Mininet,
+    title={A network in a laptop: rapid prototyping for software-defined networks},
+    author={Lantz, Bob and Heller, Brandon and McKeown, Nick},
+    booktitle={Proceedings of the 9th ACM SIGCOMM Workshop on Hot Topics in Networks},
+    pages={1--6},
+    year={2010}
 }
