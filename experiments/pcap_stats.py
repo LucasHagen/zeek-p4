@@ -25,6 +25,14 @@ ATTACK_CATEGORIES = [
 ]
 
 
+ATTACK_NAMES = [
+    "NTP Monlist",
+    "Pingback Tunnel",
+    "FTP Bruteforce",
+    "Traceroute",
+]
+
+
 def main():
     global docker_client
     parser = argparse.ArgumentParser(
@@ -110,11 +118,20 @@ def plot_pps(averages: np.ndarray, stats_dir: str, times=None):
     y = averages[:, PACKET_COUNT_INDEX]
 
     # plot
-    fig, ax = plt.subplots(1, 1)
+    fig, ax = plt.subplots(2, gridspec_kw={'height_ratios': [1, 5]})
     fig.set_tight_layout(True)
-    fig.set_size_inches(7, 7)
+    fig.set_size_inches(8, 8)
 
-    ax.plot(x, y, linewidth=2.0, color='black')
+    ax[1].plot(x, y, linewidth=2.0, color='black')
+
+    ax[1].set(
+        title=f"PPS in time",
+        xlim=(0, 10), xticks=np.arange(0, 11), xlabel="Time (s)",
+        ylim=(0, pow(10, 6)), yticks=np.arange(0, pow(10, 6) + 100000, 100000), ylabel="Packets per second (pps)",
+    )
+
+    plt.gca().set_yticklabels([format_number(x)
+                               for x in range(0, pow(10, 6) + 100000, 100000)])
 
     if times is not None:
         for category in ATTACK_CATEGORIES:
@@ -122,37 +139,33 @@ def plot_pps(averages: np.ndarray, stats_dir: str, times=None):
             count = len(attack_x)
             attack_y = get_ys(count)
 
-            category_color = get_color()
+            # category_color = get_color()
+            category_color = 'black'
 
             height = attack_y[0]
-            # plt.axhline(y=height, color=color, label=category)
-            ax.scatter(attack_x, attack_y, s=1, marker="s",
-                       color=category_color, label=get_label(category))
+            ax[0].scatter(attack_x, attack_y, s=1, marker="s",
+                          color=category_color, label=get_label(category))
 
-    ax.set(
-        # title=f"PPS in time",
+    ax[0].set(
+        title=f"Attack packets in time",
         xlim=(0, 10), xticks=np.arange(0, 11), xlabel="Time (s)",
-        ylim=(0, pow(10, 6)), yticks=np.arange(0, pow(10, 6) + 100000, 100000), ylabel="Packets per second (pps)",
+        ylim=(1, -4), yticks=[0, -1, -2, -3], yticklabels=ATTACK_NAMES,
     )
 
-    if times is not None:
-        ax.legend()
-
-    plt.gca().set_yticklabels(
-        [format_number(x) for x in range(0, pow(10, 6) + 100000, 100000)])
+    # plt.gca().set_yticklabels(attack_names)
 
     plt.savefig(os.path.join(
         stats_dir, f"pps_in_time.pdf"))
     plt.show()
 
 
-ATTACKS_Y_INDEX = 800000
+attack_y_index = 0
 
 
 def get_ys(amount: int):
-    global ATTACKS_Y_INDEX
-    value = [ATTACKS_Y_INDEX for i in range(0, amount)]
-    ATTACKS_Y_INDEX += 50000
+    global attack_y_index
+    value = [attack_y_index for i in range(0, amount)]
+    attack_y_index -= 1
     return value
 
 
