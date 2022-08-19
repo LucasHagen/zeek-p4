@@ -19,6 +19,8 @@ SCRIPT_NAME = os.path.basename(SCRIPT_PATH)
 TIME_INDEX = 0
 MEM_INDEX = 1
 CPU_INDEX = 2
+MEM_CI_INDEX = 3
+CPU_CI_INDEX = 4
 
 
 def main():
@@ -103,17 +105,24 @@ def plot_mem_graph(averages_rna: np.ndarray, averages_full: np.ndarray, log_dir:
     # make data
     x_rna = averages_rna[:, TIME_INDEX] / 1000
     y_rna = averages_rna[:, MEM_INDEX]
+    ci_rna = averages_rna[:, MEM_CI_INDEX]
 
     x_full = averages_full[:, TIME_INDEX] / 1000
     y_full = averages_full[:, MEM_INDEX]
+    ci_full = averages_rna[:, MEM_CI_INDEX]
 
     # plot
     fig, ax = plt.subplots(1, 1)
     fig.set_tight_layout(True)
     fig.set_size_inches(6, 6)
 
+    ax.fill_between(x_rna, (y_rna-ci_rna), (y_rna+ci_rna),
+                    color='gray', alpha=0.4, label='95% confidence interval')
+    ax.fill_between(x_full, (y_full-ci_full), (y_full+ci_full),
+                    color='gray', alpha=0.4)  # , label='95% confidence interval')
+
     ax.plot(x_rna, y_rna, linewidth=2.0, color='black', label="With RNA")
-    ax.plot(x_full, y_full, linewidth=1.0, color='gray', label="Without RNA")
+    ax.plot(x_full, y_full, linewidth=1.0, color='black', label="Without RNA")
 
     ax.legend()
 
@@ -134,17 +143,24 @@ def plot_cpu_graph(averages_rna: np.ndarray, averages_full: np.ndarray, log_dir:
     # make data
     x_rna = averages_rna[:, TIME_INDEX] / 1000
     y_rna = averages_rna[:, CPU_INDEX]
+    ci_rna = averages_rna[:, CPU_CI_INDEX]
 
     x_full = averages_full[:, TIME_INDEX] / 1000
     y_full = averages_full[:, CPU_INDEX]
+    ci_full = averages_rna[:, CPU_CI_INDEX]
 
     # plot
     fig, ax = plt.subplots(1, 1)
     fig.set_tight_layout(True)
     fig.set_size_inches(6, 6)
 
+    ax.fill_between(x_rna, (y_rna-ci_rna), (y_rna+ci_rna),
+                    color='gray', alpha=0.4, label='95% confidence interval')
+    ax.fill_between(x_full, (y_full-ci_full), (y_full+ci_full),
+                    color='gray', alpha=0.4)  # , label='95% confidence interval')
+
     ax.plot(x_rna, y_rna, linewidth=2.0, color='black', label="With RNA")
-    ax.plot(x_full, y_full, linewidth=1.0, color='gray', label="Without RNA")
+    ax.plot(x_full, y_full, linewidth=1.0, color='black', label="Without RNA")
 
     ax.legend()
 

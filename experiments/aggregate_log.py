@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 
+from math import sqrt
 import matplotlib.pyplot as plt
 import json
 import numpy as np
@@ -19,6 +20,8 @@ SCRIPT_NAME = os.path.basename(SCRIPT_PATH)
 TIME_INDEX = 0
 MEM_INDEX = 1
 CPU_INDEX = 2
+MEM_CI_INDEX = 3
+CPU_CI_INDEX = 4
 
 
 def main():
@@ -143,10 +146,10 @@ def aggregate_zeek_perf(log_dir: str, iteractions: int) -> np.ndarray:
     TIME_MAX = 10100
     TIME_STEP = 100
 
-    COLUMNS = int(TIME_MAX/TIME_STEP)
+    ROWS = int(TIME_MAX/TIME_STEP)
 
-    mem_matrix = np.zeros((COLUMNS, iteractions))
-    cpu_matrix = np.zeros((COLUMNS, iteractions))
+    mem_matrix = np.zeros((ROWS, iteractions))
+    cpu_matrix = np.zeros((ROWS, iteractions))
 
     for i in range(iteractions):
         perf = read_zeek_perf(os.path.join(log_dir, f"zeek_perf_{i}.csv"))
@@ -160,7 +163,7 @@ def aggregate_zeek_perf(log_dir: str, iteractions: int) -> np.ndarray:
             if time_index < 0:
                 continue
 
-            if time_index >= COLUMNS:
+            if time_index >= ROWS:
                 break
 
             mem_matrix[time_index, i] = float(mem)
@@ -169,17 +172,27 @@ def aggregate_zeek_perf(log_dir: str, iteractions: int) -> np.ndarray:
     mem_average = mem_matrix.mean(1)
     cpu_average = cpu_matrix.mean(1)
 
-    average = np.zeros((COLUMNS, 3))
+    mem_sdev = cpu_matrix.std(1)
+    cpu_sdev = cpu_matrix.std(1)
 
-    for t in range(0, COLUMNS):
+    # CI = x (+-) z * (sdev / sqrt(n))
+
+    mem_ci = 1.96 * (mem_sdev / sqrt(iteractions))
+    cpu_ci = 1.96 * (cpu_sdev / sqrt(iteractions))
+
+    average = np.zeros((ROWS, 5))
+
+    for t in range(0, ROWS):
         ms = t*TIME_STEP
         average[t, TIME_INDEX] = ms
 
     average[:, MEM_INDEX] = mem_average
     average[:, CPU_INDEX] = cpu_average
+    average[:, MEM_CI_INDEX] = mem_ci
+    average[:, CPU_CI_INDEX] = cpu_ci
 
     np.savetxt(os.path.join(log_dir, "aggregated_perf.csv"), average,
-               delimiter=",", fmt='%i,%0.2f,%0.2f', header="Time (ms),Memory (Mb),CPU (%)")
+               delimiter=",", fmt='%i,%0.2f,%0.2f,%0.2f,%0.2f', header="Time (ms),Memory (Mb),CPU (%),Memory CI 95%, CPU CI 95%")
 
     return average
 
@@ -202,12 +215,15 @@ def plot_mem_graph(averages: np.ndarray, log_dir: str, is_rna: bool):
     # make data
     x = averages[:, TIME_INDEX] / 1000
     y = averages[:, MEM_INDEX]
+    ci = averages[:, MEM_CI_INDEX]
 
     # plot
     fig, ax = plt.subplots(1, 1)
     fig.set_tight_layout(True)
     fig.set_size_inches(5, 5)
 
+    ax.fill_between(x, (y-ci), (y+ci), color='gray',
+                    alpha=0.5, label='95% confidence interval')
     ax.plot(x, y, linewidth=2.0, color='black')
 
     ax.set(
@@ -215,8 +231,10 @@ def plot_mem_graph(averages: np.ndarray, log_dir: str, is_rna: bool):
         xlim=(0, 10), xticks=np.arange(0, 11), xlabel="Time (s)",
         ylim=(0, 1000), yticks=np.arange(0, 1100, 100), ylabel="Memory (Mb)",
     )
+    ax.legend()
 
-    plt.savefig(os.path.join(log_dir, f"memory_with{'' if is_rna else 'out'}_rna.pdf"))
+    plt.savefig(os.path.join(
+        log_dir, f"memory_with{'' if is_rna else 'out'}_rna.pdf"))
     plt.show()
 
 
@@ -226,12 +244,15 @@ def plot_cpu_graph(averages: np.ndarray, log_dir: str, is_rna: bool):
     # make data
     x = averages[:, TIME_INDEX] / 1000
     y = averages[:, CPU_INDEX]
+    ci = averages[:, CPU_CI_INDEX]
 
     # plot
     fig, ax = plt.subplots(1, 1)
     fig.set_tight_layout(True)
     fig.set_size_inches(5, 5)
 
+    ax.fill_between(x, (y-ci), (y+ci), color='gray',
+                    alpha=0.5, label='95% confidence interval')
     ax.plot(x, y, linewidth=2.0, color="black")
 
     ax.set(
@@ -239,8 +260,10 @@ def plot_cpu_graph(averages: np.ndarray, log_dir: str, is_rna: bool):
         xlim=(0, 10), xticks=np.arange(0, 11), xlabel="Time (s)",
         ylim=(0, 130), yticks=np.arange(0, 140, 10), ylabel="CPU (%)",
     )
+    ax.legend()
 
-    plt.savefig(os.path.join(log_dir, f"cpu_with{'' if is_rna else 'out'}_rna.pdf"))
+    plt.savefig(os.path.join(
+        log_dir, f"cpu_with{'' if is_rna else 'out'}_rna.pdf"))
     plt.show()
 
 
