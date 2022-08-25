@@ -1,9 +1,68 @@
 \chapter{Introduction}
 \label{cap:introduction}
 
-Introduction...
+% 1. Context: paragrafo bem escrito com contexto (parrudo)
 
-\section{Motivation}
+In this globally connected world, every day more people depend on the internet for every task of their lives. This creates two challenges: rapidly increasing network speeds and traffic and more attack targets for hackers, resulting in a rise in attack incidents and an increase in difficulty to detect these attacks. According to \citeonline{AkamaiRansomwareReport}, ransomware attacks have caused $20$ billion US dollars of damage globally in 2021, and Netscout \cite{NetscoutTIR2021} estimates that the potential revenue loss from Distributed Denial of Service (DDoS) extortion of VoIP providers was between $9$ and $12$ million US dollars in the same year.
 
-% \section{Threat Model}
-% Not sure where this section goes... leaving it here so we don't forget.
+% 2. Problem Definition Motivation
+
+To mitigate and detect attacks, a variety of systems are used, including Intrusion Detection Systems (IDS) and Network Intrusion Detection Systems (NIDS), i.g., Zeek \cite{Paxson1999}, Suricata \cite{SuricataWebsite}, and Snort \cite{SnortWebsite}. All of these systems have one problem in common: the difficulty to detect attacks and threats with high accuracy and high performance, especially given the large volume of data modern network infrastructures are capable of transmitting. The root of the problem lies in the type of architecture these systems use, which are general-purpose servers, that require copying data from the network to memory and then manipulating it. This is absolutely incompatible with the speeds we observe today. In this scenario, together with the emergence of Software Defined Networks (SDNs) and Programmable Data Planes (PDPs), there is an opportunity to execute intrusion detection tasks directly in Programmable Forwarding Devices (PFDs) at line rate. \citeonline{Ilha2022} uses the benefits of PDPs to offload certain IDS tasks. This solution, although functional, needs to be developed for each monitoring scenario, requiring skilled developers in every deployment scenario.
+
+% 3. [Ideally and optionally.] State of the art: adicionar limitações também das outras soluções
+
+
+
+% 4. Objectives 1§ para dizer o que e como foi feito - in a nutshell.
+
+In this attempt to move the processing of IDS to the Data Plane, we propose an approach that enables offloading certain tasks, normally executed in general purpose processors, to be executed in a PFD. More important than this, we propose that this integration process, between IDS and PDP, should be fully automatic, eliminating the need for a network operator to develop an \textit{ad-hoc} solution for each specific offloading task. To accomplish this, we propose additions to the RNA framework, which enable us to describe a mechanism that is able to parse Zeek Scripts, identify the operations to be offloaded, and based on templates generate a complete solution to offloading a set of Zeek Scripts to PDPs.
+
+% 5. Organization.
+
+This project is organized as follows: In \autoref{cap:background} we briefly describe the ``anatomy'' of the attacks studied in this project, the Zeek Network Security Monitor System, and Programmable Data Planes, with a focus on the P4 programming language. In \autoref{cap:rna}, we present the architecture our project is based on, the Reconfigurable Network Analytics, which was proposed by \citeonline{Ilha2022}, and describe some of our additions to the framework. In \autoref{cap:code_gen} we propose an automatic code generation mechanism for offloading Zeek Scripts to PDPs. In \autoref{cap:evaluation} we describe some implementation aspects of our prototype and evaluate the capabilities and performance of our solutions. And to finalize, in \autoref{cap:conclusion}, we conclude the text by summarizing the results and presenting suggestions for future work.
+
+
+
+
+
+
+
+
+% ==============================================================================
+% OLD TEXT
+
+
+% 1. Context: paragrafo bem escrito com contexto (parrudo)
+
+% In this constantly connected world, every day more people depend on the internet for every task of their lives. This creates two challenges, \textit{rapidly increasing network speeds and traffic} and \textit{more attacks targets for hackers}, resulting in a rise of attack incidents. According to \citeonline{AkamaiRansomwareReport}, ransomware attacks have caused $20$ billion US dollars of damage globally in 2021, and Netscout \cite{NetscoutTIR2021} estimates that the potential revenue loss from Distributed Denial of Service (DDoS) extortion of VoIP providers was between $9$ and $12$ million US dollars in the same year.
+
+
+% 2. Problem Definition/motivacao 1§ c/ problem def + motivation: 
+
+% para mitigar esses ataques... utiliza-se diversos sistemas, por ex, IDSs e NIDS, porém é uma área onde se tem dificuldade de lidar com os enormes volumes de trafego de redes (em infras modernas): dificuldade de acuracia e eficiencia). Esses mecanismos exigem copias e manipulacoes de dado incomativeis com velocidades atuais.
+% Com PDPs, identifica-se uma oportunidade de poder executar procedimentos de IDS diretamente em dispositivos de encaminhamento em velocidade de linha. Existem diversos sistemas comerciais em uso. Tentando utilizar PDPs para acelerar os procedimentos de protocol inspection em IDS, propomos uma abordagem que permite realizar parte do procedimento da IDS, para um dispoitivo programavel. Mais importante do que isso, no contexto desse trabalho, propomos que esse processo de integração de IDS e PDP para a realização dessa tarefa seja feita de maneira totalmente automatizada, sem a necessidade de um operador de rede desenvolver uma solução manualmente.
+
+% OBS: trazer o ZEEK para o texto acima
+
+% OLD TEXT
+% In this scenario, Intrusion Detection Systems (IDS) are an attempt to detect attacks and give network operators and administrators an opportunity to act against them. Unfortunately, IDS systems sometimes are unable to keep up with the today's data link speeds.
+
+
+% 3. [Ideally and optionally.] State of the art: adicionar limitações também das outras soluções
+
+% TODO
+
+% 4. Objectives 1§ para dizer o que e como foi feito - in a nutshell.
+
+% OLD TEXT START
+% To solve this problem, Software Defined Networks, and more specifically, Programmable Data Planes are being used to shift away the processing and detection of these attacks to the network. Using Programmable Forwarding Devices (PFDs) to process network packets relieves normal CPUs and allows IDS to process more traffic. With this idea in mind, we first propose in \autoref{cap:rna} additions to the Reconfigurable Network Analytics (RNA), originally proposed by \citeonline{Ilha2022}. The RNA is a Framework for offloading IDS operations to the Data Plane.
+
+% One of the problems of RNA is the difficulty and the knowledge required by network operators and developers develop an instance of RNA to offload the desired IDS policies. In \autoref{cap:code_gen}, we propose a solution to this problem with an automatic code generation mechanism that allows any network operator to offload a desired set of scripts. Our mechanism is able to identify the operations required to offload the desired Zeek Scripts, and using previously programmed and reusable templates, auto generate an instance of RNA.
+
+% After proposing the automatic code generation mechanism and the additions to RNA, we evaluate in \autoref{cap:evaluation} their capabilities. We asses the ability of our mechanism to generate correct code, and how many lines it generates for its users. We then assess the performance of an automatically generated instance of RNA using a traffic-heavy workload. The performance assessment shows a big performance benefit, highlighting the potentials of using PDPs for IDS operations.
+% OLD TEXT END
+
+% OBS: adicinar referencia ao trabalho do Alexandre
+
+
+% 5. Organization.

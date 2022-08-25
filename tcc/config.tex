@@ -1,21 +1,28 @@
 % ----------------------------------------------------------------
 % Initial Packages
-% 
-% Refs:
-% https://github.com/schnorr/infufrgs/blob/master/exemplos/cic-tc.tex
+% Refs: https://github.com/schnorr/infufrgs/blob/master/exemplos/cic-tc.tex
 
-% Use unicode
 \usepackage[utf8]{inputenc}   % pacote para acentuação
-
-% Necessário para incluir figuras
 \usepackage{graphicx}         % pacote para importar figuras
-\usepackage{svg}
-
+\usepackage{svg}              % SVG
 \usepackage{times}            % pacote para usar fonte Adobe Times
-% \usepackage{palatino}
+% \usepackage{palatino}       % No idea...
 % \usepackage{mathptmx}       % p/ usar fonte Adobe Times nas fórmulas
 
 \usepackage[alf,abnt-emphasize=bf]{abntex2cite}	% pacote para usar citações abnt
+
+
+% ----------------------------------------------------------------
+% Other Custom Packages
+% 
+
+\usepackage{csquotes}
+\usepackage{hyperref}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{blindtext}
+\usepackage{siunitx}
+% \usepackage{datatool} % For sorting stuff
 
 % ----------------------------------------------------------------
 % Algorithms (extracted from Alexandre Ilha's Msc Thesis)
@@ -33,17 +40,6 @@
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
 \renewcommand{\algorithmicensure}{\textbf{Output:}}
 \algrenewcommand\algorithmicindent{0.8em}
-
-% ----------------------------------------------------------------
-% Other Custom Packages
-% 
-
-\usepackage{csquotes}
-\usepackage{hyperref}
-\usepackage{subcaption}
-\usepackage{float}
-\usepackage{blindtext}
-\usepackage{siunitx}
 
 % ----------------------------------------------------------------
 % Code Listings

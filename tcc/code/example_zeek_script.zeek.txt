@@ -1,0 +1,27 @@
+##! FTP brute-forcing detector, triggering when too many rejected usernames or
+##! failed passwords have occurred from a single address.
+
+@load base/protocols/ftp
+@load base/frameworks/sumstats
+
+@load base/utils/time
+
+module FTP;
+
+export {
+    # Hidden to enhance readability
+}
+
+
+event zeek_init() {
+    # Hidden to enhance readability
+}
+
+event ftp_reply(c: connection, code: count, msg: string, cont_resp: bool) {
+	local cmd = c$ftp$cmdarg$cmd;
+	if ( cmd == "USER" || cmd == "PASS" ) {
+		if ( FTP::parse_ftp_reply_code(code)$x == 5 ) {
+			SumStats::observe("ftp.failed_auth", [$host=c$id$orig_h], [$str=cat(c$id$resp_h)]);
+        }
+	}
+}
