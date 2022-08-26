@@ -1,6 +1,6 @@
-$ENV{'TEXINPUTS'}='tex/latex/biblatex-contrib/biblatex-abnt/:./inputs/:' . $ENV{'TEXINPUTS'};
+$ENV{'TEXINPUTS'}='./inputs/:' . $ENV{'TEXINPUTS'}; 
+$ENV{'BSTINPUTS'}='./inputs/:' . $ENV{'BSTINPUTS'};
 
 $pdflatex = 'pdflatex --shell-escape %O %S';
-# $pdflatex = 'xelatex --shell-escape %O %S';
 $pdf_mode=1;
 $postscript_mode = $dvi_mode = 0;
