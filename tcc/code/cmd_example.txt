@@ -1,0 +1,16 @@
+<@lshagen@lucas-xps:/rna$@> python3 rna.py output -o -s zeek/scripts/detect-bruteforcing.zeek 
+[INFO] Starting RNA Tool for 'output'
+
+[INFO] Generated headers.p4
+[INFO] Generated parser.p4
+[INFO] Generated main.p4
+[INFO] Done copying no-edit zeek files
+[INFO] Generated constants.h
+[INFO] Generated README
+[INFO] Generated CHANGES
+[INFO] Copied all C++ files from offloader templates.
+[INFO] Generated main.zeek
+[INFO] Generated Plugin.cc
+[INFO] Generated CMakeLists.txt
+[INFO] Execution hash: b6431a2e00823b944bd6061084f1ff383ecdbf90be50e7f0d2c49a90897e8199
+[INFO] Done!

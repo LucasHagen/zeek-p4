@@ -1,0 +1,10 @@
+// CONSTRUCT OFFLOADER SPECIFIC HEADERS
+if (meta.offloader_type == RNA_FTP_MESSAGE_UID) {
+    hdr.ftp_message.setValid();
+
+    // Hidden for clarity, splicer continues here
+} else if (meta.offloader_type == RNA_NTP_MESSAGE_UID) {
+    hdr.ntp_message.setValid();
+
+    // Hidden for clarity, splicer continues here
+}

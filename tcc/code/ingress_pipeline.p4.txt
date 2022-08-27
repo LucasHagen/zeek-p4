@@ -1,0 +1,39 @@
+// Hidden to enhance readability
+
+if (hdr.ethernet.isValid()) {
+    meta.protocol_l3 = hdr.ethernet.ethertype;
+}
+if (hdr.ipv4.isValid()) {
+    meta.protocol_l4 = hdr.ipv4.protocol;
+}
+if (hdr.tcp.isValid()) {
+    meta.src_port = hdr.tcp.src_port;
+    meta.dst_port = hdr.tcp.dst_port;
+}
+if (hdr.udp.isValid()) {
+    meta.src_port = hdr.udp.src_port;
+    meta.dst_port = hdr.udp.dst_port;
+}
+
+// Hidden to enhance readability
+
+if (hdr.tcp.isValid()) {
+    if(hdr.tcp.flags.PSH == 1 && (hdr.tcp.src_port == 21 || hdr.tcp.dst_port == 21)) {
+        meta.offloader_type = RNA_FTP_MESSAGE_UID;
+    }
+}
+if (hdr.udp.isValid()) {
+    if(hdr.udp.src_port == NTP_PORT || hdr.udp.dst_port == NTP_PORT) {
+        meta.offloader_type = RNA_NTP_MESSAGE_UID;
+    }
+}
+if (hdr.icmp_echo.isValid()) {
+    if(hdr.icmp.type_ == ICMP_ECHOREPLY || hdr.icmp.type_ == ICMP_ECHO) {
+        meta.offloader_type = RNA_ICMP_ECHO_MESSAGE_UID;
+    }
+}
+if (hdr.icmp_ipv4_context.isValid()) {
+    if(hdr.icmp.type_ == ICMP_DEST_UNREACH || hdr.icmp.type_ == ICMP_TIME_EXCEEDED) {
+        meta.offloader_type = RNA_ICMP_CONTEXT_MSG_UID;
+    }
+}

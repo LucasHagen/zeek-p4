@@ -1,0 +1,34 @@
+def build(self, templates):
+    """Builds the graph and validates it.
+    """
+    self._validate_templates_list(templates)
+
+    protocol_list = _filter_list_by_type(templates, ProtocolTemplate)
+    offloader_list = _filter_list_by_type(templates, OffloaderTemplate)
+
+    self.required_offloaders = self._get_required_offloaders(offloader_list)
+
+    if len(self.required_offloaders) == 0:
+        raise RnaException("No Offloader or Zeek Event specified for offloading. Aborting.")
+
+    # Remove not required offloaders
+    offloader_list = _filter_list(
+        lambda offloader: offloader.id in self.required_offloaders, offloader_list)
+
+    self.protocols = _make_template_dict(protocol_list)
+    self.offloaders = _make_template_dict(offloader_list)
+
+    self.root = self._find_root_protocol()
+
+    self._link_graph()
+    self._attach_offloaders()
+    self._check_for_cycles()
+    self._trim_unused_protocols()
+    self._remove_unreachable_protocols()
+
+    self._set_protocol_depths()
+    self._sort_protocols()
+    self._sort_offloaders()
+    self._set_offloaders_uids()
+
+    self.is_built = True

@@ -1,0 +1,322 @@
+@Article{Bosshart2014,
+  author           = {Bosshart, Pat and Daly, Dan and Gibb, Glen and Izzard, Martin and McKeown, Nick and Rexford, Jennifer and Schlesinger, Cole and Talayco, Dan and Vahdat, Amin and Varghese, George and Walker, David},
+  journal          = {ACM SIGCOMM Computer Communication Review},
+  title            = {{P4: Programming Protocol-independent Packet Processors}},
+  year             = {2014},
+  issn             = {0146-4833},
+  month            = jul,
+  number           = {3},
+  pages            = {87--95},
+  volume           = {44},
+  abstract         = {P4 is a high-level language for programming protocol-independent packet processors. P4 works in conjunction with SDN control protocols like OpenFlow. In its current form, OpenFlow explicitly specifies protocol headers on which it operates. This set has grown from 12 to 41 fields in a few years, increasing the complexity of the specification while still not providing the flexibility to add new headers. In this paper we propose P4 as a strawman proposal for how OpenFlow should evolve in the future. We have three goals: (1) Reconfigurability in the field: Programmers should be able to change the way switches process packets once they are deployed. (2) Protocol independence: Switches should not be tied to any specific network protocols. (3) Target independence: Programmers should be able to describe packet-processing functionality independently of the specifics of the underlying hardware. As an example, we describe how to use P4 to configure a switch to add a new hierarchical label.},
+  acmid            = {2656890},
+  address          = {New York, NY, USA},
+  creationdate     = {2022-06-01T12:30:50},
+  doi              = {10.1145/2656877.2656890},
+  file             = {:P4 Basic/Bosshart2014P4. Bosshart. P4. SIGCOMM CCR 2014.pdf:PDF},
+  groups           = {Alexandre:1},
+  issue_date       = {July 2014},
+  keywords         = {p4, protocol-independent, reconfigurability, sdn},
+  modificationdate = {2022-08-26T14:20:20},
+  numpages         = {9},
+  publisher        = {ACM},
+  qualityassured   = {qualityAssured},
+  ranking          = {rank5},
+  readstatus       = {read},
+}
+
+@MastersThesis{Ilha2022,
+  author           = {Alexandre da Silveira Ilha},
+  school           = {Universidade Federal do Rio Grande do Sul},
+  title            = {{Towards a General Approach for Cyberattack Detection Using Programmable Data Planes}},
+  year             = {2022},
+  modificationdate = {2022-08-26T14:20:56},
+  qualityassured   = {qualityAssured},
+}
+
+@Article{Paxson1999,
+  author           = {Vern Paxson},
+  journal          = {Computer Networks},
+  title            = {Bro: a system for detecting network intruders in real-time},
+  year             = {1999},
+  issn             = {1389-1286},
+  number           = {23},
+  pages            = {2435--2463},
+  volume           = {31},
+  abstract         = {We describe Bro, a stand-alone system for detecting network intruders in real-time by passively monitoring a network link over which the intruder's traffic transits. We give an overview of the system's design, which emphasizes high-speed (FDDI-rate) monitoring, real-time notification, clear separation between mechanism and policy, and extensibility. To achieve these ends, Bro is divided into an `event engine' that reduces a kernel-filtered network traffic stream into a series of higher-level events, and a `policy script interpreter' that interprets event handlers written in a specialized language used to express a site's security policy. Event handlers can update state information, synthesize new events, record information to disk, and generate real-time notifications via syslog. We also discuss a number of attacks that attempt to subvert passive monitoring systems and defenses against these, and give particulars of how Bro analyzes the six applications integrated into it so far: Finger, FTP, Portmapper, Ident, Telnet and Rlogin. The system is publicly available in source code form.},
+  doi              = {https://doi.org/10.1016/S1389-1286(99)00112-7},
+  keywords         = {Network intrusion detection, Passive network monitoring, Network monitoring evasion, Domain-specific languages},
+  modificationdate = {2022-08-26T14:20:34},
+  qualityassured   = {qualityAssured},
+  url              = {https://www.sciencedirect.com/science/article/pii/S1389128699001127},
+}
+
+@Misc{AboutZeek,
+  author           = {Jon Siwek},
+  title            = {{About Zeek -- Book of Zeek}},
+  year             = {2022},
+  modificationdate = {2022-08-26T14:18:34},
+  url              = {https://docs.zeek.org/en/master/about.html},
+  urlaccessdate    = {2022-07-10},
+}
+
+@Misc{Hjson,
+  title            = {Hjson, a user interface for {JSON}},
+  year             = {2022},
+  modificationdate = {2022-08-26T14:38:18},
+  url              = {https://hjson.github.io/},
+  urlaccessdate    = {2022-08-05},
+}
+
+@Misc{CorelightPingback,
+  author           = {Ben Reardon},
+  title            = {{Pingback C2 Detection}},
+  year             = {2021},
+  modificationdate = {2022-08-26T14:14:13},
+  url              = {https://github.com/corelight/pingback/},
+  urlaccessdate    = {2022-08-14},
+}
+
+@misc{PingbackAttack,
+  author        = {Pedro Tavares},
+  year          = {2021},
+  title         = {Pingback malware: How it works and how to prevent it},
+  url           = {https://resources.infosecinstitute.com/topic/pingback-malware-how-it-works-and-how-to-prevent-it/},
+  urlaccessdate = {2022-08-23}
+}
+
+@Misc{NIDSScienceDirect,
+  author           = {{Science Direct}},
+  title            = {{Network Based Intrusion Detection System}},
+  year             = {2022},
+  modificationdate = {2022-08-26T14:14:26},
+  url              = {https://www.sciencedirect.com/topics/computer-science/network-based-intrusion-detection-system},
+  urlaccessdate    = {2022-08-23},
+}
+
+@Misc{NtpMonlist,
+  title            = {{NTP~Monlist~Detection}},
+  year             = {2021},
+  modificationdate = {2022-08-26T14:14:39},
+  url              = {https://github.com/dopheide-esnet/zeek-ntp-monlist/},
+  urlaccessdate    = {2022-08-14},
+}
+
+@Misc{NtpMonlistAttack,
+  author           = {{Cloudflare, Inc.}},
+  title            = {{NTP amplification DDoS attack}},
+  year             = {2022},
+  modificationdate = {2022-08-26T14:14:48},
+  url              = {https://www.cloudflare.com/learning/ddos/ntp-amplification-ddos-attack/},
+  urlaccessdate    = {2022-08-23},
+}
+
+@Misc{FtpBruteforceAttack,
+  author           = {David Adams},
+  title            = {{Brute Force Against SSH and FTP Services}},
+  year             = {2019},
+  modificationdate = {2022-08-26T14:14:55},
+  url              = {https://linuxhint.com/bruteforce_ssh_ftp/},
+  urlaccessdate    = {2022-08-23},
+}
+
+@Misc{CAIDA2016,
+  author           = {CAIDA},
+  title            = {{The CAIDA UCSD Anonymized Internet Traces 2016}},
+  year             = {2016},
+  modificationdate = {2022-08-26T14:15:02},
+  url              = {https://catalog.caida.org/dataset/passive_2016_pcap},
+  urlaccessdate    = {2022-08-16},
+}
+
+@Misc{ZeekWebsite,
+  author           = {{The Zeek Project}},
+  title            = {{The Zeek Network Security Monitor}},
+  year             = {2022},
+  modificationdate = {2022-08-26T14:15:08},
+  url              = {https://zeek.org/},
+  urlaccessdate    = {2022-08-16},
+}
+
+@Misc{SnortWebsite,
+  author           = {{Cisco Systems}},
+  title            = {{Snort - Network Intrusion Detection and Prevention System}},
+  year             = {2022},
+  modificationdate = {2022-08-26T14:15:15},
+  url              = {https://www.snort.org/},
+  urlaccessdate    = {2022-08-16},
+}
+
+@Misc{SuricataWebsite,
+  author           = {{The Open Information Security Foundation}},
+  title            = {{Home - Suricata}},
+  year             = {2022},
+  modificationdate = {2022-08-26T14:15:21},
+  url              = {https://suricata.io/},
+  urlaccessdate    = {2022-08-16},
+}
+
+@Misc{Traceroute,
+  author           = {Rahul Gupta},
+  title            = {{Traceroute in Network Layer}},
+  year             = {2021},
+  modificationdate = {2022-08-26T14:15:27},
+  url              = {https://www.geeksforgeeks.org/traceroute-in-network-layer/},
+  urlaccessdate    = {2022-08-16},
+}
+
+@misc{Libpcap,
+  author        = {Van Jacobson and Craig Leres and Steven McCanne},
+  title         = {libpcap},
+  howpublished  = {Lawrence Berkeley Laboratory, Berkeley, CA},
+  year          = {1994},
+  url           = {https://www.tcpdump.org/},
+  urlaccessdate = {2022-08-16}
+}
+
+@Misc{ZeekSignatureFramework,
+  author           = {{The Zeek Project}},
+  title            = {{Signature Framework -- Book of Zeek}},
+  year             = {2022},
+  modificationdate = {2022-08-26T14:18:31},
+  url              = {https://docs.zeek.org/en/master/frameworks/signatures.html},
+  urlaccessdate    = {2022-08-23},
+}
+
+@InProceedings{Dreger2006,
+  author           = {Dreger, Holger and Feldmann, Anja and Mai, Michael and Paxson, Vern and Sommer, Robin},
+  booktitle        = {15th {USENIX} Security Symposium (USENIX Security 06)},
+  title            = {{Dynamic Application-Layer Protocol Analysis for Network Intrusion Detection}},
+  year             = {2006},
+  address          = {Vancouver, BC, Canada},
+  editor           = {Angelos D. Keromytis},
+  month            = jul,
+  organization     = {{USENIX} Association},
+  pages            = {257--272},
+  publisher        = {{USENIX} Association},
+  bibsource        = {dblp computer science bibliography, https://dblp.org},
+  biburl           = {https://dblp.org/rec/conf/uss/DregerF06.bib},
+  creationdate     = {2022-03-16T14:51:16},
+  modificationdate = {2022-08-26T14:20:39},
+  qualityassured   = {qualityAssured},
+  timestamp        = {Mon, 01 Feb 2021 08:43:12 +0100},
+  url              = {https://www.usenix.org/conference/15th-usenix-security-symposium/dynamic-application-layer-protocol-analysis-network},
+}
+
+@Article{Cordeiro2017,
+  author           = {da Costa Cordeiro, Weverton Luis and Marques, Jonatas Adilson and Gaspary, Luciano Paschoal},
+  journal          = {Journal of Network and Systems Management},
+  title            = {{Data Plane Programmability Beyond OpenFlow: Opportunities and Challenges for Network and Service Operations and Management}},
+  year             = {2017},
+  issn             = {1573-7705},
+  month            = oct,
+  number           = {4},
+  pages            = {784--818},
+  volume           = {25},
+  abstract         = {SDN and OpenFlow reshaped the way we configure forwarding devices and determine network behavior, by offering an open interface upon which apps like routing, monitoring, etc. can be built. SDN/OpenFlow helped break network ``ossification'' and unleash evolution, by enabling one to effectively think networking from top-down. It evidenced, however, a subtle but important problem: networking evolution is also hampered by the inability to change switch behavior, which forces one to build systems constrained from the bottom up. This scenario can change dramatically with the re-emergence of programmable data planes, and languages like POF and P4. Although recent, these languages proved to be very influential, powering several contributions towards flexible and customizable forwarding devices. In this paper, we survey the literature on data plane programmability, from early concepts (like Active Networks) to state-of-the-art solutions. We then dive into research questions that more recent work (especially P4) have uncovered: how to deploy and manage custom switch programs in large-scale networks? Can we improve services like monitoring and security with programmable data planes? Can we make network operation more dependable? As another contribution, we organize and discuss opportunities and challenges with potential to influence research in the field, from the perspective of network and service operations and management.},
+  day              = {01},
+  doi              = {10.1007/s10922-017-9423-2},
+  modificationdate = {2022-08-26T14:20:13},
+  qualityassured   = {qualityAssured},
+}
+
+@InProceedings{Song2013,
+  author           = {Song, Haoyu},
+  booktitle        = {Proceedings of the Second ACM SIGCOMM Workshop on Hot Topics in Software Defined Networking},
+  title            = {{Protocol-Oblivious Forwarding: Unleash the Power of SDN through a Future-Proof Forwarding Plane}},
+  year             = {2013},
+  address          = {New York, NY, USA},
+  pages            = {127--132},
+  publisher        = {Association for Computing Machinery},
+  series           = {HotSDN '13},
+  abstract         = {A flexible and programmable forwarding plane is essential to maximize the value of Software-Defined Networks (SDN). In this paper, we propose Protocol-Oblivious Forwarding (POF) as a key enabler for highly flexible and programmable SDN. Our goal is to remove any dependency on protocol-specific configurations on the forwarding elements and enhance the data-path with new stateful instructions to support genuine software defined networking behavior. A generic flow instruction set (FIS) is defined to fulfill this purpose. POF helps to lower network cost by using commodity forwarding elements and to create new value by enabling numerous innovative network services. We built both hardware-based and open source software-based prototypes to demonstrate the feasibility and advantages of POF. We report the preliminary evaluation results and the insights we learnt from the experiments. POF is future-proof and expressive. We believe it represents a promising direction to evolve the OpenFlow protocol and the future SDN forwarding elements.},
+  doi              = {10.1145/2491185.2491190},
+  isbn             = {9781450321785},
+  keywords         = {forwarding plane, pof, openflow, sdn},
+  location         = {Hong Kong, China},
+  modificationdate = {2022-08-26T14:20:44},
+  numpages         = {6},
+  qualityassured   = {qualityAssured},
+  url              = {https://doi.org/10.1145/2491185.2491190},
+}
+
+
+@misc{Kim2016,
+  author           = {Kim, Changhoon and Lee, Jeongkeun},
+  month            = aug,
+  title            = {Programming the network dataplane. {ACM} {SIGCOMM} {Tutorial}.},
+  year             = {2016},
+  comment          = {https://web.archive.org/web/2017*/https://conferences.sigcomm.org/sigcomm/2016/files/program/netpl/netpl16-kim.pdf
+                      https://conferences.sigcomm.org/sigcomm/2016/tutorial-p4.php},
+  creationdate     = {2022-05-13T09:09:12},
+  modificationdate = {2022-05-13T09:23:02},
+  timestamp        = {2022-05-13},
+  url              = {https://conferences.sigcomm.org/sigcomm/2016/files/program/netpl/netpl16-kim.pdf}
+}
+
+@misc{BMv2,
+  author           = {{The P4 Language Consortium}},
+  month            = jan,
+  title            = {{BMv2}},
+  year             = {2020},
+  modificationdate = {2022-03-15T11:16:37},
+  organization     = {P4 Language Consortium},
+  relevance        = {relevant},
+  url              = {https://github.com/p4lang/behavioral-model}
+}
+
+@misc{P4App,
+  author           = {{The P4 Language Consortium}},
+  month            = dec,
+  title            = {{p4app}},
+  year             = {2019},
+  creationdate     = {2022-08-18T11:52:23},
+  modificationdate = {2022-08-18T11:54:52},
+  organization     = {P4 Language Consortium},
+  timestamp        = {2022-08-18},
+  url              = {https://github.com/p4lang/p4app}
+}
+
+@TechReport{NetscoutTIR2021,
+  author           = {Richard Hummel and Carol Hildebrand},
+  institution      = {{Netscout Systems, Inc.}},
+  title            = {{NETSCOUT Threat Intelligence Report - Issue 7: Findings From 1H 2021 - The Long Tail of Attacker Innovation}},
+  year             = {2021},
+  address          = {Westford, MA, USA},
+  month            = sep,
+  note             = {Retrieved on 2022-02-23},
+  number           = {SECR\_001\_EN-2102},
+  creationdate     = {2022-02-23T11:54:12},
+  modificationdate = {2022-08-26T14:17:40},
+  readstatus       = {skimmed},
+  url              = {https://www.netscout.com/threatreport},
+  urlaccessdate    = {2022-08-19},
+}
+
+
+@misc{AkamaiRansomwareReport,
+  author        = {{Akamai Technologies}},
+  title         = {{Akamai Ransomware Threat Report}},
+  year          = {2022},
+  url           = {https://www.akamai.com/resources/research-paper/akamai-ransomware-threat-report},
+  urlaccessdate = {2022-08-19}
+}
+
+@InProceedings{Mininet,
+  author           = {Bob Lantz and Brandon Heller and Nick McKeown},
+  booktitle        = {Proceedings of the 9th {ACM} Workshop on Hot Topics in Networks. HotNets 2010, Monterey, CA, {USA} - October 20 - 21, 2010},
+  title            = {A network in a laptop: rapid prototyping for software-defined networks},
+  year             = {2010},
+  editor           = {Geoffrey G. Xie and Robert Beverly and Robert Tappan Morris and Bruce Davie},
+  pages            = {19},
+  publisher        = {{ACM}},
+  bibsource        = {dblp computer science bibliography, https://dblp.org},
+  biburl           = {https://dblp.org/rec/conf/hotnets/LantzHM10.bib},
+  creationdate     = {2022-08-26T14:23:52},
+  doi              = {10.1145/1868447.1868466},
+  modificationdate = {2022-08-26T14:23:52},
+  timestamp        = {Tue, 06 Nov 2018 16:58:14 +0100},
+  url              = {https://doi.org/10.1145/1868447.1868466},
+}
+
+@Comment{jabref-meta: databaseType:bibtex;}

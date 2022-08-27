@@ -1,0 +1,17 @@
+<@lshagen@lucas-xps:/rna$@> python3 rna.py --help
+usage: rna.py [-h] [-d] [-t TEMPLATE] [-s SCRIPT] [-o] OUTPUT [OFFLOADER ...]
+
+Process and compile a Zeek-P4 Offloader (ZPO).
+
+positional arguments:
+  OUTPUT                output folder.
+  OFFLOADER             Offloaders that will be active.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d, --debug           enable debug mode
+  -t TEMPLATE, --template TEMPLATE
+                        template folders
+  -s SCRIPT, --script SCRIPT
+                        zeek script file to be supported
+  -o, --override        overrides output dir, if it exists
