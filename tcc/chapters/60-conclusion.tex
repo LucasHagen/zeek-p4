@@ -1,36 +1,34 @@
 \chapter{Conclusion}
 \label{cap:conclusion}
 
-In this project, we investigated the benefits of using Programmable Data Planes to offload Zeek monitoring scripts. We also took the first step toward an automatic code generation mechanism, which enables any network operator, with no programming knowledge of PDPs, to offload Zeek scripts to programmable forwarding devices. We implemented an automatic code generator that identifies which Zeek Events should are required by a set of scripts, and using templates, is able to automatically generate P4 and Zeek code to offload these scripts.
+In this project, we investigated the benefits of using Programmable Data Planes to offload Zeek monitoring scripts. We also took the first step towards an automatic code generation mechanism, which enables any network operator without programming knowledge to offload Zeek scripts to programmable forwarding devices. We implemented an automatic code generator that identifies which Zeek Events are required by a set of scripts and, using templates, automatically generates P4 and Zeek code to offload these scripts.
 
-After proposing additions to the RNA framework and implementing the first prototype for the automatic code generator, we have also evaluated these proposed solutions and assessed their capabilities of automatically generating code and performance enhancement. We showed the mechanism was able to generate almost $3$ thousand lines of code a developer would need to manually write in order to offload four Zeek Scripts. We demonstrated that RNA is able to give a performance benefit compared to traditional IDS, resulting in $57\times$ less CPU usage, and $4\times$ less memory usage for the workload used in the experiments. And finally, we have also shown that our solution is capable of producing these benefits for network operators without any P4 programming knowledge. It is also important to note that these results are still to be confirmed with future experiments using physical PFDs.
+After proposing additions to the RNA framework and implementing our prototypical automatic code generator, we evaluated the proposed approach and assessed its capabilities of automatically generating code and enhancing performance. We showed the mechanism generates almost $3$ thousand lines of code, which, otherwise, a developer would need to write manually in order to offload four Zeek Scripts. We demonstrated that RNA can give a performance benefit compared to server-based intrusion detection, resulting in $57\times$ less CPU usage and $4\times$ less memory usage for the workload used in the experiments. Moreover, we have also shown that our approach can produce these benefits for network operators without any previous P4 programming knowledge. It is also important to note that these results are still to be confirmed with future experiments using hardware PFDs.
 
-\section{Challenges and Difficulties}
-% "Reflexao pessoal", desafios do projeto (1 paragrafo)
+%\vspace{-0.5em}
 
-The main challenge in this project was to adapt an existing IDS, in our case Zeek, to work with DPD offloading. This was also challenging due to the lack of internal documentation on the Zeek internal systems since it is only originally meant to receive new protocols and scripts based on existing protocols, and not have its existing protocols changed.
+%\section{Challenges and Difficulties}
+
+%\vspace{-0.5em}
+% "Reflexão pessoal", desafios do projeto (1 parágrafo)
+
+%This project's main challenge was adapting an existing IDS, in our case Zeek, to work with PDP offloading. This adaptation was also challenging due to the lack of internal documentation on the Zeek internal subsystems, initially designed to facilitate adding support to new protocols without needing to modify the existing data flow.
 
 % \section{Future Work}
 
-This project was only the first step into automatic code generation for RNA. Next, we describe some opportunities for future work and items that could be improved. These items are both suggestions for RNA and for the code generator mechanism.
+This project took the first step towards adding automatic code generation to RNA. Next, we describe some opportunities for future work and items that could be improved. These items are both suggestions for RNA and the code generator mechanism.
 
 \subsubsection*{Stateful Connections}
 
-The next step to allow better handling, mainly of TCP connections is the implementation of a state-full analysis of RNA. This will allow far greater performance benefits if developed in the Data Plane. It will offload a big part of Zeek state management, allowing P4 to analyze more connection-based protocols.
+The next step to allow better protocol handling, mainly of TCP connections, is the implementation of stateful analysis into RNA. Stateful analysis will allow far more significant performance benefits if executed in the data plane. It will offload a significant part of Zeek state management, allowing P4 to analyze more connection-based protocols.
 
 
 \subsubsection*{Multiple Offloaders}
 
-At the current state of RNA and our code generation mechanism, it is not possible to trigger more than one Offloader per incoming packet. This is a limitation that could impact future deployments where a higher number of scripts are being executed. This is a problem that should be solved in the future.
+At the current state of RNA and our code generation mechanism, it is not possible to trigger more than one Offloader per incoming packet. This limitation could impact future deployments where many scripts are being executed. This is a problem that should be solved in the future.
 
 
 \subsubsection*{Enhanced Zeek \textit{Connection} Management}
 
-Zeek uses an object called \textit{Connection} (not to be confused with an actual \textit{network connection}) to manage sessions internally. This object is not being removed in our solution. Future work needs to develop a timeout mechanism to free memory usage and handle protocol timeouts. Some protocols also have timeout events, which should also be triggered.
+Zeek uses an object called \textit{Connection} (not to be confused with an actual \textit{network connection}) to manage sessions internally. This object is not deallocated after usage in our aproach. Future work must develop a mechanism to handle protocol timeouts and free resources after these are no longer needed. Some protocols also have timeout events, which should also be triggered by the PDP.
 
-% Saved for later:
-
-% Professor's comment about this whole paragraph (previously in Chapter 4):
-% Acho ruim começar o capítulo mencionando mudanças de planos em função de dificuldades. Esse tipo de texto poderia aparecer perfeitamente em alguma seção sobre dificuldades ou mesmo na Conclusão, mas não aqui.
-% 
-% The automation mechanism started with the idea of having a set of Zeek scripts as input, and two components on the output: a Zeek Script/Package and a P4 program. This became evidently unfeasible for the scope of this project due to the complexity and the logic behind each event triggering logic in Zeek. This obstacle steered us into another approach. The proposed mechanism uses the previously mentioned concepts, the \ProtocolTemplates{} and the \Offloaders{}, as a source of templates and resources, in order to implement the software required to offload the events subscribed by the desired scripts. Another proposed change to the original design is the generation of a unique Zeek Plugin, which will automatically deploy the P4 code when initiated, instead of having two separate deployable components.
